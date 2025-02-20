@@ -1,24 +1,34 @@
 using System;
 using UnityEngine;
+using System.Collections;
 
 public class Unit : MonoBehaviour
 {
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     private float _unitHealth;
     public float unitMaxHealth;
+    private Animator animator;
 
     public HealthTracker healthTracker;
-    void Start()
+    private void Start()
     {
+        animator = GetComponent<Animator>();
+
         UnitSelectionManager.Instance.allUnitSelected.Add(this.gameObject);
+
 
         _unitHealth = unitMaxHealth;
     }
 
-    private void OnDestroy()
-    {
+
+    private IEnumerator DeathAnimationHolder() {
+        animator.SetTrigger("Dead");
         UnitSelectionManager.Instance.allUnitSelected.Remove(this.gameObject);
+        yield return new WaitForSeconds(3.2f);
+        Destroy(gameObject);
+       
     }
+
 
     private void UpdateHealthUI()
     {
@@ -26,7 +36,7 @@ public class Unit : MonoBehaviour
 
         if (_unitHealth <= 0)
         {
-            Destroy(gameObject);
+            StartCoroutine(DeathAnimationHolder());
         }
     }
 

@@ -6,12 +6,12 @@ using UnityEngine.UI;
 
 public class HealthTracker : MonoBehaviour
 {
-    public Slider HealthBarSlider;
-    public Image sliderFill;
+    [SerializeField] private Slider HealthBarSlider;
+    [SerializeField] private Image sliderFill;
 
-    public Material greenEmission;
-    public Material yellowEmission;
-    public Material redEmission;
+    [SerializeField] private Material greenEmission;
+    [SerializeField] private Material yellowEmission;
+    [SerializeField] private Material redEmission;
 
 
     private Coroutine smoothHealthChangeCoroutine;
