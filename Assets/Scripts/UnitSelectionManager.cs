@@ -1,10 +1,9 @@
 using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
 
 public class UnitSelectionManager : MonoBehaviour
 {
-    public static UnitSelectionManager Instance { get; set; }
+    public static UnitSelectionManager Instance { get; private set; }
 
     public List<GameObject> allUnitSelected = new List<GameObject>();
     public List<GameObject> unitSelected = new List<GameObject>();
@@ -17,18 +16,26 @@ public class UnitSelectionManager : MonoBehaviour
 
     private Camera cam;
 
+    public delegate void SelectionChanged();
+    public event SelectionChanged onSelectionChanged; // Событие для обновления UI
+
     private void Awake()
     {
         if (Instance != null && Instance != this)
-        { Destroy(gameObject); }
-        else { Instance = this; }
+        {
+            Destroy(gameObject);
+        }
+        else
+        {
+            Instance = this;
+        }
     }
+
     void Start()
     {
         cam = Camera.main;
     }
 
-    // Update is called once per frame
     void Update()
     {
         if (Input.GetMouseButtonDown(0))
@@ -55,6 +62,7 @@ public class UnitSelectionManager : MonoBehaviour
                 }
             }
         }
+
         if (Input.GetMouseButtonDown(1) && unitSelected.Count > 0)
         {
             RaycastHit hit;
@@ -63,21 +71,18 @@ public class UnitSelectionManager : MonoBehaviour
             if (Physics.Raycast(ray, out hit, Mathf.Infinity, clicakble))
             {
                 groundMarker.transform.position = hit.point;
-                // groundMarker.SetActive(false);
                 groundMarker.SetActive(true);
-                Debug.Log("Hll");
             }
         }
-        // Attack
-        if (unitSelected.Count > 0 &&  AtLeastOneOffensiveUnit(unitSelected))
+
+        // Проверка атаки
+        if (unitSelected.Count > 0 && AtLeastOneOffensiveUnit(unitSelected))
         {
             RaycastHit hit;
             Ray ray = cam.ScreenPointToRay(Input.mousePosition);
 
             if (Physics.Raycast(ray, out hit, Mathf.Infinity, attackable))
             {
-                Debug.Log("Enemy!");
-
                 attackCursorVisible = true;
 
                 if (Input.GetMouseButtonDown(1))
@@ -92,7 +97,6 @@ public class UnitSelectionManager : MonoBehaviour
                     }
                 }
             }
-
             else
             {
                 attackCursorVisible = false;
@@ -111,16 +115,18 @@ public class UnitSelectionManager : MonoBehaviour
         }
         return false;
     }
+
     private void SelectByClicking(GameObject unit)
     {
         DeselectAll();
         unitSelected.Add(unit);
         SelectUnit(unit, true);
+        onSelectionChanged?.Invoke(); // Обновляем UI
     }
 
     private void MultiSelect(GameObject unit)
     {
-        if (unitSelected.Contains(unit) == false)
+        if (!unitSelected.Contains(unit))
         {
             unitSelected.Add(unit);
             SelectUnit(unit, true);
@@ -130,7 +136,9 @@ public class UnitSelectionManager : MonoBehaviour
             SelectUnit(unit, false);
             unitSelected.Remove(unit);
         }
+        onSelectionChanged?.Invoke(); // Обновляем UI
     }
+
     public void DeselectAll()
     {
         foreach (var unit in unitSelected)
@@ -139,6 +147,23 @@ public class UnitSelectionManager : MonoBehaviour
         }
         groundMarker.SetActive(false);
         unitSelected.Clear();
+        onSelectionChanged?.Invoke(); // Обновляем UI
+    }
+
+    internal void DragSelect(GameObject unit)
+    {
+        if (!unitSelected.Contains(unit))
+        {
+            unitSelected.Add(unit);
+            SelectUnit(unit, true);
+        }
+        onSelectionChanged?.Invoke(); // Обновляем UI
+    }
+
+    private void SelectUnit(GameObject unit, bool isSelected)
+    {
+        EnableUnitMovement(unit, isSelected);
+        TriggerSelectionIndicator(unit, isSelected);
     }
 
     private void EnableUnitMovement(GameObject unit, bool shouldMove)
@@ -149,20 +174,5 @@ public class UnitSelectionManager : MonoBehaviour
     private void TriggerSelectionIndicator(GameObject unit, bool isVisible)
     {
         unit.transform.Find("Indicator").gameObject.SetActive(isVisible);
-    }
-
-    internal void DragSelect(GameObject unit)
-    {
-        if (unitSelected.Contains(unit) == false)
-        {
-            unitSelected.Add(unit);
-            SelectUnit(unit, true);
-        }
-    }
-
-    private void SelectUnit(GameObject unit, bool  isSelected)
-    {
-        EnableUnitMovement(unit, isSelected);
-        TriggerSelectionIndicator(unit, isSelected);
     }
 }
