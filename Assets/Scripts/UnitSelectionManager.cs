@@ -17,7 +17,7 @@ public class UnitSelectionManager : MonoBehaviour
     private Camera cam;
 
     public delegate void SelectionChanged();
-    public event SelectionChanged onSelectionChanged; // Событие для обновления UI
+    public event SelectionChanged onSelectionChanged; // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ UI
 
     private void Awake()
     {
@@ -75,7 +75,7 @@ public class UnitSelectionManager : MonoBehaviour
             }
         }
 
-        // Проверка атаки
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
         if (unitSelected.Count > 0 && AtLeastOneOffensiveUnit(unitSelected))
         {
             RaycastHit hit;
@@ -121,7 +121,7 @@ public class UnitSelectionManager : MonoBehaviour
         DeselectAll();
         unitSelected.Add(unit);
         SelectUnit(unit, true);
-        onSelectionChanged?.Invoke(); // Обновляем UI
+        onSelectionChanged?.Invoke(); // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ UI
     }
 
     private void MultiSelect(GameObject unit)
@@ -136,7 +136,7 @@ public class UnitSelectionManager : MonoBehaviour
             SelectUnit(unit, false);
             unitSelected.Remove(unit);
         }
-        onSelectionChanged?.Invoke(); // Обновляем UI
+        onSelectionChanged?.Invoke(); // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ UI
     }
 
     public void DeselectAll()
@@ -147,7 +147,7 @@ public class UnitSelectionManager : MonoBehaviour
         }
         groundMarker.SetActive(false);
         unitSelected.Clear();
-        onSelectionChanged?.Invoke(); // Обновляем UI
+        onSelectionChanged?.Invoke(); // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ UI
     }
 
     internal void DragSelect(GameObject unit)
@@ -157,7 +157,7 @@ public class UnitSelectionManager : MonoBehaviour
             unitSelected.Add(unit);
             SelectUnit(unit, true);
         }
-        onSelectionChanged?.Invoke(); // Обновляем UI
+        onSelectionChanged?.Invoke(); // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ UI
     }
 
     private void SelectUnit(GameObject unit, bool isSelected)
@@ -173,6 +173,6 @@ public class UnitSelectionManager : MonoBehaviour
 
     private void TriggerSelectionIndicator(GameObject unit, bool isVisible)
     {
-        unit.transform.Find("Indicator").gameObject.SetActive(isVisible);
+        unit.transform.Find("CircleIndicator").gameObject.SetActive(isVisible);
     }
 }
