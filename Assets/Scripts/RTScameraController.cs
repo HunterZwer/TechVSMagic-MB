@@ -23,8 +23,8 @@ public class RTSCameraController : MonoBehaviour
     [SerializeField] bool moveWithMouseDrag;
 
     [Header("Keyboard Movement")]
-    [SerializeField] float fastSpeed = 0.05f;
-    [SerializeField] float normalSpeed = 0.01f;
+    [SerializeField] float fastSpeed = 2f;
+    [SerializeField] float normalSpeed = 4f;
     [SerializeField] float movementSensitivity = 1f; // Hardcoded Sensitivity
     float movementSpeed;
 
@@ -163,6 +163,7 @@ public class RTSCameraController : MonoBehaviour
             }
             else
             {
+                newPosition = transform.position;
                 if (isCursorSet)
                 {
                     ChangeCursor(CursorArrow.DEFAULT);
