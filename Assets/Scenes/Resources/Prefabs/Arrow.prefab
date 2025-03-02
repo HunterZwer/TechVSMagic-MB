@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: -6536069764978008764}
   - component: {fileID: -4675742554114912424}
   m_Layer: 0
-  m_Name: ArrowPrefab
+  m_Name: Arrow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

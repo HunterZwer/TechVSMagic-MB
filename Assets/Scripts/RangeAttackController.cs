@@ -80,7 +80,7 @@ public class RangeAttackController : MonoBehaviour
                 projectileScript = projectile.AddComponent<Projectile>();
             }
 
-            projectileScript.Initialize(targetToAttack, projectileDamage, projectileSpeed);
+            projectileScript.Initialize(targetToAttack, projectileDamage, projectileSpeed, isPlayer);
         }
     }
 

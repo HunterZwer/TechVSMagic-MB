@@ -1,5 +1,4 @@
 using UnityEngine;
-using System.Collections;
 
 public class Projectile : MonoBehaviour
 {
@@ -8,12 +7,12 @@ public class Projectile : MonoBehaviour
     private float speed;
     private bool isPlayerProjectile;
 
-    public void Initialize(Transform target, int damage, float speed)
+    public void Initialize(Transform target, int damage, float speed, bool isPlayerProjectile)
     {
         this.target = target;
         this.damage = damage;
         this.speed = speed;
-        this.isPlayerProjectile = isPlayerProjectile;
+        this.isPlayerProjectile = isPlayerProjectile; // Set the isPlayerProjectile flag
     }
 
     void Update()
@@ -24,6 +23,7 @@ public class Projectile : MonoBehaviour
             return;
         }
 
+        // Move towards the target
         Vector3 direction = (target.position - transform.position).normalized;
         transform.position += direction * speed * Time.deltaTime;
         transform.LookAt(target);
@@ -31,27 +31,21 @@ public class Projectile : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
+        // Determine the target tag based on the projectile type
         string targetTag = isPlayerProjectile ? "Enemy" : "Player";
-        
+
+        // Check if the collided object has the correct tag
         if (other.CompareTag(targetTag))
         {
-            float distance = Vector3.Distance(
-                transform.position,
-                other.transform.position
-            );
+            // Apply damage to the target
             Unit targetUnit = other.GetComponent<Unit>();
-
-            // Only trigger if within acceptable range
-            if (distance <= 0.5f)
+            if (targetUnit != null)
             {
-                if (targetUnit != null)
-                {
-                    targetUnit.TakeDamage(damage);
-                    Destroy(gameObject);
-                }
+                targetUnit.TakeDamage(damage);
             }
+
+            // Destroy the projectile
+            Destroy(gameObject);
         }
     }
 }
-
-
