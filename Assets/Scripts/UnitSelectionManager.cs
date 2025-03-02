@@ -8,7 +8,7 @@ public class UnitSelectionManager : MonoBehaviour
     public List<GameObject> allUnitSelected = new List<GameObject>();
     public List<GameObject> unitSelected = new List<GameObject>();
 
-    public LayerMask clicakble;
+    public LayerMask clickable; // Fixed typo in variable name
     public LayerMask ground;
     public LayerMask attackable;
     public GameObject groundMarker;
@@ -17,7 +17,7 @@ public class UnitSelectionManager : MonoBehaviour
     private Camera cam;
 
     public delegate void SelectionChanged();
-    public event SelectionChanged onSelectionChanged; // ������� ��� ���������� UI
+    public event SelectionChanged onSelectionChanged; // Event for updating UI
 
     private void Awake()
     {
@@ -43,7 +43,7 @@ public class UnitSelectionManager : MonoBehaviour
             RaycastHit hit;
             Ray ray = cam.ScreenPointToRay(Input.mousePosition);
 
-            if (Physics.Raycast(ray, out hit, Mathf.Infinity, clicakble))
+            if (Physics.Raycast(ray, out hit, Mathf.Infinity, clickable))
             {
                 if (Input.GetKey(KeyCode.LeftShift))
                 {
@@ -68,14 +68,14 @@ public class UnitSelectionManager : MonoBehaviour
             RaycastHit hit;
             Ray ray = cam.ScreenPointToRay(Input.mousePosition);
 
-            if (Physics.Raycast(ray, out hit, Mathf.Infinity, clicakble))
+            if (Physics.Raycast(ray, out hit, Mathf.Infinity, clickable))
             {
                 groundMarker.transform.position = hit.point;
                 groundMarker.SetActive(true);
             }
         }
 
-        // �������� �����
+        // Attack logic
         if (unitSelected.Count > 0 && AtLeastOneOffensiveUnit(unitSelected))
         {
             RaycastHit hit;
@@ -90,7 +90,7 @@ public class UnitSelectionManager : MonoBehaviour
                     Transform target = hit.transform;
                     foreach (GameObject unit in unitSelected)
                     {
-                        if (unit.GetComponent<AttackController>())
+                        if (unit != null && unit.GetComponent<AttackController>())
                         {
                             unit.GetComponent<AttackController>().targetToAttack = target;
                         }
@@ -108,7 +108,7 @@ public class UnitSelectionManager : MonoBehaviour
     {
         foreach (GameObject unit in unitSelected)
         {
-            if (unit.GetComponent<AttackController>())
+            if (unit != null && unit.GetComponent<AttackController>())
             {
                 return true;
             }
@@ -121,7 +121,7 @@ public class UnitSelectionManager : MonoBehaviour
         DeselectAll();
         unitSelected.Add(unit);
         SelectUnit(unit, true);
-        onSelectionChanged?.Invoke(); // ��������� UI
+        onSelectionChanged?.Invoke(); // Update UI
     }
 
     private void MultiSelect(GameObject unit)
@@ -136,18 +136,21 @@ public class UnitSelectionManager : MonoBehaviour
             SelectUnit(unit, false);
             unitSelected.Remove(unit);
         }
-        onSelectionChanged?.Invoke(); // ��������� UI
+        onSelectionChanged?.Invoke(); // Update UI
     }
 
     public void DeselectAll()
     {
+        // Remove null references from the list
+        unitSelected.RemoveAll(unit => unit == null);
+
         foreach (var unit in unitSelected)
         {
             SelectUnit(unit, false);
         }
         groundMarker.SetActive(false);
         unitSelected.Clear();
-        onSelectionChanged?.Invoke(); // ��������� UI
+        onSelectionChanged?.Invoke(); // Update UI
     }
 
     internal void DragSelect(GameObject unit)
@@ -157,22 +160,36 @@ public class UnitSelectionManager : MonoBehaviour
             unitSelected.Add(unit);
             SelectUnit(unit, true);
         }
-        onSelectionChanged?.Invoke(); // ��������� UI
+        onSelectionChanged?.Invoke(); // Update UI
     }
 
     private void SelectUnit(GameObject unit, bool isSelected)
     {
+        if (unit == null) return; // Skip if the unit is destroyed
+
         EnableUnitMovement(unit, isSelected);
         TriggerSelectionIndicator(unit, isSelected);
     }
 
     private void EnableUnitMovement(GameObject unit, bool shouldMove)
     {
-        unit.GetComponent<UnitMovement>().enabled = shouldMove;
+        if (unit == null) return; // Skip if the unit is destroyed
+
+        UnitMovement unitMovement = unit.GetComponent<UnitMovement>();
+        if (unitMovement != null)
+        {
+            unitMovement.enabled = shouldMove;
+        }
     }
 
     private void TriggerSelectionIndicator(GameObject unit, bool isVisible)
     {
-        unit.transform.Find("CircleIndicator").gameObject.SetActive(isVisible);
+        if (unit == null) return; // Skip if the unit is destroyed
+
+        Transform circleIndicator = unit.transform.Find("CircleIndicator");
+        if (circleIndicator != null)
+        {
+            circleIndicator.gameObject.SetActive(isVisible);
+        }
     }
 }
