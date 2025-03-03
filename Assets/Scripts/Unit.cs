@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Unit : MonoBehaviour
 {
-    public enum UnitClass { Swordsman, Archer } // Классы юнитов
+    public enum UnitClass { Swordsman, Archer , Shaman, Brute } // Классы юнитов
     public UnitClass unitClass;
     public Sprite unitIcon; // Иконка юнита
 
