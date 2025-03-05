@@ -6,6 +6,9 @@ public class MeleeAttackController : MonoBehaviour
     public bool isPlayer;
     public int unitDamage;
     private string _targetTag;
+    [Header("Combat Settings")]
+    public float attackRange = 1.2f; // Add this
+    private float lastAttackTime;
 
     void Start()
     {
@@ -67,6 +70,6 @@ public class MeleeAttackController : MonoBehaviour
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, 1f);
         Gizmos.color = Color.blue;
-        Gizmos.DrawWireSphere(transform.position, 1.2f);
+        Gizmos.DrawWireSphere(transform.position, attackRange);
     }
 }

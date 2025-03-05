@@ -9,7 +9,8 @@ public class RTSCameraController : MonoBehaviour
     // public void OnMouseDown(){
     //   CameraController.instance.followTransform = transform;
     // }
-
+    
+    
     [Header("General")]
     [SerializeField] Transform cameraTransform;
     public Transform followTransform;
@@ -23,8 +24,11 @@ public class RTSCameraController : MonoBehaviour
     [SerializeField] bool moveWithMouseDrag;
 
     [Header("Keyboard Movement")]
+    public AnimationCurve speedCurve = AnimationCurve.Linear(0f, 0f, 1f, 1f);
     [SerializeField] float fastSpeed = 4f;
     [SerializeField] float normalSpeed = 2f;
+    public float minMovementSpeed = 2f;
+    public float maxMovementSpeed = 20f;
     [SerializeField] float movementSensitivity = 1f; // Hardcoded Sensitivity
     float movementSpeed;
 
@@ -38,10 +42,11 @@ public class RTSCameraController : MonoBehaviour
     
     [Header("Zoom Settings")]
     public float zoomSpeed = 5f; 
-    public float minFOV = 20f; 
-    public float maxFOV = 60f; 
+    public float minFOV = 1f; 
+    public float maxFOV = 20f; 
     
     private Camera cam;
+    private float currentMovementSpeed;
     Vector3 rotation;
 
     CursorArrow currentCursor = CursorArrow.DEFAULT;
@@ -69,6 +74,15 @@ public class RTSCameraController : MonoBehaviour
 
     private void Update()
     {
+        // Camera Speed
+        float zoomNormalized = Mathf.InverseLerp(minFOV, maxFOV, cam.orthographicSize);
+        
+        // Use the animation curve to determine speed multiplier
+        // This allows for custom speed scaling
+        float speedMultiplier = speedCurve.Evaluate(zoomNormalized);
+        
+        // Interpolate between min and max movement speeds
+        currentMovementSpeed = Mathf.Lerp(minMovementSpeed, maxMovementSpeed, speedMultiplier);
         // Allow Camera to follow Target
         if (followTransform != null)
         {
@@ -243,8 +257,8 @@ public class RTSCameraController : MonoBehaviour
 
         if (scrollInput != 0)
         {
-            float newFOV = cam.fieldOfView - scrollInput * zoomSpeed;
-            cam.fieldOfView = Mathf.Clamp(newFOV, minFOV, maxFOV);
+            float newFOV = cam.orthographicSize - scrollInput * zoomSpeed;
+            cam.orthographicSize = Mathf.Clamp(newFOV, minFOV, maxFOV);
         }
     }
 }

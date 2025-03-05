@@ -54,7 +54,12 @@ public class UnitSpawner : MonoBehaviour
             {
                 if (unitPrefabs[selectedUnitIndex] != null)
                 {
-                    Instantiate(unitPrefabs[selectedUnitIndex], hit.point, Quaternion.identity);
+                    Vector3 spawnPosition = new Vector3(
+                        hit.point.x,
+                        hit.point.y + 0.25f,
+                        hit.point.z
+                    );
+                    Instantiate(unitPrefabs[selectedUnitIndex], spawnPosition, Quaternion.identity);
                 }
             }
         }
