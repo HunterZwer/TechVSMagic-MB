@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Unit : MonoBehaviour
 {
-    public enum UnitClass { Swordsman, Archer , Shaman, Brute } // Классы юнитов
+    public enum UnitClass { Swordsman, Archer, Shaman, Brute } // Классы юнитов
     public UnitClass unitClass;
     public Sprite unitIcon; // Иконка юнита
 
@@ -13,6 +13,8 @@ public class Unit : MonoBehaviour
     private Animator animator;
 
     public HealthTracker healthTracker;
+
+    private bool isDead = false; // Флаг для предотвращения повторного вызова смерти
 
     // События для обновления UI
     public static event Action onUnitStatsChanged;
@@ -27,7 +29,6 @@ public class Unit : MonoBehaviour
 
     private IEnumerator DeathAnimationHolder()
     {
-        animator.SetTrigger("Dead");
         UnitSelectionManager.Instance.allUnitSelected.Remove(this.gameObject);
         yield return new WaitForSeconds(3.2f);
         Destroy(gameObject);
@@ -37,8 +38,10 @@ public class Unit : MonoBehaviour
     {
         healthTracker.UpdateSliderValue(_unitHealth, unitMaxHealth);
 
-        if (_unitHealth <= 0)
+        if (_unitHealth <= 0 && !isDead)
         {
+            isDead = true; // Устанавливаем флаг
+            animator.SetTrigger("Dead");
             StartCoroutine(DeathAnimationHolder());
         }
 
@@ -47,6 +50,8 @@ public class Unit : MonoBehaviour
 
     internal void TakeDamage(int damageToInflict)
     {
+        if (isDead) return; // Если юнит уже мертв, не продолжаем
+
         _unitHealth -= damageToInflict;
         _unitHealth = Mathf.Max(0, _unitHealth); // Защита от отрицательных значений
         UpdateHealthUI();
