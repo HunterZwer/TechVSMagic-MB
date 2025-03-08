@@ -72,4 +72,5 @@ crashlytics-build.properties
 /[Aa]ssets/[Ss]treamingAssets/aa/*
 Assets/Shared/
 Assets/Shared.meta
-
+Assets/Map/
+Assets/Map.meta

@@ -11,7 +11,12 @@ public class BattleManager : MonoBehaviour
     [SerializeField] private float timeScale = 1f;
     [SerializeField] private Slider timeScaleSlider;
     [SerializeField] private TextMeshProUGUI timeScaleText;
-
+    
+    [Header("Formation Settings")]
+    [SerializeField] private float horizontalSpacing = 2f;    // Space between units in a row
+    [SerializeField] private float verticalSpacing = 5f;      // Space between unit types
+    [SerializeField] private float unitLineOffset = 3f;       // Front-back offset between lines
+    
     [Header("Team A Units")]
     [SerializeField] private GameObject teamA_Unit1Prefab;
     [SerializeField] private GameObject teamA_Unit2Prefab;
@@ -96,34 +101,58 @@ public class BattleManager : MonoBehaviour
         }
     }
 
-    private void SpawnTeams()
+   private void SpawnTeams()
     {
-        // Spawn Team A
-        SpawnUnits(teamA_Unit1Prefab, teamA_Unit1Count, teamASpawnCenter, teamAUnits);
-        SpawnUnits(teamA_Unit2Prefab, teamA_Unit2Count, teamASpawnCenter, teamAUnits);
-        SpawnUnits(teamA_Unit3Prefab, teamA_Unit3Count, teamASpawnCenter, teamAUnits);
-        SpawnUnits(teamA_Unit4Prefab, teamA_Unit4Count, teamASpawnCenter, teamAUnits);
+        // Spawn Team A units in organized lines
+        SpawnTeamUnits(
+            new GameObject[] { teamA_Unit1Prefab, teamA_Unit2Prefab, teamA_Unit3Prefab, teamA_Unit4Prefab },
+            new int[] { teamA_Unit1Count, teamA_Unit2Count, teamA_Unit3Count, teamA_Unit4Count },
+            teamASpawnCenter,
+            teamAUnits
+        );
 
-        // Spawn Team B
-        SpawnUnits(teamB_Unit1Prefab, teamB_Unit1Count, teamBSpawnCenter, teamBUnits);
-        SpawnUnits(teamB_Unit2Prefab, teamB_Unit2Count, teamBSpawnCenter, teamBUnits);
-        SpawnUnits(teamB_Unit3Prefab, teamB_Unit3Count, teamBSpawnCenter, teamBUnits);
-        SpawnUnits(teamB_Unit4Prefab, teamB_Unit4Count, teamBSpawnCenter, teamBUnits);
+        // Spawn Team B units in organized lines
+        SpawnTeamUnits(
+            new GameObject[] { teamB_Unit1Prefab, teamB_Unit2Prefab, teamB_Unit3Prefab, teamB_Unit4Prefab },
+            new int[] { teamB_Unit1Count, teamB_Unit2Count, teamB_Unit3Count, teamB_Unit4Count },
+            teamBSpawnCenter,
+            teamBUnits
+        );
     }
 
-    private void SpawnUnits(GameObject prefab, int count, Vector3 center, List<GameObject> teamList)
+    private void SpawnTeamUnits(GameObject[] prefabs, int[] counts, Vector3 basePosition, List<GameObject> teamList)
     {
-        if (prefab == null) return;
+        Vector3 currentPosition = basePosition;
+        
+        for (int unitType = 0; unitType < prefabs.Length; unitType++)
+        {
+            if (prefabs[unitType] == null) continue;
+
+            // Spawn units in a line for this type
+            SpawnUnitLine(
+                prefabs[unitType],
+                counts[unitType],
+                currentPosition,
+                teamList
+            );
+
+            // Move position for next unit type
+            currentPosition += new Vector3(0, 0, verticalSpacing);
+        }
+    }
+
+    private void SpawnUnitLine(GameObject prefab, int count, Vector3 lineCenter, List<GameObject> teamList)
+    {
+        // Calculate starting position for the line
+        Vector3 startPosition = lineCenter - new Vector3((count - 1) * horizontalSpacing / 2, 0, 0);
 
         for (int i = 0; i < count; i++)
         {
-            // Generate random position within spawn radius
-            Vector3 randomOffset = Random.insideUnitSphere * spawnRadius;
-            randomOffset.y = 0; // Keep units on the ground
-            Vector3 spawnPos = center + randomOffset;
+            // Calculate position in the line
+            Vector3 spawnPosition = startPosition + new Vector3(i * horizontalSpacing, 0, 0);
 
-            // Instantiate unit
-            GameObject unit = Instantiate(prefab, spawnPos, Quaternion.identity);
+            // Instantiate and add to team
+            GameObject unit = Instantiate(prefab, spawnPosition, Quaternion.identity);
             teamList.Add(unit);
         }
     }
