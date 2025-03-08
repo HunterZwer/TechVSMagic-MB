@@ -15,21 +15,23 @@ public class RangeAttackController : MonoBehaviour
 
     private float lastAttackTime;
     private string targetTag;
-    [SerializeField] 
+    [SerializeField]
     float maxHitDistance = 1.5f;
-	public bool isPlayer;
-
+    public bool isPlayer;
 
     void Start()
     {
         SetTargetTag();
-        lastAttackTime = -attackCooldown; // Allow immediate attack
+        lastAttackTime = -attackCooldown;
     }
 
     void Update()
     {
-        FindNearestTarget();
-        
+        if (targetToAttack == null || IsTargetDead())
+        {
+            FindNearestTarget();
+        }
+
         if (targetToAttack != null && Time.time - lastAttackTime >= attackCooldown)
         {
             if (Vector3.Distance(transform.position, targetToAttack.position) <= attackRange)
@@ -55,11 +57,15 @@ public class RangeAttackController : MonoBehaviour
         {
             if (hitCollider.CompareTag(targetTag))
             {
-                float distance = Vector3.Distance(transform.position, hitCollider.transform.position);
-                if (distance < closestDistance)
+                Unit unit = hitCollider.GetComponent<Unit>();
+                if (unit != null && unit.GetCurrentHealth() > 0)
                 {
-                    closestDistance = distance;
-                    closestTarget = hitCollider.transform;
+                    float distance = Vector3.Distance(transform.position, hitCollider.transform.position);
+                    if (distance < closestDistance)
+                    {
+                        closestDistance = distance;
+                        closestTarget = hitCollider.transform;
+                    }
                 }
             }
         }
@@ -67,14 +73,23 @@ public class RangeAttackController : MonoBehaviour
         targetToAttack = closestTarget;
     }
 
-    // Change this method to public
+    bool IsTargetDead()
+    {
+        if (targetToAttack != null)
+        {
+            Unit unit = targetToAttack.GetComponent<Unit>();
+            return unit == null || unit.GetCurrentHealth() <= 0;
+        }
+        return true;
+    }
+
     public void Attack()
     {
-        if (projectilePrefab && projectileSpawnPoint)
+        if (projectilePrefab && projectileSpawnPoint && targetToAttack != null && !IsTargetDead())
         {
             GameObject projectile = Instantiate(projectilePrefab, projectileSpawnPoint.position, Quaternion.identity);
             Projectile projectileScript = projectile.GetComponent<Projectile>();
-            
+
             if (projectileScript == null)
             {
                 projectileScript = projectile.AddComponent<Projectile>();
@@ -82,11 +97,5 @@ public class RangeAttackController : MonoBehaviour
 
             projectileScript.Initialize(targetToAttack, projectileDamage, projectileSpeed, isPlayer);
         }
-    }
-
-    private void OnDrawGizmos()
-    {
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, attackRange);
     }
 }

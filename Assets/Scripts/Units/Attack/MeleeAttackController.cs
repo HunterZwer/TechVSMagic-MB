@@ -5,61 +5,62 @@ public class MeleeAttackController : MonoBehaviour
     public Transform targetToAttack;
     public bool isPlayer;
     public int unitDamage;
-    
+    private string _targetTag;
     [Header("Combat Settings")]
     public float attackRange = 1.2f;
-    
-    private string _targetTag;
     private float lastAttackTime;
 
-    private void Awake()
+    void Start()
     {
         SetTargetTag();
     }
 
-    void SetTargetTag()
+    void Update()
     {
-        _targetTag = isPlayer ? "Enemy" : "Player";
-        
-        // Ensure tag exists
-        try
-        {
-            // This will throw an error if tag doesn't exist
-            gameObject.CompareTag(_targetTag); 
-        }
-        catch
-        {
-            Debug.LogError($"Tag '{_targetTag}' is not defined in project settings!");
-        }
-    }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        if (!string.IsNullOrEmpty(_targetTag) && other.CompareTag(_targetTag) && targetToAttack == null)
-        {
-            targetToAttack = other.transform;
-        }
-    }
-
-    private void OnTriggerStay(Collider other)
-    {
-        if (!string.IsNullOrEmpty(_targetTag) && other.CompareTag(_targetTag) && targetToAttack == null)
-        {
-            targetToAttack = other.transform;
-        }
-    }
-
-    private void OnTriggerExit(Collider other)
-    {
-        if (!string.IsNullOrEmpty(_targetTag) && other.CompareTag(_targetTag) && targetToAttack != null)
+        if (targetToAttack != null && IsTargetDead())
         {
             targetToAttack = null;
         }
     }
 
-    public void Attack()
+    void SetTargetTag()
+    {
+        _targetTag = isPlayer ? "Enemy" : "Player";
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag(_targetTag) && targetToAttack == null)
+        {
+            Unit unit = other.GetComponent<Unit>();
+            if (unit != null && unit.GetCurrentHealth() > 0)
+            {
+                targetToAttack = other.transform;
+            }
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.CompareTag(_targetTag) && targetToAttack == other.transform)
+        {
+            targetToAttack = null;
+        }
+    }
+
+    bool IsTargetDead()
     {
         if (targetToAttack != null)
+        {
+            Unit unit = targetToAttack.GetComponent<Unit>();
+            return unit == null || unit.GetCurrentHealth() <= 0;
+        }
+        return true;
+    }
+
+    public void Attack()
+    {
+        if (targetToAttack != null && !IsTargetDead())
         {
             Unit targetUnit = targetToAttack.GetComponent<Unit>();
             if (targetUnit != null)
@@ -67,11 +68,5 @@ public class MeleeAttackController : MonoBehaviour
                 targetUnit.TakeDamage(unitDamage);
             }
         }
-    }
-
-    private void OnDrawGizmos()
-    {
-        Gizmos.color = Color.blue;
-        Gizmos.DrawWireSphere(transform.position, attackRange);
     }
 }
