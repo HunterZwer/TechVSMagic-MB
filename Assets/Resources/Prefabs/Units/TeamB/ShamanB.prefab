@@ -1726,7 +1726,7 @@ GameObject:
   - component: {fileID: 2380522604425923415}
   - component: {fileID: 1058048121292335567}
   - component: {fileID: 8323046428196292981}
-  m_Layer: 7
+  m_Layer: 8
   m_Name: ShamanB
   m_TagString: Enemy
   m_Icon: {fileID: 0}

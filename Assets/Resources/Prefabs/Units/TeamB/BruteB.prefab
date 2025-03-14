@@ -4717,7 +4717,7 @@ GameObject:
   - component: {fileID: 2669253126528421045}
   - component: {fileID: 7431608944032491140}
   - component: {fileID: -6846127528736188840}
-  m_Layer: 7
+  m_Layer: 8
   m_Name: BruteB
   m_TagString: Enemy
   m_Icon: {fileID: 0}

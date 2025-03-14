@@ -6256,7 +6256,7 @@ GameObject:
   - component: {fileID: 4986614543121173279}
   - component: {fileID: 7422442726696333297}
   - component: {fileID: 8009543317875024894}
-  m_Layer: 7
+  m_Layer: 8
   m_Name: ArchererB
   m_TagString: Enemy
   m_Icon: {fileID: 0}

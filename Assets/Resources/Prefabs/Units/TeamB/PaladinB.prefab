@@ -3578,7 +3578,7 @@ GameObject:
   - component: {fileID: 6457240231487787683}
   - component: {fileID: 8483686998318666754}
   - component: {fileID: -7216197731221705137}
-  m_Layer: 7
+  m_Layer: 8
   m_Name: PaladinB
   m_TagString: Enemy
   m_Icon: {fileID: 0}

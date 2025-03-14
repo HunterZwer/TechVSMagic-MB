@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-
+using Unity.Burst;
+    
+    
+[BurstCompile]
 public class BattleManager : MonoBehaviour
 {
     [Header("Time Scale Settings")]
@@ -15,7 +18,7 @@ public class BattleManager : MonoBehaviour
     [Header("Formation Settings")]
     [SerializeField] private float horizontalSpacing = 2f;    // Space between units in a row
     [SerializeField] private float verticalSpacing = 5f;      // Space between unit types
-    [SerializeField] private float unitLineOffset = 3f;       // Front-back offset between lines
+    // [SerializeField] private float unitLineOffset = 3f;       // Front-back offset between lines
     
     [Header("Team A Units")]
     [SerializeField] private GameObject teamA_Unit1Prefab;

@@ -30,6 +30,10 @@ public class MeleeAttackController : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        if (_targetTag == null)
+        {
+            return;
+        }
         if (other.CompareTag(_targetTag) && targetToAttack == null)
         {
             Unit unit = other.GetComponent<Unit>();
