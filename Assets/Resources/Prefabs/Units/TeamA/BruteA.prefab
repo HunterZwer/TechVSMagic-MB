@@ -4880,7 +4880,8 @@ MonoBehaviour:
   targetToAttack: {fileID: 0}
   isPlayer: 1
   unitDamage: 12
-  attackRange: 1.2
+  attackRange: 10
+  attackCooldown: 1
 --- !u!135 &2669253126528421045
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -4900,7 +4901,7 @@ SphereCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Radius: 8
+  m_Radius: 15
   m_Center: {x: 0.0000076293945, y: -0.00000047683716, z: 0.0000038146973}
 --- !u!95 &7431608944032491140
 Animator:

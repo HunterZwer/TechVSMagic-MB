@@ -6,8 +6,10 @@ public class MeleeAttackController : MonoBehaviour
     public bool isPlayer;
     public int unitDamage;
     private string _targetTag;
+
     [Header("Combat Settings")]
     public float attackRange = 1.2f;
+    public float attackCooldown = 1.0f; // Cooldown time between attacks
     private float lastAttackTime;
 
     void Start()
@@ -21,6 +23,15 @@ public class MeleeAttackController : MonoBehaviour
         {
             targetToAttack = null;
         }
+
+        if (targetToAttack != null && Time.time - lastAttackTime >= attackCooldown)
+        {
+            if (Vector3.Distance(transform.position, targetToAttack.position) <= attackRange)
+            {
+                Attack();
+                lastAttackTime = Time.time;
+            }
+        }
     }
 
     void SetTargetTag()
@@ -30,10 +41,7 @@ public class MeleeAttackController : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (_targetTag == null)
-        {
-            return;
-        }
+        if (_targetTag is null){return;}
         if (other.CompareTag(_targetTag) && targetToAttack == null)
         {
             Unit unit = other.GetComponent<Unit>();

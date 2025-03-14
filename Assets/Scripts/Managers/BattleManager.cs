@@ -294,38 +294,5 @@ public class BattleManager : MonoBehaviour
         if (timeScaleText != null)
             timeScaleText.text = $"Time Scale: {timeScale:F1}x";
     }
-
-    // Optional: Reset battle
-    public void RestartBattle()
-    {
-        // Reset state
-        battleEnded = false;
-        
-        // Clean up any remaining units
-        foreach (GameObject unit in teamAUnits)
-        {
-            if (unit != null)
-                Destroy(unit);
-        }
-        
-        foreach (GameObject unit in teamBUnits)
-        {
-            if (unit != null)
-                Destroy(unit);
-        }
-        
-        teamAUnits.Clear();
-        teamBUnits.Clear();
-        
-        // Hide result panel
-        if (resultPanel != null)
-            resultPanel.SetActive(false);
-            
-        // Respawn teams
-        SpawnTeams();
-        SetTeamTags();
-        
-        // Reset time
-        nextCheckTime = Time.time + checkInterval;
-    }
+   
 }
