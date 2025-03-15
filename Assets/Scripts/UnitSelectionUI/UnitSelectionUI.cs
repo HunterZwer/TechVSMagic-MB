@@ -5,12 +5,12 @@ using UnityEngine.UI;
 
 public class UnitSelectionUI : MonoBehaviour
 {
-    public GameObject panel; // Панель UI
-    public TextMeshProUGUI countText;      // Количество юнитов
-    public TextMeshProUGUI unitNamesText;  // Имена юнитов
-    public TextMeshProUGUI unitStatsText;  // Характеристики юнитов
-    public GameObject unitIconPrefab;      // Префаб иконки
-    public Transform unitIconsContainer;   // Контейнер с Grid Layout Group
+    public GameObject panel; // пїЅпїЅпїЅпїЅпїЅпїЅ UI
+    public TextMeshProUGUI countText;      // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+    public TextMeshProUGUI unitNamesText;  // пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+    public TextMeshProUGUI unitStatsText;  // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+    public GameObject unitIconPrefab;      // пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+    public Transform unitIconsContainer;   // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ Grid Layout Group
 
     private List<GameObject> iconInstances = new List<GameObject>();
 
@@ -41,7 +41,7 @@ public class UnitSelectionUI : MonoBehaviour
         }
 
         panel.SetActive(true);
-        countText.text = $"Выбрано: {selectedUnits.Count}";
+        countText.text = $"пїЅпїЅпїЅпїЅпїЅпїЅпїЅ: {selectedUnits.Count}";
 
         unitNamesText.text = "";
         unitStatsText.text = "";
@@ -50,6 +50,7 @@ public class UnitSelectionUI : MonoBehaviour
         foreach (GameObject unit in selectedUnits)
         {
             Unit unitComponent = unit.GetComponent<Unit>();
+            if (unitComponent is null){return;}
             if (unitComponent != null)
             {
                 unitNamesText.text += $"- {unit.name}\n";

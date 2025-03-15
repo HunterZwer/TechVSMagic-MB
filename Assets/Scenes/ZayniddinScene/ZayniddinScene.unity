@@ -684,7 +684,7 @@ Camera:
   near clip plane: 0.3
   far clip plane: 1000
   field of view: 15
-  orthographic: 0
+  orthographic: 1
   orthographic size: 5
   m_Depth: -1
   m_CullingMask:
@@ -1604,8 +1604,34 @@ MonoBehaviour:
   moveWithKeyboad: 1
   moveWithEdgeScrolling: 1
   moveWithMouseDrag: 1
+  speedCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 1
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 1
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
   fastSpeed: 0.5
   normalSpeed: 0.1
+  minMovementSpeed: 2
+  maxMovementSpeed: 20
   movementSensitivity: 0
   edgeSize: 50
   cursorArrowUp: {fileID: 2800000, guid: 44ca47f398d221048917ce77afb6d82d, type: 3}
@@ -5445,7 +5471,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1432843411009495565
 Transform:
   m_ObjectHideFlags: 0
@@ -6598,7 +6624,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   unitClass: 2
-  unitIcon: {fileID: 21300000, guid: b7f8429af4263894196708bece9eb511, type: 3}
+  unitIcon: {fileID: 21300000, guid: 5e97af742d42db945a80c57fcd004e28, type: 3}
   unitMaxHealth: 100
   healthTracker: {fileID: 6510882240894701722}
 --- !u!4 &2073220376747331684
@@ -7137,7 +7163,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &2287365285039802092
 RectTransform:
   m_ObjectHideFlags: 0
@@ -7849,8 +7875,8 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 3991479532005804052}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 1, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 20, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -10824,7 +10850,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   unitClass: 0
-  unitIcon: {fileID: 21300000, guid: 94550253271628a4881c033b8e444b3b, type: 3}
+  unitIcon: {fileID: 21300000, guid: 3da923f6fdf453b47b3d86a3089a2f05, type: 3}
   unitMaxHealth: 150
   healthTracker: {fileID: 3999716737725696467}
 --- !u!1 &4127955187091606654
@@ -11092,6 +11118,7 @@ MonoBehaviour:
   targetToAttack: {fileID: 0}
   isPlayer: 1
   unitDamage: 12
+  attackRange: 1.2
 --- !u!1 &4310365922405137382
 GameObject:
   m_ObjectHideFlags: 0
@@ -13230,9 +13257,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 81d70b751bd18cd41bb4cdb1ceaa0efe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  targetToAttack: {fileID: 0}
+  targetToAttack: {fileID: 4523324951554615719}
   isPlayer: 1
   unitDamage: 12
+  attackRange: 1.2
 --- !u!223 &5640257064393646958
 Canvas:
   m_ObjectHideFlags: 0
@@ -13587,7 +13615,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   unitClass: 3
-  unitIcon: {fileID: 21300000, guid: 961a4b06027c85d4fbbe487100ff853b, type: 3}
+  unitIcon: {fileID: 21300000, guid: 8aa3d2228b05064408c24ad209bca1ed, type: 3}
   unitMaxHealth: 150
   healthTracker: {fileID: 2102102046830697512}
 --- !u!4 &5803897526244193187
@@ -16636,8 +16664,8 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 1191631892353777396}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 1, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 20, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -19054,7 +19082,7 @@ RectTransform:
   m_Father: {fileID: 4753578123799419027}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: -4.894989, y: 0}
   m_SizeDelta: {x: 0.21, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -19705,7 +19733,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   unitClass: 1
-  unitIcon: {fileID: 21300000, guid: 723eb5020d0d28f4ea318632f12ca298, type: 3}
+  unitIcon: {fileID: 21300000, guid: 1c6c0c72169aff245a67178d6fe6f7e6, type: 3}
   unitMaxHealth: 100
   healthTracker: {fileID: 4649498726437456933}
 --- !u!4 &8702793942637491623
@@ -19807,7 +19835,7 @@ RectTransform:
   m_Father: {fileID: 3923735432693245127}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: -4.894989, y: 0}
   m_SizeDelta: {x: 0.21, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
