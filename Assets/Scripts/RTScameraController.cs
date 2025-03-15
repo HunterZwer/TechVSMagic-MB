@@ -39,10 +39,15 @@ public class RTSCameraController : MonoBehaviour
     [Header("Zoom Settings")]
     public float zoomSpeed = 5f; 
     public float minFOV = 20f; 
-    public float maxFOV = 60f; 
-    
+    public float maxFOV = 60f;
+
+    [Header("Other Settings")]
+    public GameObject pauseButton;
+
     private Camera cam;
     Vector3 rotation;
+
+    public bool stopWork = false;
 
     CursorArrow currentCursor = CursorArrow.DEFAULT;
     enum CursorArrow
@@ -53,7 +58,7 @@ public class RTSCameraController : MonoBehaviour
         RIGHT,
         DEFAULT
     }
-
+    
     private void Start()
     {
         instance = this;
@@ -69,23 +74,34 @@ public class RTSCameraController : MonoBehaviour
 
     private void Update()
     {
-        // Allow Camera to follow Target
-        if (followTransform != null)
+        if (EventSystem.current.IsPointerOverGameObject() && EventSystem.current.currentSelectedGameObject == pauseButton)
         {
-            transform.position = followTransform.position;
-        }
-        // Let us control Camera
-        else
-        {
-            HandleCameraMovement();
+            Debug.Log("Курсор над кнопкой");
+            stopWork = true;
         }
 
-        if (Input.GetKeyDown(KeyCode.Escape))
+
+        if (!stopWork)
         {
-            followTransform = null;
+            // Allow Camera to follow Target
+            if (followTransform != null)
+            {
+                transform.position = followTransform.position;
+            }
+            // Let us control Camera
+            else
+            {
+                HandleCameraMovement();
+            }
+
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                followTransform = null;
+            }
+
+            HandleZoom();
         }
 
-        HandleZoom();
     }
 
     void HandleCameraMovement()
