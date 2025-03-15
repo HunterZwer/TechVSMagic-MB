@@ -1302,6 +1302,67 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!1 &785767982
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 785767984}
+  - component: {fileID: 785767983}
+  m_Layer: 0
+  m_Name: SpawnArea
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &785767983
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 785767982}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 987b322520035fc47be076e8f6b209a4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  spawnAreaSize: {x: 10, y: 0, z: 10}
+  respawnDelay: 5
+  waveUnits:
+  - unitPrefab: {fileID: 9016114144046474163, guid: a3c52525ecffb7041b45ec0ae9473bfa, type: 3}
+    wave1Amount: 1
+    wave2Amount: 2
+  - unitPrefab: {fileID: 8908745380470061523, guid: 49bbb8883513a62458f2f25290555a17, type: 3}
+    wave1Amount: 1
+    wave2Amount: 2
+  - unitPrefab: {fileID: 8829081743538213828, guid: 9eecc802e64c7544da18a5258a12aa71, type: 3}
+    wave1Amount: 1
+    wave2Amount: 2
+  - unitPrefab: {fileID: 2905507000728761543, guid: 843c4d3b6c49fb447ac00a10441cee62, type: 3}
+    wave1Amount: 1
+    wave2Amount: 2
+  playerTag: Player
+  checkInterval: 1
+--- !u!4 &785767984
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 785767982}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 21.47, y: 0.04, z: 21.26}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &832575517
 GameObject:
   m_ObjectHideFlags: 0
@@ -1919,7 +1980,7 @@ MonoBehaviour:
   m_OverrideVoxelSize: 0
   m_VoxelSize: 0.16666667
   m_MinRegionArea: 2
-  m_NavMeshData: {fileID: 23800000, guid: e96e7bd18c3e6e54bb8f8e741601bfd1, type: 2}
+  m_NavMeshData: {fileID: 23800000, guid: b559f274a165e3144a0594362631dbd8, type: 2}
   m_BuildHeightMesh: 0
 --- !u!1 &1172126165
 GameObject:
@@ -3618,3 +3679,4 @@ SceneRoots:
   - {fileID: 1462196503}
   - {fileID: 330497983}
   - {fileID: 659205656}
+  - {fileID: 785767984}
