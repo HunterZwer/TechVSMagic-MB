@@ -5,12 +5,11 @@ using UnityEngine.UI;
 
 public class UnitSelectionUI : MonoBehaviour
 {
-    public GameObject panel; // ������ UI
-    public TextMeshProUGUI countText;      // ���������� ������
-    public TextMeshProUGUI unitNamesText;  // ����� ������
-    public TextMeshProUGUI unitStatsText;  // �������������� ������
-    public GameObject unitIconPrefab;      // ������ ������
-    public Transform unitIconsContainer;   // ��������� � Grid Layout Group
+    public GameObject panel; // Основная панель UI
+    public TextMeshProUGUI unitNamesText;  // Имена юнитов
+    public TextMeshProUGUI unitAttackText; // Урон юнитов
+    public GameObject unitIconPrefab;      // Префаб иконки юнита
+    public Transform unitIconsContainer;   // Контейнер для иконок (Grid Layout Group)
 
     private List<GameObject> iconInstances = new List<GameObject>();
 
@@ -33,35 +32,41 @@ public class UnitSelectionUI : MonoBehaviour
     {
         List<GameObject> selectedUnits = UnitSelectionManager.Instance.unitSelected;
 
-        if (selectedUnits.Count == 0)
-        {
-            panel.SetActive(false);
-            ClearIcons();
-            return;
-        }
-
         panel.SetActive(true);
-        countText.text = $"�������: {selectedUnits.Count}";
-
         unitNamesText.text = "";
-        unitStatsText.text = "";
+        unitAttackText.text = "";
         ClearIcons();
 
         foreach (GameObject unit in selectedUnits)
         {
             Unit unitComponent = unit.GetComponent<Unit>();
-            if (unitComponent is null){return;}
-            if (unitComponent != null)
-            {
-                unitNamesText.text += $"- {unit.name}\n";
-                unitStatsText.text += $"HP: {unitComponent.GetCurrentHealth()}/{unitComponent.unitMaxHealth}\n";
+            if (unitComponent == null) continue;
 
-                if (unitComponent.GetUnitIcon() != null)
-                {
-                    GameObject newIcon = Instantiate(unitIconPrefab, unitIconsContainer);
-                    newIcon.GetComponent<Image>().sprite = unitComponent.GetUnitIcon();
-                    iconInstances.Add(newIcon);
-                }
+            // Добавляем имя юнита
+            unitNamesText.text += $"- {unit.name}\n";
+
+            // Определяем урон юнита
+            string attackInfo = "Нет атаки";
+            MeleeAttackController melee = unit.GetComponent<MeleeAttackController>();
+            RangeAttackController ranged = unit.GetComponent<RangeAttackController>();
+
+            if (melee != null)
+            {
+                attackInfo = $"Урон: {melee.unitDamage}";
+            }
+            else if (ranged != null)
+            {
+                attackInfo = $"Урон: {ranged.projectileDamage}";
+            }
+
+            unitAttackText.text += attackInfo + "\n";
+
+            // Добавляем иконку юнита
+            if (unitComponent.GetUnitIcon() != null)
+            {
+                GameObject newIcon = Instantiate(unitIconPrefab, unitIconsContainer);
+                newIcon.GetComponent<Image>().sprite = unitComponent.GetUnitIcon();
+                iconInstances.Add(newIcon);
             }
         }
     }

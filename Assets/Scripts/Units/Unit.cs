@@ -2,6 +2,7 @@
 using System.Collections;
 using UnityEngine;
 
+
 public class Unit : MonoBehaviour
 {
     public enum UnitClass { Swordsman, Archer, Shaman, Brute } // Классы юнитов
@@ -40,13 +41,26 @@ public class Unit : MonoBehaviour
 
         if (_unitHealth <= 0 && !isDead)
         {
-            isDead = true; // Устанавливаем флаг
+            isDead = true;
+
+            
+       
+
+            // Останавливаем движение, но не отключаем скрипт!
+            UnitMovement movement = GetComponent<UnitMovement>();
+            if (movement != null)
+            {
+                movement.agent.isStopped = true; // Останавливаем
+                movement.isCommandToMove = false; // Сбрасываем флаг движения
+            }
+
             animator.SetTrigger("Dead");
             StartCoroutine(DeathAnimationHolder());
         }
 
-        onUnitStatsChanged?.Invoke(); // Обновление UI при изменении здоровья
+        onUnitStatsChanged?.Invoke();
     }
+
 
     internal void TakeDamage(int damageToInflict)
     {

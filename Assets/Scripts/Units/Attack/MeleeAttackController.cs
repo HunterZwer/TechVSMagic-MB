@@ -72,6 +72,8 @@ public class MeleeAttackController : MonoBehaviour
 
     public void Attack()
     {
+        if (GetComponent<Unit>().GetCurrentHealth() <= 0) return; 
+
         if (targetToAttack != null && !IsTargetDead())
         {
             Unit targetUnit = targetToAttack.GetComponent<Unit>();

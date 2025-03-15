@@ -1,9 +1,10 @@
 using UnityEngine;
 using UnityEngine.AI;
+using System.Collections.Generic;
 public class UnitMovement : MonoBehaviour
 {
     Camera cam;
-    NavMeshAgent agent;
+    public NavMeshAgent agent;
     public LayerMask ground;
     public bool isCommandToMove;
     private Animator animator;
@@ -18,26 +19,33 @@ public class UnitMovement : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(1))
         {
-            RaycastHit hit;
-            Ray ray = cam.ScreenPointToRay(Input.mousePosition);
+            List<GameObject> selectedUnits = UnitSelectionManager.Instance.unitSelected;
 
-            if (Physics.Raycast(ray, out hit, Mathf.Infinity, ground))
+            foreach (GameObject unit in selectedUnits)
             {
-                isCommandToMove = true; 
-                agent.SetDestination(hit.point);
-                animator.SetBool("isMoving", true);
-            }
+                if (unit == this.gameObject) 
+                {
+                    RaycastHit hit;
+                    Ray ray = cam.ScreenPointToRay(Input.mousePosition);
 
+                    if (Physics.Raycast(ray, out hit, Mathf.Infinity, ground))
+                    {
+                        isCommandToMove = true;
+                        agent.SetDestination(hit.point);
+                        animator.SetBool("isMoving", true);
+                    }
+                }
+            }
         }
 
-        if (agent.hasPath == false || agent.remainingDistance <= agent.stoppingDistance)
+        if (!agent.hasPath || agent.remainingDistance <= agent.stoppingDistance)
         {
-            isCommandToMove= false;
+            isCommandToMove = false;
             animator.SetBool("isMoving", false);
         }
         else
         {
             animator.SetBool("isMoving", true);
         }
-   }
+    }
 }

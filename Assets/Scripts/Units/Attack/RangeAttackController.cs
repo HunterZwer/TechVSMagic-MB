@@ -85,6 +85,8 @@ public class RangeAttackController : MonoBehaviour
 
     public void Attack()
     {
+        if (GetComponent<Unit>().GetCurrentHealth() <= 0) return; // Юнит мертв - не атакует
+
         if (projectilePrefab && projectileSpawnPoint && targetToAttack != null && !IsTargetDead())
         {
             GameObject projectile = Instantiate(projectilePrefab, projectileSpawnPoint.position, Quaternion.identity);

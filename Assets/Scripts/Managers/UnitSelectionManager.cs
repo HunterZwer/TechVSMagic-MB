@@ -140,7 +140,7 @@ public class UnitSelectionManager : MonoBehaviour
     {
         MeleeAttackController melee = unit.GetComponent<MeleeAttackController>();
         RangeAttackController ranged = unit.GetComponent<RangeAttackController>();
-        
+
         if (melee != null || ranged != null)
         {
             selectedUnitsWithAttack.Add((unit, melee != null ? (Component)melee : (Component)ranged));
@@ -182,19 +182,14 @@ public class UnitSelectionManager : MonoBehaviour
     private void SelectUnit(GameObject unit, bool isSelected)
     {
         if (unit == null) return;
-        EnableUnitMovement(unit, isSelected);
         TriggerSelectionIndicator(unit, isSelected);
     }
 
     private void EnableUnitMovement(GameObject unit, bool shouldMove)
     {
-        if (unit == null) return;
-        UnitMovement unitMovement = unit.GetComponent<UnitMovement>();
-        if (unitMovement != null)
-        {
-            unitMovement.enabled = shouldMove;
-        }
+        // Удалено выключение UnitMovement
     }
+
 
     private void TriggerSelectionIndicator(GameObject unit, bool isVisible)
     {
