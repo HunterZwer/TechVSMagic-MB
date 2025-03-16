@@ -1,51 +1,64 @@
 using UnityEngine;
 using UnityEngine.AI;
 using System.Collections.Generic;
+
 public class UnitMovement : MonoBehaviour
 {
-    Camera cam;
-    public NavMeshAgent agent;
+    // Cached references
+    private Camera _cam;
+    public NavMeshAgent agent; // Public as requested
+    private Animator _animator;
+    private Transform _transform;
+    private static readonly int IsMoving = Animator.StringToHash("isMoving");
+    
+    // Public fields
     public LayerMask ground;
     public bool isCommandToMove;
-    private Animator animator;
+    
+    private void Awake()
+    {
+        // Cache components in Awake
+        _transform = transform;
+        _animator = GetComponent<Animator>();
+    }
+    
     private void Start()
     {
-        cam = Camera.main;
+        _cam = Camera.main;
         agent = GetComponent<NavMeshAgent>();
-        animator = GetComponent<Animator>();
     }
-
+    
     private void Update()
     {
+        // Process mouse input
         if (Input.GetMouseButtonDown(1))
         {
             List<GameObject> selectedUnits = UnitSelectionManager.Instance.unitSelected;
-
+            
             foreach (GameObject unit in selectedUnits)
             {
-                if (unit == this.gameObject) 
+                if (unit == gameObject)
                 {
-                    RaycastHit hit;
-                    Ray ray = cam.ScreenPointToRay(Input.mousePosition);
-
-                    if (Physics.Raycast(ray, out hit, Mathf.Infinity, ground))
+                    Ray ray = _cam.ScreenPointToRay(Input.mousePosition);
+                    
+                    if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, ground))
                     {
                         isCommandToMove = true;
                         agent.SetDestination(hit.point);
-                        animator.SetBool("isMoving", true);
+                        _animator.SetBool(IsMoving, true);
                     }
                 }
             }
         }
-
+        
         if (!agent.hasPath || agent.remainingDistance <= agent.stoppingDistance)
         {
             isCommandToMove = false;
-            animator.SetBool("isMoving", false);
+            _animator.SetBool(IsMoving, false);
         }
         else
         {
-            animator.SetBool("isMoving", true);
+            _animator.SetBool(IsMoving, true);
         }
     }
 }

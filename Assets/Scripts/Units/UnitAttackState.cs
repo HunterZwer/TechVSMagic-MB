@@ -3,80 +3,115 @@ using UnityEngine.AI;
 
 public class UnitAttackState : StateMachineBehaviour
 {
-    private NavMeshAgent agent;
-    private RangeAttackController rangeAttackController;
-    private MeleeAttackController meleeAttackController;
+    // Configuration
     public float stopattackingDistance = 1.2f;
-
     public float attackRate = 1f;
-    private float attackTimer;
-
+    
+    // Cached state
+    private float _attackTimer;
+    private float _attackInterval;
+    private Transform _cachedTransform;
+    private UnitMovement _unitMovement;
+    
+    // Component references
+    private NavMeshAgent _agent;
+    private RangeAttackController _rangeAttackController;
+    private MeleeAttackController _meleeAttackController;
+    
+    // Cached for performance
+    private static readonly int IsAttacking = Animator.StringToHash("isAttacking");
+    private Vector3 _directionToTarget = Vector3.zero;
+    private float _sqrStopAttackingDistance;
+    
     // OnStateEnter is called when a transition starts and the state machine starts to evaluate this state
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        agent = animator.GetComponent<NavMeshAgent>();
-        rangeAttackController = animator.GetComponent<RangeAttackController>();
-        meleeAttackController = animator.GetComponent<MeleeAttackController>();
+        // Cache all components needed
+        _cachedTransform = animator.transform;
+        _agent = animator.GetComponent<NavMeshAgent>();
+        _rangeAttackController = animator.GetComponent<RangeAttackController>();
+        _meleeAttackController = animator.GetComponent<MeleeAttackController>();
+        _unitMovement = animator.GetComponent<UnitMovement>();
+        
+        // Precalculate values
+        _attackInterval = 1f / attackRate;
+        _attackTimer = 0f;
+        _sqrStopAttackingDistance = stopattackingDistance * stopattackingDistance;
     }
 
     // OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
     override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        Transform targetToAttack = rangeAttackController != null ? rangeAttackController.targetToAttack : meleeAttackController.targetToAttack;
+        // Get current target (prefer range attack target if available)
+        Transform targetToAttack = _rangeAttackController != null ? 
+            _rangeAttackController.targetToAttack : 
+            _meleeAttackController?.targetToAttack;
 
-        if (targetToAttack != null && animator.transform.GetComponent<UnitMovement>().isCommandToMove == false)
+        // Check if we have a valid target and aren't commanded to move elsewhere
+        if (targetToAttack != null && (_unitMovement == null || !_unitMovement.isCommandToMove))
         {
-            LookAtTarget();
+            // Look at target
+            LookAtTarget(targetToAttack);
 
-            if (attackTimer <= 0)
+            // Handle attack timing
+            if (_attackTimer <= 0)
             {
                 Attack();
-                attackTimer = 1f / attackRate;
+                _attackTimer = _attackInterval;
             }
             else
             {
-                attackTimer -= Time.deltaTime;
+                _attackTimer -= Time.deltaTime;
             }
 
-            float distanceFromTarget = Vector3.Distance(targetToAttack.position, animator.transform.position);
-            if (distanceFromTarget > stopattackingDistance || targetToAttack == null)
+            // Check if target is still in range using square distance (more efficient)
+            _directionToTarget = targetToAttack.position - _cachedTransform.position;
+            float sqrDistanceFromTarget = _directionToTarget.sqrMagnitude;
+            
+            if (sqrDistanceFromTarget > _sqrStopAttackingDistance)
             {
-                agent.SetDestination(animator.transform.position);
-                animator.SetBool("isAttacking", false);
+                // Target out of range, stop attacking
+                _agent.SetDestination(_cachedTransform.position);
+                animator.SetBool(IsAttacking, false);
             }
         }
         else
         {
-            animator.SetBool("isAttacking", false);
+            // No target or movement command, stop attacking
+            animator.SetBool(IsAttacking, false);
         }
     }
 
     private void Attack()
     {
-        if (rangeAttackController != null)
+        // Try range attack first, then melee
+        if (_rangeAttackController != null)
         {
-            rangeAttackController.Attack();
+            _rangeAttackController.Attack();
         }
-        else if (meleeAttackController != null)
+        else if (_meleeAttackController != null)
         {
-            // Assuming the MeleeAttackController has an Attack method
-            meleeAttackController.Attack();
+            _meleeAttackController.Attack();
         }
     }
 
-    private void LookAtTarget()
+    private void LookAtTarget(Transform target)
     {
-        Transform targetToAttack = rangeAttackController != null ? rangeAttackController.targetToAttack : meleeAttackController.targetToAttack;
-        Vector3 direction = targetToAttack.position - agent.transform.position;
-        agent.transform.rotation = Quaternion.LookRotation(direction);
-
-        var yRotation = agent.transform.eulerAngles.y;
-        agent.transform.rotation = Quaternion.Euler(0, yRotation, 0);
+        // Only calculate direction once
+        _directionToTarget = target.position - _cachedTransform.position;
+        _directionToTarget.y = 0; // Keep rotation on the horizontal plane
+        
+        // Avoid computing rotation if direction is too small
+        if (_directionToTarget.sqrMagnitude > 0.001f)
+        {
+            // Set rotation directly - faster than slerp for instant rotation
+            _cachedTransform.rotation = Quaternion.LookRotation(_directionToTarget);
+        }
     }
 
     // OnStateExit is called when a transition ends and the state machine finishes evaluating this state
     override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        // Cleanup if needed
+        // No cleanup needed
     }
 }

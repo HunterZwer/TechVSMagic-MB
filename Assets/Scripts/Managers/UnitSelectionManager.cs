@@ -7,7 +7,8 @@ public class UnitSelectionManager : MonoBehaviour
 
     public List<GameObject> allUnitSelected = new List<GameObject>();
     public List<GameObject> unitSelected = new List<GameObject>();
-    private List<(GameObject unit, Component attackComponent)> selectedUnitsWithAttack = new List<(GameObject, Component)>();
+    private List<SelectedUnitData> selectedUnitsWithAttack = new List<SelectedUnitData>();
+    private HashSet<GameObject> selectedUnitsSet = new HashSet<GameObject>();
 
     public LayerMask clickable;
     public LayerMask ground;
@@ -52,13 +53,14 @@ public class UnitSelectionManager : MonoBehaviour
             Ray ray = cam.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, clickable))
             {
+                GameObject clickedUnit = hit.collider.gameObject;
                 if (Input.GetKey(KeyCode.LeftShift))
                 {
-                    MultiSelect(hit.collider.gameObject);
+                    MultiSelect(clickedUnit);
                 }
                 else
                 {
-                    SelectByClicking(hit.collider.gameObject);
+                    SelectByClicking(clickedUnit);
                 }
             }
             else if (!Input.GetKey(KeyCode.LeftShift))
@@ -82,15 +84,15 @@ public class UnitSelectionManager : MonoBehaviour
             if (_hasOffensiveUnits && Physics.Raycast(ray, out hit, Mathf.Infinity, attackable))
             {
                 Transform target = hit.transform;
-                foreach (var (unit, attackComponent) in selectedUnitsWithAttack)
+                foreach (var unitData in selectedUnitsWithAttack)
                 {
-                    if (attackComponent is MeleeAttackController melee)
+                    if (unitData.meleeAttack != null)
                     {
-                        melee.targetToAttack = target;
+                        unitData.meleeAttack.targetToAttack = target;
                     }
-                    else if (attackComponent is RangeAttackController ranged)
+                    if (unitData.rangeAttack != null)
                     {
-                        ranged.targetToAttack = target;
+                        unitData.rangeAttack.targetToAttack = target;
                     }
                 }
             }
@@ -113,91 +115,98 @@ public class UnitSelectionManager : MonoBehaviour
     private void SelectByClicking(GameObject unit)
     {
         DeselectAll();
-        unitSelected.Add(unit);
-        SelectUnit(unit, true);
-        AddUnitToAttackList(unit);
+        AddToSelection(unit);
         onSelectionChanged?.Invoke();
     }
 
     private void MultiSelect(GameObject unit)
     {
-        if (!unitSelected.Contains(unit))
+        if (!selectedUnitsSet.Contains(unit))
         {
-            unitSelected.Add(unit);
-            SelectUnit(unit, true);
-            AddUnitToAttackList(unit);
+            AddToSelection(unit);
         }
         else
         {
-            SelectUnit(unit, false);
-            unitSelected.Remove(unit);
-            RemoveUnitFromAttackList(unit);
+            RemoveFromSelection(unit);
         }
         onSelectionChanged?.Invoke();
     }
 
-    private void AddUnitToAttackList(GameObject unit)
+    private void AddToSelection(GameObject unit)
     {
+        unitSelected.Add(unit);
+        selectedUnitsSet.Add(unit);
+        SelectUnit(unit, true);
+
         MeleeAttackController melee = unit.GetComponent<MeleeAttackController>();
         RangeAttackController ranged = unit.GetComponent<RangeAttackController>();
-
         if (melee != null || ranged != null)
         {
-            selectedUnitsWithAttack.Add((unit, melee != null ? (Component)melee : (Component)ranged));
+            selectedUnitsWithAttack.Add(new SelectedUnitData(unit, melee, ranged));
             _hasOffensiveUnits = true;
         }
     }
 
-    private void RemoveUnitFromAttackList(GameObject unit)
+    private void RemoveFromSelection(GameObject unit)
     {
-        selectedUnitsWithAttack.RemoveAll(u => u.unit == unit);
+        unitSelected.Remove(unit);
+        selectedUnitsSet.Remove(unit);
+        SelectUnit(unit, false);
+
+        for (int i = 0; i < selectedUnitsWithAttack.Count; i++)
+        {
+            if (selectedUnitsWithAttack[i].unit == unit)
+            {
+                selectedUnitsWithAttack.RemoveAt(i);
+                break;
+            }
+        }
         _hasOffensiveUnits = selectedUnitsWithAttack.Count > 0;
     }
 
     public void DeselectAll()
     {
-        unitSelected.RemoveAll(u => u == null);
-        selectedUnitsWithAttack.Clear();
         foreach (var unit in unitSelected)
         {
             SelectUnit(unit, false);
         }
-        groundMarker.SetActive(false);
         unitSelected.Clear();
+        selectedUnitsSet.Clear();
+        selectedUnitsWithAttack.Clear();
+        groundMarker.SetActive(false);
         _hasOffensiveUnits = false;
         onSelectionChanged?.Invoke();
     }
 
     internal void DragSelect(GameObject unit)
     {
-        if (!unitSelected.Contains(unit))
+        if (!selectedUnitsSet.Contains(unit))
         {
-            unitSelected.Add(unit);
-            SelectUnit(unit, true);
-            AddUnitToAttackList(unit);
-            onSelectionChanged?.Invoke();
+            AddToSelection(unit);
         }
     }
 
     private void SelectUnit(GameObject unit, bool isSelected)
     {
         if (unit == null) return;
-        TriggerSelectionIndicator(unit, isSelected);
-    }
-
-    private void EnableUnitMovement(GameObject unit, bool shouldMove)
-    {
-        // Удалено выключение UnitMovement
-    }
-
-
-    private void TriggerSelectionIndicator(GameObject unit, bool isVisible)
-    {
-        if (unit == null) return;
         Transform circleIndicator = unit.transform.Find("CircleIndicator");
         if (circleIndicator != null)
         {
-            circleIndicator.gameObject.SetActive(isVisible);
+            circleIndicator.gameObject.SetActive(isSelected);
+        }
+    }
+
+    private struct SelectedUnitData
+    {
+        public GameObject unit;
+        public MeleeAttackController meleeAttack;
+        public RangeAttackController rangeAttack;
+
+        public SelectedUnitData(GameObject unit, MeleeAttackController melee, RangeAttackController ranged)
+        {
+            this.unit = unit;
+            this.meleeAttack = melee;
+            this.rangeAttack = ranged;
         }
     }
 }
