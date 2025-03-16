@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 using System.Collections.Generic;
 
 public class MeleeAttackController : MonoBehaviour
@@ -9,39 +10,16 @@ public class MeleeAttackController : MonoBehaviour
     private string _targetTag;
 
     [Header("Combat Settings")]
-    public float attackRange = 1.2f;
+    public float attackRange = 1.5f;  // Slightly increased for reliability
     public float attackCooldown = 1.0f;
-    private float lastAttackTime;
+    private bool isAttacking = false;
 
     private List<Transform> enemiesInRange = new List<Transform>(); // Track multiple enemies
 
     private void Start()
     {
         SetTargetTag();
-    }
-
-    private void Update()
-    {
-        CleanupDeadTargets(); // Remove dead targets
-
-        if (targetToAttack == null)
-        {
-            targetToAttack = GetClosestEnemy();
-        }
-
-        if (targetToAttack != null && Time.time - lastAttackTime >= attackCooldown)
-        {
-            if (Vector3.Distance(transform.position, targetToAttack.position) <= attackRange)
-            {
-                Attack();
-                lastAttackTime = Time.time;
-            }
-        }
-    }
-
-    private void SetTargetTag()
-    {
-        _targetTag = isPlayer ? "Enemy" : "Player";
+        StartCoroutine(AttackLoop()); // Coroutine for attacking
     }
 
     private void OnTriggerEnter(Collider other)
@@ -63,16 +41,11 @@ public class MeleeAttackController : MonoBehaviour
         {
             enemiesInRange.Remove(other.transform);
 
-            if (targetToAttack == other.transform) 
+            if (targetToAttack == other.transform)
             {
                 targetToAttack = GetClosestEnemy();
             }
         }
-    }
-
-    private void CleanupDeadTargets()
-    {
-        enemiesInRange.RemoveAll(enemy => enemy == null || IsTargetDead(enemy));
     }
 
     private Transform GetClosestEnemy()
@@ -82,6 +55,8 @@ public class MeleeAttackController : MonoBehaviour
 
         foreach (Transform enemy in enemiesInRange)
         {
+            if (enemy == null || IsTargetDead(enemy)) continue;
+
             float distance = Vector3.Distance(transform.position, enemy.position);
             if (distance < closestDistance)
             {
@@ -100,6 +75,54 @@ public class MeleeAttackController : MonoBehaviour
         return unit == null || unit.GetCurrentHealth() <= 0;
     }
 
+    private void SetTargetTag()
+    {
+        _targetTag = isPlayer ? "Enemy" : "Player";
+    }
+
+    private IEnumerator AttackLoop()
+    {
+        while (true)
+        {
+            yield return new WaitForSeconds(0.2f); // Check frequently but not every frame
+            
+            CleanupDeadTargets(); // Remove dead enemies
+            targetToAttack = GetClosestEnemy(); // Always get the closest target
+
+            if (targetToAttack != null && !isAttacking)
+            {
+                float distance = Vector3.Distance(transform.position, targetToAttack.position);
+                
+                if (distance <= attackRange)
+                {
+                    StartCoroutine(PerformAttack());
+                }
+            }
+        }
+    }
+
+    private IEnumerator PerformAttack()
+    {
+        isAttacking = true;
+
+        if (GetComponent<Unit>().GetCurrentHealth() > 0 && targetToAttack != null && !IsTargetDead(targetToAttack))
+        {
+            Unit targetUnit = targetToAttack.GetComponent<Unit>();
+            if (targetUnit != null)
+            {
+                targetUnit.TakeDamage(unitDamage);
+            }
+        }
+
+        yield return new WaitForSeconds(attackCooldown);
+        isAttacking = false;
+    }
+
+    private void CleanupDeadTargets()
+    {
+        enemiesInRange.RemoveAll(enemy => enemy == null || IsTargetDead(enemy));
+    }
+    
     public void Attack()
     {
         if (GetComponent<Unit>().GetCurrentHealth() <= 0) return;

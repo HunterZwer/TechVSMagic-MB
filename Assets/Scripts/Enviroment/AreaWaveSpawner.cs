@@ -21,8 +21,7 @@ public class AreaWaveSpawner : MonoBehaviour
     [Header("Trigger Settings")]
     [SerializeField] private string playerTag = "Player";
     [SerializeField] private float checkInterval = 1f;
-
-    private bool isActive = false;
+    
     private bool hasSpawned = false;
 
     private void Start()
