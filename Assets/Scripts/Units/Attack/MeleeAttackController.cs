@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 public class MeleeAttackController : MonoBehaviour
 {
@@ -9,19 +10,23 @@ public class MeleeAttackController : MonoBehaviour
 
     [Header("Combat Settings")]
     public float attackRange = 1.2f;
-    public float attackCooldown = 1.0f; // Cooldown time between attacks
+    public float attackCooldown = 1.0f;
     private float lastAttackTime;
 
-    void Start()
+    private List<Transform> enemiesInRange = new List<Transform>(); // Track multiple enemies
+
+    private void Start()
     {
         SetTargetTag();
     }
 
-    void Update()
+    private void Update()
     {
-        if (targetToAttack != null && IsTargetDead())
+        CleanupDeadTargets(); // Remove dead targets
+
+        if (targetToAttack == null)
         {
-            targetToAttack = null;
+            targetToAttack = GetClosestEnemy();
         }
 
         if (targetToAttack != null && Time.time - lastAttackTime >= attackCooldown)
@@ -34,47 +39,72 @@ public class MeleeAttackController : MonoBehaviour
         }
     }
 
-    void SetTargetTag()
+    private void SetTargetTag()
     {
         _targetTag = isPlayer ? "Enemy" : "Player";
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        if (_targetTag is null){return;}
-        if (other.CompareTag(_targetTag) && targetToAttack == null)
+        if (_targetTag is null) return;
+        if (other.CompareTag(_targetTag))
         {
             Unit unit = other.GetComponent<Unit>();
             if (unit != null && unit.GetCurrentHealth() > 0)
             {
-                targetToAttack = other.transform;
+                enemiesInRange.Add(other.transform);
             }
         }
     }
 
     private void OnTriggerExit(Collider other)
     {
-        if (other.CompareTag(_targetTag) && targetToAttack == other.transform)
+        if (other.CompareTag(_targetTag))
         {
-            targetToAttack = null;
+            enemiesInRange.Remove(other.transform);
+
+            if (targetToAttack == other.transform) 
+            {
+                targetToAttack = GetClosestEnemy();
+            }
         }
     }
 
-    bool IsTargetDead()
+    private void CleanupDeadTargets()
     {
-        if (targetToAttack != null)
+        enemiesInRange.RemoveAll(enemy => enemy == null || IsTargetDead(enemy));
+    }
+
+    private Transform GetClosestEnemy()
+    {
+        Transform closestEnemy = null;
+        float closestDistance = Mathf.Infinity;
+
+        foreach (Transform enemy in enemiesInRange)
         {
-            Unit unit = targetToAttack.GetComponent<Unit>();
-            return unit == null || unit.GetCurrentHealth() <= 0;
+            float distance = Vector3.Distance(transform.position, enemy.position);
+            if (distance < closestDistance)
+            {
+                closestDistance = distance;
+                closestEnemy = enemy;
+            }
         }
-        return true;
+
+        return closestEnemy;
+    }
+
+    private bool IsTargetDead(Transform target)
+    {
+        if (target == null) return true;
+        Unit unit = target.GetComponent<Unit>();
+        return unit == null || unit.GetCurrentHealth() <= 0;
     }
 
     public void Attack()
     {
-        if (GetComponent<Unit>().GetCurrentHealth() <= 0) return; 
+        if (GetComponent<Unit>().GetCurrentHealth() <= 0) return;
 
-        if (targetToAttack != null && !IsTargetDead())
+        if (targetToAttack != null && !IsTargetDead(targetToAttack))
         {
             Unit targetUnit = targetToAttack.GetComponent<Unit>();
             if (targetUnit != null)
