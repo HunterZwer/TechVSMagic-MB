@@ -16,7 +16,6 @@ public class RangeAttackController : MonoBehaviour
     private float lastAttackTime;
     private string targetTag;
     [SerializeField]
-    float maxHitDistance = 1.5f;
     public bool isPlayer;
 
     void Start()
@@ -85,7 +84,7 @@ public class RangeAttackController : MonoBehaviour
 
     public void Attack()
     {
-        if (GetComponent<Unit>().GetCurrentHealth() <= 0) return; // Юнит мертв - не атакует
+        if (GetComponent<Unit>().GetCurrentHealth() <= 0) return; // пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ - пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 
         if (projectilePrefab && projectileSpawnPoint && targetToAttack != null && !IsTargetDead())
         {

@@ -47,7 +47,6 @@ public class BattleManager : MonoBehaviour
     [Header("Spawn Settings")]
     [SerializeField] private Vector3 teamASpawnCenter = new Vector3(-20, 0, 0);
     [SerializeField] private Vector3 teamBSpawnCenter = new Vector3(20, 0, 0);
-    [SerializeField] private float spawnRadius = 10f;
 
     [Header("Distance Tracking")]
     [SerializeField] private TextMeshProUGUI allyDistanceText;
