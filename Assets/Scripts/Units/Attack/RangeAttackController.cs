@@ -1,5 +1,4 @@
 using UnityEngine;
-using System.Collections;
 
 public class RangeAttackController : MonoBehaviour
 {
@@ -15,13 +14,17 @@ public class RangeAttackController : MonoBehaviour
 
     private float lastAttackTime;
     private string targetTag;
-    [SerializeField]
-    public bool isPlayer;
+    private Unit _unit;
+    private float attackRangeSq;
+    [SerializeField] public bool isPlayer;
 
     void Start()
     {
         SetTargetTag();
-        lastAttackTime = -attackCooldown;
+        _unit = GetComponent<Unit>();
+        attackRangeSq = attackRange * attackRange;
+        lastAttackTime = Time.time - attackCooldown;
+        FindNearestTarget();
     }
 
     void Update()
@@ -33,7 +36,8 @@ public class RangeAttackController : MonoBehaviour
 
         if (targetToAttack != null && Time.time - lastAttackTime >= attackCooldown)
         {
-            if (Vector3.Distance(transform.position, targetToAttack.position) <= attackRange)
+            Vector3 direction = targetToAttack.position - transform.position;
+            if (direction.sqrMagnitude <= attackRangeSq)
             {
                 Attack();
                 lastAttackTime = Time.time;
@@ -49,7 +53,7 @@ public class RangeAttackController : MonoBehaviour
     void FindNearestTarget()
     {
         Collider[] hitColliders = Physics.OverlapSphere(transform.position, attackRange);
-        float closestDistance = Mathf.Infinity;
+        float closestDistanceSq = Mathf.Infinity;
         Transform closestTarget = null;
 
         foreach (var hitCollider in hitColliders)
@@ -59,10 +63,11 @@ public class RangeAttackController : MonoBehaviour
                 Unit unit = hitCollider.GetComponent<Unit>();
                 if (unit != null && unit.GetCurrentHealth() > 0)
                 {
-                    float distance = Vector3.Distance(transform.position, hitCollider.transform.position);
-                    if (distance < closestDistance)
+                    Vector3 direction = hitCollider.transform.position - transform.position;
+                    float distanceSq = direction.sqrMagnitude;
+                    if (distanceSq < closestDistanceSq)
                     {
-                        closestDistance = distance;
+                        closestDistanceSq = distanceSq;
                         closestTarget = hitCollider.transform;
                     }
                 }
@@ -84,19 +89,24 @@ public class RangeAttackController : MonoBehaviour
 
     public void Attack()
     {
-        if (GetComponent<Unit>().GetCurrentHealth() <= 0) return; // ���� ����� - �� �������
+        if (_unit.GetCurrentHealth() <= 0) return;
 
-        if (projectilePrefab && projectileSpawnPoint && targetToAttack != null && !IsTargetDead())
+        if (projectilePrefab && projectileSpawnPoint && targetToAttack != null)
         {
-            GameObject projectile = Instantiate(projectilePrefab, projectileSpawnPoint.position, Quaternion.identity);
-            Projectile projectileScript = projectile.GetComponent<Projectile>();
+            GameObject projectile = ObjectPool.Instance.GetPooledObject(projectilePrefab.name);
+            if (projectile == null)
+            {
+                projectile = Instantiate(projectilePrefab, projectileSpawnPoint.position, Quaternion.identity);
+            }
 
+            Projectile projectileScript = projectile.GetComponent<Projectile>();
             if (projectileScript == null)
             {
                 projectileScript = projectile.AddComponent<Projectile>();
             }
 
             projectileScript.Initialize(targetToAttack, projectileDamage, projectileSpeed, isPlayer);
+            projectile.SetActive(true);
         }
     }
 }

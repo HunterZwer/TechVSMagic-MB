@@ -10,27 +10,31 @@ public class MeleeAttackController : MonoBehaviour
     private string _targetTag;
 
     [Header("Combat Settings")]
-    public float attackRange = 1.5f;  // Slightly increased for reliability
+    public float attackRange = 1.5f;
     public float attackCooldown = 1.0f;
-    private bool isAttacking = false;
+    private bool isAttacking;
+    private float attackRangeSquared;
+    private Unit _unit;
 
-    private List<Transform> enemiesInRange = new List<Transform>(); // Track multiple enemies
+    private List<EnemyInfo> enemiesInRange = new List<EnemyInfo>();
 
     private void Start()
     {
         SetTargetTag();
-        StartCoroutine(AttackLoop()); // Coroutine for attacking
+        _unit = GetComponent<Unit>();
+        attackRangeSquared = attackRange * attackRange;
+        StartCoroutine(AttackLoop());
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        if (_targetTag is null) return;
+        if (_targetTag == null) return;
         if (other.CompareTag(_targetTag))
         {
             Unit unit = other.GetComponent<Unit>();
             if (unit != null && unit.GetCurrentHealth() > 0)
             {
-                enemiesInRange.Add(other.transform);
+                enemiesInRange.Add(new EnemyInfo(other.transform, unit));
             }
         }
     }
@@ -39,9 +43,9 @@ public class MeleeAttackController : MonoBehaviour
     {
         if (other.CompareTag(_targetTag))
         {
-            enemiesInRange.Remove(other.transform);
-
-            if (targetToAttack == other.transform)
+            enemiesInRange.RemoveAll(ei => ei.Transform == other.transform);
+            
+            if (targetToAttack != null && targetToAttack == other.transform)
             {
                 targetToAttack = GetClosestEnemy();
             }
@@ -51,28 +55,22 @@ public class MeleeAttackController : MonoBehaviour
     private Transform GetClosestEnemy()
     {
         Transform closestEnemy = null;
-        float closestDistance = Mathf.Infinity;
+        float closestDistanceSq = Mathf.Infinity;
 
-        foreach (Transform enemy in enemiesInRange)
+        foreach (EnemyInfo enemy in enemiesInRange)
         {
-            if (enemy == null || IsTargetDead(enemy)) continue;
+            if (enemy.Unit == null || enemy.Unit.GetCurrentHealth() <= 0) continue;
 
-            float distance = Vector3.Distance(transform.position, enemy.position);
-            if (distance < closestDistance)
+            Vector3 direction = enemy.Transform.position - transform.position;
+            float distanceSq = direction.sqrMagnitude;
+            if (distanceSq < closestDistanceSq)
             {
-                closestDistance = distance;
-                closestEnemy = enemy;
+                closestDistanceSq = distanceSq;
+                closestEnemy = enemy.Transform;
             }
         }
 
         return closestEnemy;
-    }
-
-    private bool IsTargetDead(Transform target)
-    {
-        if (target == null) return true;
-        Unit unit = target.GetComponent<Unit>();
-        return unit == null || unit.GetCurrentHealth() <= 0;
     }
 
     private void SetTargetTag()
@@ -84,16 +82,15 @@ public class MeleeAttackController : MonoBehaviour
     {
         while (true)
         {
-            yield return new WaitForSeconds(0.2f); // Check frequently but not every frame
+            yield return new WaitForSeconds(0.2f);
             
-            CleanupDeadTargets(); // Remove dead enemies
-            targetToAttack = GetClosestEnemy(); // Always get the closest target
+            CleanupDeadTargets();
+            targetToAttack = GetClosestEnemy();
 
-            if (targetToAttack != null && !isAttacking)
+            if (targetToAttack != null && !IsTargetDead(_unit.transform) && !isAttacking)
             {
-                float distance = Vector3.Distance(transform.position, targetToAttack.position);
-                
-                if (distance <= attackRange)
+                Vector3 direction = targetToAttack.position - transform.position;
+                if (direction.sqrMagnitude <= attackRangeSquared)
                 {
                     StartCoroutine(PerformAttack());
                 }
@@ -104,11 +101,12 @@ public class MeleeAttackController : MonoBehaviour
     private IEnumerator PerformAttack()
     {
         isAttacking = true;
+        yield return new WaitForEndOfFrame();
 
-        if (GetComponent<Unit>().GetCurrentHealth() > 0 && targetToAttack != null && !IsTargetDead(targetToAttack))
+        if (!IsTargetDead(_unit.transform) && targetToAttack != null)
         {
             Unit targetUnit = targetToAttack.GetComponent<Unit>();
-            if (targetUnit != null)
+            if (targetUnit != null && targetUnit.GetCurrentHealth() > 0)
             {
                 targetUnit.TakeDamage(unitDamage);
             }
@@ -120,20 +118,39 @@ public class MeleeAttackController : MonoBehaviour
 
     private void CleanupDeadTargets()
     {
-        enemiesInRange.RemoveAll(enemy => enemy == null || IsTargetDead(enemy));
+        enemiesInRange.RemoveAll(ei => ei.Unit == null || ei.Unit.GetCurrentHealth() <= 0);
     }
-    
+
     public void Attack()
     {
-        if (GetComponent<Unit>().GetCurrentHealth() <= 0) return;
+        if (IsTargetDead(_unit.transform)) return;
 
-        if (targetToAttack != null && !IsTargetDead(targetToAttack))
+        if (targetToAttack != null)
         {
             Unit targetUnit = targetToAttack.GetComponent<Unit>();
-            if (targetUnit != null)
+            if (targetUnit != null && targetUnit.GetCurrentHealth() > 0)
             {
                 targetUnit.TakeDamage(unitDamage);
             }
         }
+    }
+
+    private struct EnemyInfo
+    {
+        public Transform Transform;
+        public Unit Unit;
+
+        public EnemyInfo(Transform transform, Unit unit)
+        {
+            Transform = transform;
+            Unit = unit;
+        }
+    }
+    
+    private bool IsTargetDead(Transform target)
+    {
+        if (target == null) return true;
+        Unit unit = target.GetComponent<Unit>();
+        return unit == null || unit.GetCurrentHealth() <= 0;
     }
 }

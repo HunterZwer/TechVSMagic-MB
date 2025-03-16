@@ -7,45 +7,48 @@ public class Projectile : MonoBehaviour
     private float speed;
     private bool isPlayerProjectile;
 
-    public void Initialize(Transform target, int damage, float speed, bool isPlayerProjectile)
+    public void Initialize(Transform target, int damage, float speed, bool isPlayer)
     {
         this.target = target;
         this.damage = damage;
         this.speed = speed;
-        this.isPlayerProjectile = isPlayerProjectile; // Set the isPlayerProjectile flag
+        this.isPlayerProjectile = isPlayer;
+        gameObject.SetActive(true);
     }
 
     void Update()
     {
-        if (target == null)
+        if (target == null || target.GetComponent<Unit>()?.GetCurrentHealth() <= 0)
         {
-            Destroy(gameObject);
+            DestroyProjectile();
             return;
         }
 
-        // Move towards the target
-        Vector3 direction = (target.position - transform.position).normalized;
-        transform.position += direction * speed * Time.deltaTime;
         transform.LookAt(target);
+        transform.Translate(Vector3.forward * speed * Time.deltaTime);
+
+        float distance = Vector3.Distance(transform.position, target.position);
+        if (distance < 0.5f)
+        {
+            HitTarget();
+        }
     }
 
-    void OnTriggerEnter(Collider other)
+    void HitTarget()
     {
-        // Determine the target tag based on the projectile type
-        string targetTag = isPlayerProjectile ? "Enemy" : "Player";
-
-        // Check if the collided object has the correct tag
-        if (other.CompareTag(targetTag))
+        if (target != null)
         {
-            // Apply damage to the target
-            Unit targetUnit = other.GetComponent<Unit>();
+            Unit targetUnit = target.GetComponent<Unit>();
             if (targetUnit != null)
             {
                 targetUnit.TakeDamage(damage);
             }
-
-            // Destroy the projectile
-            Destroy(gameObject);
         }
+        DestroyProjectile();
+    }
+
+    void DestroyProjectile()
+    {
+        ObjectPool.Instance.ReturnObjectToPool(gameObject);
     }
 }
