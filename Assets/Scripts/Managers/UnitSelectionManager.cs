@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using System.Collections;
 
 public class UnitSelectionManager : MonoBehaviour
 {
@@ -79,6 +80,7 @@ public class UnitSelectionManager : MonoBehaviour
             {
                 groundMarker.transform.position = hit.point;
                 groundMarker.SetActive(true);
+
             }
 
             if (_hasOffensiveUnits && Physics.Raycast(ray, out hit, Mathf.Infinity, attackable))
@@ -95,10 +97,27 @@ public class UnitSelectionManager : MonoBehaviour
                         unitData.rangeAttack.targetToAttack = target;
                     }
                 }
+
+            }
+
+            Ray ray2 = cam.ScreenPointToRay(Input.mousePosition);
+            Plane groundPlane = new Plane(Vector3.up, Vector3.zero); 
+
+            float distance;
+            if (groundPlane.Raycast(ray2, out distance))
+            {
+                Vector3 point = ray2.GetPoint(distance); 
+                groundMarker.transform.position = point;
+                StartCoroutine(EnableDisableGroundMarker());
             }
         }
     }
-
+    private IEnumerator EnableDisableGroundMarker()
+    {
+        groundMarker.SetActive(true);
+        yield return new WaitForSeconds(0.15f);
+        groundMarker.SetActive(false);
+    }
     private void UpdateAttackCursor()
     {
         if (_hasOffensiveUnits)

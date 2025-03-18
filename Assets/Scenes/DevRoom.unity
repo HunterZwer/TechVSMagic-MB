@@ -961,6 +961,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dd1c6591f6f2a674086d35f5cd3dc187, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  myCam: {fileID: 0}
   boxVisual: {fileID: 895780718}
 --- !u!114 &625442288
 MonoBehaviour:
@@ -1934,6 +1935,8 @@ MonoBehaviour:
   zoomSpeed: 5
   minOrthoSize: 1
   maxOrthoSize: 20
+  useSmoothing: 1
+  smoothingSpeed: 8
 --- !u!114 &1172126169
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2141,7 +2144,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!135 &1357540216
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -2226,7 +2229,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 24.574, y: -0.01, z: 7.06}
-  m_LocalScale: {x: 0.378853, y: 0.378853, z: 0.378853}
+  m_LocalScale: {x: 0.24999999, y: 0.24999999, z: 0.24999999}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 1126739672}
