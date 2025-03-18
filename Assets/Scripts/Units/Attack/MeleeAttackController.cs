@@ -15,6 +15,7 @@ public class MeleeAttackController : MonoBehaviour
     private bool isAttacking;
     private float attackRangeSquared;
     private Unit _unit;
+    private UnitStats unitStats;
 
     private List<EnemyInfo> enemiesInRange = new List<EnemyInfo>();
 
@@ -24,6 +25,31 @@ public class MeleeAttackController : MonoBehaviour
         _unit = GetComponent<Unit>();
         attackRangeSquared = attackRange * attackRange;
         StartCoroutine(AttackLoop());
+        
+        LoadUnitStats();
+
+        // Override combat settings with JSON data
+        attackRange = unitStats.range;
+        attackCooldown = unitStats.reload;
+        unitDamage = unitStats.damage;
+    }
+    
+    private void LoadUnitStats()
+    {
+        // Use the JsonLoader to load the unit stats based on the unit's class and team
+        unitStats = JsonLoader.LoadUnitStats(_unit.unitClass, isPlayer);
+
+        if (unitStats == null)
+        {
+            Debug.LogError("Failed to load unit stats. Using default values.");
+            unitStats = new UnitStats
+            {
+                health = 100,
+                damage = 10,
+                range = 1.5f,
+                reload = 1.0f
+            };
+        }
     }
 
     private void OnTriggerEnter(Collider other)

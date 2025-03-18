@@ -1,0 +1,18 @@
+{
+  "health": 150,
+  "health1": 180,
+  "health2": 210,
+  "health3": 250,
+  "damage": 20,
+  "damage1": 25,
+  "damage2": 30,
+  "damage3": 35,
+  "range": 1.2,
+  "range1": 1.5,
+  "attackRange": 1.1,
+  "attackRange1": 1.3,
+  "speed": 2.5,
+  "speed1": 3.0,
+  "reload": 1.0,
+  "reload1": 0.8
+}

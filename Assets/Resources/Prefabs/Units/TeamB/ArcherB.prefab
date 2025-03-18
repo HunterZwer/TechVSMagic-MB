@@ -6349,7 +6349,7 @@ GameObject:
   - component: {fileID: 7422442726696333297}
   - component: {fileID: 8009543317875024894}
   m_Layer: 8
-  m_Name: ArchererB
+  m_Name: ArcherB
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

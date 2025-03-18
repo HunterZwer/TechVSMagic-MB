@@ -5,7 +5,7 @@ using UnityEngine;
 public class Unit : MonoBehaviour
 {
     // Unit type configuration
-    public enum UnitClass { Swordsman, Archer, Shaman, Brute }
+    public enum UnitClass { Knight, Archer, Shaman, Brute }
     public UnitClass unitClass;
     public Sprite unitIcon;
     
