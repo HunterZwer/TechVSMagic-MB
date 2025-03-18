@@ -114,9 +114,11 @@ public class UnitSelectionManager : MonoBehaviour
     }
     private IEnumerator EnableDisableGroundMarker()
     {
-        groundMarker.SetActive(true);
-        yield return new WaitForSeconds(0.15f);
-        groundMarker.SetActive(false);
+        if (unitSelected.Count > 0) {
+            groundMarker.SetActive(true);
+            yield return new WaitForSeconds(0.15f);
+            groundMarker.SetActive(false);
+        }
     }
     private void UpdateAttackCursor()
     {
