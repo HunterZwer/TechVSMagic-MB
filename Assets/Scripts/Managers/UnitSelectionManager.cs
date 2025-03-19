@@ -142,12 +142,16 @@ public class UnitSelectionManager : MonoBehaviour
 
     private void MultiSelect(GameObject unit)
     {
-        if (!selectedUnitsSet.Contains(unit))
+        if (!unitSelected.Contains(unit))
         {
+            unitSelected.Add(unit);
+            SelectUnit(unit, true);
             AddToSelection(unit);
         }
         else
         {
+            SelectUnit(unit, false);
+            unitSelected.Remove(unit);
             RemoveFromSelection(unit);
         }
         onSelectionChanged?.Invoke();
@@ -201,9 +205,12 @@ public class UnitSelectionManager : MonoBehaviour
 
     internal void DragSelect(GameObject unit)
     {
-        if (!selectedUnitsSet.Contains(unit))
+        if (!unitSelected.Contains(unit))
         {
-            AddToSelection(unit);
+            unitSelected.Add(unit);
+            SelectUnit(unit, true);
+         
+            onSelectionChanged?.Invoke();
         }
     }
 
