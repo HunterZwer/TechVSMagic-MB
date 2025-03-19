@@ -17,4 +17,5 @@ public class UnitStats
     public float speed1;
     public float reload;
     public float reload1;
+    public float rotationSpeed;
 }

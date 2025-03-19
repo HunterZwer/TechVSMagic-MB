@@ -14,5 +14,6 @@
   "speed": 2.5,
   "speed1": 3.0,
   "reload": 1.0,
-  "reload1": 0.8
+  "reload1": 0.8,
+  "rotationSpeed": 120.0
 }

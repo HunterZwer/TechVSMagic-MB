@@ -12,6 +12,7 @@ public class UnitFollowState : StateMachineBehaviour
     private NavMeshAgent _agent;
     private Transform _cachedTransform;
     private UnitMovement _unitMovement;
+    private readonly float _rotationSpeed = 120f;
     
     // Performance optimization
     private float _sqrAttackingDistance;
@@ -60,7 +61,12 @@ public class UnitFollowState : StateMachineBehaviour
             // Only rotate if direction is valid
             if (direction.sqrMagnitude > 0.001f)
             {
-                _cachedTransform.rotation = Quaternion.LookRotation(direction);
+                Quaternion targetRotation  = Quaternion.LookRotation(direction);
+                _cachedTransform.rotation = Quaternion.Slerp(
+                    _cachedTransform.rotation, 
+                    targetRotation, 
+                    _rotationSpeed * Time.deltaTime
+                );
             }
             
             // Check distance to target using squared magnitude (more efficient than Vector3.Distance)
