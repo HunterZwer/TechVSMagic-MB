@@ -1,133 +1,122 @@
 ﻿using System;
 using System.Collections;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 public class Unit : MonoBehaviour
 {
-    // Unit type configuration
     public enum UnitClass { Knight, Archer, Shaman, Brute }
     public UnitClass unitClass;
     public Sprite unitIcon;
-    
-    // Health settings
+
     [SerializeField] private float _unitHealth;
     public float unitMaxHealth;
-    
-    // Component references
+
     private Animator _animator;
     private UnitMovement _movement;
     public HealthTracker healthTracker;
-    
-    // State tracking
-    public bool IsDead = false;
+
+    public bool _isDead { get; private set; } = false;
     private static readonly int DeadTrigger = Animator.StringToHash("Dead");
-    
-    // Events
+
     public static event Action onUnitStatsChanged;
     public static event Action onUnitClassChanged;
-    
+
+    public static event Action<Unit> onUnitDied;
+
     private void Awake()
     {
-        // Cache components in Awake
         _animator = GetComponent<Animator>();
         _movement = GetComponent<UnitMovement>();
     }
-    
+
     private void Start()
     {
-        // Add to global registry and initialize health
         if (UnitSelectionManager.Instance != null)
         {
             UnitSelectionManager.Instance.allUnitSelected.Add(gameObject);
         }
         _unitHealth = unitMaxHealth;
-        
-        // Initialize health display
         UpdateHealthUI(false);
     }
-    
+
     private void OnDestroy()
     {
-        // Clean up references when destroyed
         if (UnitSelectionManager.Instance != null)
         {
             UnitSelectionManager.Instance.allUnitSelected.Remove(gameObject);
         }
     }
-    
+
     private IEnumerator DeathCoroutine()
     {
-        // More efficient than DeathAnimationHolder - removes from list only once
         yield return new WaitForSeconds(3.2f);
         Destroy(gameObject);
     }
-    
+
+   
+
     private void UpdateHealthUI(bool invokeEvent = true)
     {
-        // Only update if tracker exists
         if (healthTracker != null)
         {
             healthTracker.UpdateSliderValue(_unitHealth, unitMaxHealth);
         }
-        
-        // Only invoke event when needed
+
         if (invokeEvent)
         {
-            onUnitStatsChanged?.Invoke();
+            onUnitStatsChanged?.Invoke(); 
         }
-        
-        // Check for death
-        if (_unitHealth <= 0 && !IsDead)
+
+        if (_unitHealth <= 0 && !_isDead)
         {
             Die();
         }
     }
-    
+
+   
+
     private void Die()
     {
-        IsDead = true;
-        
-        // Stop movement
+        _isDead = true;
+
+        // Оповещаем подписчиков о смерти юнита
+        onUnitDied?.Invoke(this);
+
+        // Останавливаем движение
         if (_movement != null && _movement.agent != null)
         {
             _movement.agent.isStopped = true;
             _movement.isCommandToMove = false;
         }
-        
-        // Trigger death animation
+
+        // Анимация смерти
         if (_animator != null)
         {
             _animator.SetTrigger(DeadTrigger);
         }
-        
-        // Start death sequence
+
+        // Удаление юнита через корутину
         StartCoroutine(DeathCoroutine());
     }
-    
+
     public void TakeDamage(int damageToInflict)
     {
-        // Early exit if already dead
-        if (IsDead) return;
-        
-        // Apply damage with bounds check
+        if (_isDead) return;
+
         _unitHealth = Mathf.Max(0, _unitHealth - damageToInflict);
         UpdateHealthUI();
     }
-    
-    // Getter for current health
+
     public float GetCurrentHealth()
     {
         return _unitHealth;
     }
-    
-    // Getter for unit icon
+
     public Sprite GetUnitIcon()
     {
         return unitIcon;
     }
-    
-    // Method to change unit class
+
     public void SetUnitClass(UnitClass newClass, Sprite newIcon)
     {
         unitClass = newClass;

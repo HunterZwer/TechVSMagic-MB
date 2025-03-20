@@ -3816,7 +3816,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   unitClass: 0
-  unitIcon: {fileID: 21300000, guid: 94550253271628a4881c033b8e444b3b, type: 3}
+  unitIcon: {fileID: 21300000, guid: 3da923f6fdf453b47b3d86a3089a2f05, type: 3}
+  _unitHealth: 0
   unitMaxHealth: 150
   healthTracker: {fileID: 3331138851283688299}
 --- !u!114 &5124030722077707608
