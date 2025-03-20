@@ -29,12 +29,20 @@ public class RangeAttackController : MonoBehaviour
 
     void Update()
     {
+        // Check if the target is null or dead and find a new target if necessary
         if (targetToAttack == null || IsTargetDead())
         {
             FindNearestTarget();
         }
 
-        if (targetToAttack != null && Time.time - lastAttackTime >= attackCooldown)
+        // If there is no valid target, return early
+        if (targetToAttack is null)
+        {
+            return;
+        }
+
+        // Check if it's time to attack
+        if (Time.time - lastAttackTime >= attackCooldown)
         {
             Vector3 direction = targetToAttack.position - transform.position;
             if (direction.sqrMagnitude <= attackRangeSq)
@@ -52,19 +60,22 @@ public class RangeAttackController : MonoBehaviour
 
     void FindNearestTarget()
     {
-        Collider[] hitColliders = Physics.OverlapSphere(transform.position, attackRange);
+        Collider[] hitColliders = new Collider[100];
+        int hitCount = Physics.OverlapSphereNonAlloc(transform.position, attackRange, hitColliders);
         float closestDistanceSq = Mathf.Infinity;
         Transform closestTarget = null;
 
-        foreach (var hitCollider in hitColliders)
+        for (int i = 0; i < hitCount; i++)
         {
+            Collider hitCollider = hitColliders[i];
+
             if (hitCollider.CompareTag(targetTag))
             {
                 Unit unit = hitCollider.GetComponent<Unit>();
-                if (unit != null && unit.GetCurrentHealth() > 0)
+                if (unit && !unit.IsDead)
                 {
-                    Vector3 direction = hitCollider.transform.position - transform.position;
-                    float distanceSq = direction.sqrMagnitude;
+                    float distanceSq = (hitCollider.transform.position - transform.position).sqrMagnitude;
+
                     if (distanceSq < closestDistanceSq)
                     {
                         closestDistanceSq = distanceSq;
@@ -77,19 +88,24 @@ public class RangeAttackController : MonoBehaviour
         targetToAttack = closestTarget;
     }
 
+
     bool IsTargetDead()
     {
         if (targetToAttack != null)
         {
             Unit unit = targetToAttack.GetComponent<Unit>();
-            return unit == null || unit.GetCurrentHealth() <= 0;
+            return unit == null || !unit.IsDead;
         }
         return true;
     }
 
     public void Attack()
     {
-        if (_unit.GetCurrentHealth() <= 0) return;
+        
+        if (_unit.IsDead)
+        {
+            return;
+        }
 
         if (projectilePrefab && projectileSpawnPoint && targetToAttack != null)
         {

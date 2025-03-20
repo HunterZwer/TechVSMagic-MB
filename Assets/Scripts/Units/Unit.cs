@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class Unit : MonoBehaviour
 {
@@ -19,7 +20,7 @@ public class Unit : MonoBehaviour
     public HealthTracker healthTracker;
     
     // State tracking
-    private bool _isDead = false;
+    public bool IsDead = false;
     private static readonly int DeadTrigger = Animator.StringToHash("Dead");
     
     // Events
@@ -77,7 +78,7 @@ public class Unit : MonoBehaviour
         }
         
         // Check for death
-        if (_unitHealth <= 0 && !_isDead)
+        if (_unitHealth <= 0 && !IsDead)
         {
             Die();
         }
@@ -85,7 +86,7 @@ public class Unit : MonoBehaviour
     
     private void Die()
     {
-        _isDead = true;
+        IsDead = true;
         
         // Stop movement
         if (_movement != null && _movement.agent != null)
@@ -107,7 +108,7 @@ public class Unit : MonoBehaviour
     public void TakeDamage(int damageToInflict)
     {
         // Early exit if already dead
-        if (_isDead) return;
+        if (IsDead) return;
         
         // Apply damage with bounds check
         _unitHealth = Mathf.Max(0, _unitHealth - damageToInflict);

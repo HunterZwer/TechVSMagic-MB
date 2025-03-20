@@ -85,7 +85,7 @@ public class MeleeAttackController : MonoBehaviour
 
         foreach (EnemyInfo enemy in enemiesInRange)
         {
-            if (enemy.Unit == null || enemy.Unit.GetCurrentHealth() <= 0) continue;
+            if (enemy.Unit is null || enemy.Unit.IsDead) continue;
 
             Vector3 direction = enemy.Transform.position - transform.position;
             float distanceSq = direction.sqrMagnitude;
@@ -113,7 +113,7 @@ public class MeleeAttackController : MonoBehaviour
             CleanupDeadTargets();
             targetToAttack = GetClosestEnemy();
 
-            if (targetToAttack != null && !IsTargetDead(_unit.transform) && !isAttacking)
+            if (targetToAttack != null && !_unit.IsDead && !isAttacking)
             {
                 Vector3 direction = targetToAttack.position - transform.position;
                 if (direction.sqrMagnitude <= attackRangeSquared)
@@ -129,10 +129,10 @@ public class MeleeAttackController : MonoBehaviour
         isAttacking = true;
         yield return new WaitForEndOfFrame();
 
-        if (!IsTargetDead(_unit.transform) && targetToAttack != null)
+        if (!_unit.IsDead && targetToAttack is null)
         {
             Unit targetUnit = targetToAttack.GetComponent<Unit>();
-            if (targetUnit != null && targetUnit.GetCurrentHealth() > 0)
+            if (!targetUnit && targetUnit.GetCurrentHealth() > 0)
             {
                 targetUnit.TakeDamage(unitDamage);
             }
@@ -149,7 +149,7 @@ public class MeleeAttackController : MonoBehaviour
 
     public void Attack()
     {
-        if (IsTargetDead(_unit.transform)) return;
+        if (_unit.IsDead) return;
 
         if (targetToAttack != null)
         {
@@ -173,10 +173,4 @@ public class MeleeAttackController : MonoBehaviour
         }
     }
     
-    private bool IsTargetDead(Transform target)
-    {
-        if (target == null) return true;
-        Unit unit = target.GetComponent<Unit>();
-        return unit == null || unit.GetCurrentHealth() <= 0;
-    }
 }
