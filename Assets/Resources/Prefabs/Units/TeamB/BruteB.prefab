@@ -4843,7 +4843,7 @@ MeshRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8908745380470061523}
   m_Enabled: 1
-  m_CastShadows: 1
+  m_CastShadows: 0
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
   m_StaticShadowCaster: 0
@@ -4955,7 +4955,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   unitClass: 3
+  IsPlayer: 0
   unitIcon: {fileID: 21300000, guid: 961a4b06027c85d4fbbe487100ff853b, type: 3}
+  _unitHealth: 0
   unitMaxHealth: 150
   healthTracker: {fileID: 2252171589662545209}
 --- !u!114 &5293168436731728356
@@ -4971,7 +4973,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   targetToAttack: {fileID: 0}
-  isPlayer: 0
   unitDamage: 12
   attackRange: 10
   attackCooldown: 1
