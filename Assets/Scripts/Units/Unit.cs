@@ -15,7 +15,7 @@ public class Unit : MonoBehaviour
     private UnitMovement _movement;
     public HealthTracker healthTracker;
 
-    public bool _isDead { get; private set; } = false;
+    public bool IsDead { get; private set; } = false;
     private static readonly int DeadTrigger = Animator.StringToHash("Dead");
 
     public static event Action onUnitStatsChanged;
@@ -67,7 +67,7 @@ public class Unit : MonoBehaviour
             onUnitStatsChanged?.Invoke(); 
         }
 
-        if (_unitHealth <= 0 && !_isDead)
+        if (_unitHealth <= 0 && !IsDead)
         {
             Die();
         }
@@ -77,7 +77,7 @@ public class Unit : MonoBehaviour
 
     private void Die()
     {
-        _isDead = true;
+        IsDead = true;
 
         // Оповещаем подписчиков о смерти юнита
         onUnitDied?.Invoke(this);
@@ -101,7 +101,7 @@ public class Unit : MonoBehaviour
 
     public void TakeDamage(int damageToInflict)
     {
-        if (_isDead) return;
+        if (IsDead) return;
 
         _unitHealth = Mathf.Max(0, _unitHealth - damageToInflict);
         UpdateHealthUI();

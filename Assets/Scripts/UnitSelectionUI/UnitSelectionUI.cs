@@ -49,7 +49,7 @@ public class UnitSelectionUI : MonoBehaviour
         List<GameObject> selectedUnits = UnitSelectionManager.Instance.unitSelected;
 
         // 🔥 Удаляем мертвых юнитов из списка
-        selectedUnits.RemoveAll(unit => unit == null || unit.GetComponent<Unit>()?._isDead == true);
+        selectedUnits.RemoveAll(unit => unit == null || unit.GetComponent<Unit>()?.IsDead == true);
 
         UpdateGridHealth();
 

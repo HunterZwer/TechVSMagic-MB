@@ -61,8 +61,8 @@ public class UnitFollowState : StateMachineBehaviour
             // Only rotate if direction is valid
             if (direction.sqrMagnitude > 0.001f)
             {
-                Quaternion targetRotation  = Quaternion.LookRotation(direction);
-                _cachedTransform.rotation = Quaternion.Slerp(
+                Quaternion targetRotation = Quaternion.LookRotation(direction);
+                _cachedTransform.rotation = Quaternion.RotateTowards(
                     _cachedTransform.rotation, 
                     targetRotation, 
                     _rotationSpeed * Time.deltaTime
