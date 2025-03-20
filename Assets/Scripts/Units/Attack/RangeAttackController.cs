@@ -16,12 +16,11 @@ public class RangeAttackController : MonoBehaviour
     private string targetTag;
     private Unit _unit;
     private float attackRangeSq;
-    [SerializeField] public bool isPlayer;
 
     void Start()
     {
-        SetTargetTag();
         _unit = GetComponent<Unit>();
+        SetTargetTag();
         attackRangeSq = attackRange * attackRange;
         lastAttackTime = Time.time - attackCooldown;
         FindNearestTarget();
@@ -55,7 +54,7 @@ public class RangeAttackController : MonoBehaviour
 
     void SetTargetTag()
     {
-        targetTag = isPlayer ? "Enemy" : "Player";
+        targetTag = _unit.IsPlayer ? "Enemy" : "Player";
     }
 
     void FindNearestTarget()
@@ -68,7 +67,7 @@ public class RangeAttackController : MonoBehaviour
         for (int i = 0; i < hitCount; i++)
         {
             Collider hitCollider = hitColliders[i];
-
+            if (targetTag is null) return;
             if (hitCollider.CompareTag(targetTag))
             {
                 Unit unit = hitCollider.GetComponent<Unit>();
@@ -91,10 +90,10 @@ public class RangeAttackController : MonoBehaviour
 
     bool IsTargetDead()
     {
-        if (targetToAttack != null)
+        if (targetToAttack)
         {
             Unit unit = targetToAttack.GetComponent<Unit>();
-            return unit == null || !unit.IsDead;
+            return unit is null || !unit.IsDead;
         }
         return true;
     }
@@ -110,18 +109,18 @@ public class RangeAttackController : MonoBehaviour
         if (projectilePrefab && projectileSpawnPoint && targetToAttack != null)
         {
             GameObject projectile = ObjectPool.Instance.GetPooledObject(projectilePrefab.name);
-            if (projectile == null)
+            if (!projectile)
             {
                 projectile = Instantiate(projectilePrefab, projectileSpawnPoint.position, Quaternion.identity);
             }
 
             Projectile projectileScript = projectile.GetComponent<Projectile>();
-            if (projectileScript == null)
+            if (!projectileScript)
             {
                 projectileScript = projectile.AddComponent<Projectile>();
             }
 
-            projectileScript.Initialize(targetToAttack, projectileDamage, projectileSpeed, isPlayer);
+            projectileScript.Initialize(targetToAttack, projectileDamage, projectileSpeed, _unit.IsPlayer);
             projectile.SetActive(true);
         }
     }

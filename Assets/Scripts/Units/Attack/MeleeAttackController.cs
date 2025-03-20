@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
@@ -5,8 +6,7 @@ using System.Collections.Generic;
 public class MeleeAttackController : MonoBehaviour
 {
     public Transform targetToAttack;
-    public bool isPlayer;
-    public int unitDamage;
+    public float unitDamage;
     private string _targetTag;
 
     [Header("Combat Settings")]
@@ -16,49 +16,36 @@ public class MeleeAttackController : MonoBehaviour
     private float attackRangeSquared;
     private Unit _unit;
     private UnitStats unitStats;
+    
+    [Header("Upgrade Levels")]
+    private int _rangeUprgadeLevel = 0;
+    private int _reloadUprgadeLevel = 0;
+    private int _damageUprgadeLevel = 0;
 
     private List<EnemyInfo> enemiesInRange = new List<EnemyInfo>();
 
     private void Start()
     {
-        SetTargetTag();
         _unit = GetComponent<Unit>();
+        SetTargetTag();
         attackRangeSquared = attackRange * attackRange;
         StartCoroutine(AttackLoop());
         
-        LoadUnitStats();
+        unitStats = JsonLoader.LoadUnitStats(_unit.unitClass, _unit.IsPlayer);
 
         // Override combat settings with JSON data
-        attackRange = unitStats.range;
-        attackCooldown = unitStats.reload;
-        unitDamage = unitStats.damage;
+        attackRange = attackRange * unitStats.RangeMultiplier[_rangeUprgadeLevel];
+        attackCooldown = attackCooldown * unitStats.ReloadMultiplier[_reloadUprgadeLevel];
+        unitDamage = unitDamage * unitStats.DamageMultiplier[_damageUprgadeLevel];
     }
     
-    private void LoadUnitStats()
-    {
-        // Use the JsonLoader to load the unit stats based on the unit's class and team
-        unitStats = JsonLoader.LoadUnitStats(_unit.unitClass, isPlayer);
-
-        if (unitStats == null)
-        {
-            Debug.LogError("Failed to load unit stats. Using default values.");
-            unitStats = new UnitStats
-            {
-                health = 100,
-                damage = 10,
-                range = 1.5f,
-                reload = 1.0f
-            };
-        }
-    }
-
     private void OnTriggerEnter(Collider other)
     {
         if (_targetTag == null) return;
         if (other.CompareTag(_targetTag))
         {
             Unit unit = other.GetComponent<Unit>();
-            if (unit != null && unit.GetCurrentHealth() > 0)
+            if (unit != null && !unit.IsDead)
             {
                 enemiesInRange.Add(new EnemyInfo(other.transform, unit));
             }
@@ -67,6 +54,7 @@ public class MeleeAttackController : MonoBehaviour
 
     private void OnTriggerExit(Collider other)
     {
+        if (other.tag is null) return;
         if (other.CompareTag(_targetTag))
         {
             enemiesInRange.RemoveAll(ei => ei.Transform == other.transform);
@@ -101,7 +89,7 @@ public class MeleeAttackController : MonoBehaviour
 
     private void SetTargetTag()
     {
-        _targetTag = isPlayer ? "Enemy" : "Player";
+        _targetTag = _unit.IsPlayer ? "Enemy" : "Player";
     }
 
     private IEnumerator AttackLoop()
@@ -128,33 +116,24 @@ public class MeleeAttackController : MonoBehaviour
     {
         isAttacking = true;
         yield return new WaitForEndOfFrame();
-
-        if (!_unit.IsDead && targetToAttack is null)
-        {
-            Unit targetUnit = targetToAttack.GetComponent<Unit>();
-            if (!targetUnit && targetUnit.GetCurrentHealth() > 0)
-            {
-                targetUnit.TakeDamage(unitDamage);
-            }
-        }
-
+        Attack();
         yield return new WaitForSeconds(attackCooldown);
         isAttacking = false;
     }
 
     private void CleanupDeadTargets()
     {
-        enemiesInRange.RemoveAll(ei => ei.Unit == null || ei.Unit.GetCurrentHealth() <= 0);
+        enemiesInRange.RemoveAll(ei => ei.Unit is null || ei.Unit.GetCurrentHealth() <= 0);
     }
 
     public void Attack()
     {
         if (_unit.IsDead) return;
 
-        if (targetToAttack != null)
+        if (targetToAttack)
         {
             Unit targetUnit = targetToAttack.GetComponent<Unit>();
-            if (targetUnit != null && targetUnit.GetCurrentHealth() > 0)
+            if (targetUnit && !targetUnit.IsDead)
             {
                 targetUnit.TakeDamage(unitDamage);
             }

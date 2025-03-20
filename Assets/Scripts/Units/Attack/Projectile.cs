@@ -25,7 +25,7 @@ public class Projectile : MonoBehaviour
         }
 
         transform.LookAt(target);
-        transform.Translate(Vector3.forward * speed * Time.deltaTime);
+        transform.Translate(Vector3.forward * (speed * Time.deltaTime));
 
         float distance = Vector3.Distance(transform.position, target.position);
         if (distance < 0.5f)
@@ -36,10 +36,10 @@ public class Projectile : MonoBehaviour
 
     void HitTarget()
     {
-        if (target != null)
+        if (!target)
         {
             Unit targetUnit = target.GetComponent<Unit>();
-            if (targetUnit != null)
+            if (!targetUnit)
             {
                 targetUnit.TakeDamage(damage);
             }

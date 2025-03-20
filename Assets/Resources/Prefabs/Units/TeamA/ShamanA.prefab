@@ -1763,6 +1763,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   unitClass: 2
+  IsPlayer: 1
   unitIcon: {fileID: 21300000, guid: 5e97af742d42db945a80c57fcd004e28, type: 3}
   _unitHealth: 0
   unitMaxHealth: 100
@@ -1786,7 +1787,6 @@ MonoBehaviour:
   attackCooldown: 50
   projectileDamage: 10
   projectileSpeed: 2
-  isPlayer: 1
 --- !u!135 &1058048121292335567
 SphereCollider:
   m_ObjectHideFlags: 0

@@ -10,6 +10,11 @@ public class UnitMovement : MonoBehaviour
     private Animator _animator;
     private Transform _transform;
     private static readonly int IsMoving = Animator.StringToHash("isMoving");
+    private UnitStats unitStats;
+    private Unit _unit;
+    
+    [Header("Upgrade Levels")]
+    private int _SpeedUprgadeLevel = 0;
     
     // Public fields
     public LayerMask ground;
@@ -17,6 +22,7 @@ public class UnitMovement : MonoBehaviour
     
     private void Awake()
     {
+        _unit = GetComponent<Unit>();
         // Cache components in Awake
         _transform = transform;
         _animator = GetComponent<Animator>();
@@ -26,6 +32,8 @@ public class UnitMovement : MonoBehaviour
     {
         _cam = Camera.main;
         agent = GetComponent<NavMeshAgent>();
+        unitStats = JsonLoader.LoadUnitStats(_unit.unitClass, _unit.IsPlayer);
+        agent.speed = agent.speed * unitStats.SpeedMultiplier[_SpeedUprgadeLevel];
     }
     
     private void Update()

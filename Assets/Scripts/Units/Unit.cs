@@ -6,15 +6,19 @@ public class Unit : MonoBehaviour
 {
     public enum UnitClass { Knight, Archer, Shaman, Brute }
     public UnitClass unitClass;
+    public bool IsPlayer;    
     public Sprite unitIcon;
 
     [SerializeField] private float _unitHealth;
     public float unitMaxHealth;
+    private UnitStats unitStats;
 
     private Animator _animator;
     private UnitMovement _movement;
     public HealthTracker healthTracker;
-
+    
+    [Header("Upgrade Levels")]
+    private int _healthUprgadeLevel = 0;
     public bool IsDead { get; private set; } = false;
     private static readonly int DeadTrigger = Animator.StringToHash("Dead");
 
@@ -31,6 +35,9 @@ public class Unit : MonoBehaviour
 
     private void Start()
     {
+        unitStats = JsonLoader.LoadUnitStats(unitClass, IsPlayer);
+        _animator.cullingMode = AnimatorCullingMode.CullCompletely;
+        unitMaxHealth = unitMaxHealth * unitStats.HealthMultiplier[_healthUprgadeLevel];
         if (UnitSelectionManager.Instance != null)
         {
             UnitSelectionManager.Instance.allUnitSelected.Add(gameObject);
@@ -99,7 +106,7 @@ public class Unit : MonoBehaviour
         StartCoroutine(DeathCoroutine());
     }
 
-    public void TakeDamage(int damageToInflict)
+    public void TakeDamage(float damageToInflict)
     {
         if (IsDead) return;
 

@@ -4955,6 +4955,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   unitClass: 3
+  IsPlayer: 1
   unitIcon: {fileID: 21300000, guid: 8aa3d2228b05064408c24ad209bca1ed, type: 3}
   _unitHealth: 0
   unitMaxHealth: 150
@@ -4972,7 +4973,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   targetToAttack: {fileID: 0}
-  isPlayer: 1
   unitDamage: 12
   attackRange: 10
   attackCooldown: 1
