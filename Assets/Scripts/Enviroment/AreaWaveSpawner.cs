@@ -1,5 +1,7 @@
 using UnityEngine;
 using System.Collections;
+using Random = UnityEngine.Random;
+using CameraRelated;
 
 [System.Serializable]
 public class WaveUnit
@@ -12,37 +14,56 @@ public class WaveUnit
 public class AreaWaveSpawner : MonoBehaviour
 {
     [Header("Spawn Area Settings")]
-    [SerializeField] private Vector3 spawnAreaSize = new Vector3(10, 0, 10);
     [SerializeField] private float respawnDelay = 30f;
+    [SerializeField] private Vector3 spawnAreaSize = new Vector3(10f, 2f, 10f); // Size of spawn area
+    [SerializeField] private Color gizmoColor = new Color(1f, 0f, 0f, 0.3f); // Red with transparency
 
     [Header("Unit Configuration")]
     [SerializeField] private WaveUnit[] waveUnits = new WaveUnit[4];
-    
-    [Header("Trigger Settings")]
     [SerializeField] private string playerTag = "Player";
-    [SerializeField] private float checkInterval = 1f;
     
     private bool hasSpawned = false;
+    private SmoothCameraChange _smoothCamera;
+    private ZoomCamera _zoomCamera;
+    private BoxCollider triggerCollider;
+    private Bounds spawnBounds;
 
-    private void Start()
+    private void Awake()
     {
-        StartCoroutine(CheckForPlayers());
+        GameObject cameraHolder = GameObject.FindGameObjectWithTag("CameraHolder");
+        _smoothCamera = cameraHolder.GetComponent<SmoothCameraChange>();
+        _zoomCamera = cameraHolder.GetComponent<ZoomCamera>();
+        
+        // Get the trigger collider
+        triggerCollider = GetComponent<BoxCollider>();
+        if (triggerCollider == null)
+        {
+            Debug.LogError("AreaWaveSpawner requires a BoxCollider component!");
+        }
+        else
+        {
+            // Make sure it's set as a trigger
+            triggerCollider.isTrigger = true;
+        }
+        
+        // Define the spawn bounds (area where enemies will spawn)
+        spawnBounds = new Bounds(transform.position, spawnAreaSize);
     }
 
-    private IEnumerator CheckForPlayers()
+    private void OnTriggerEnter(Collider other)
     {
-        while (!hasSpawned)
+        if (other.CompareTag(playerTag) && !hasSpawned)
         {
-            Collider[] players = Physics.OverlapBox(transform.position, spawnAreaSize/2, Quaternion.identity);
-            foreach (Collider col in players)
-            {
-                if (col.CompareTag(playerTag))
-                {
-                    StartSpawning();
-                    yield break;
-                }
-            }
-            yield return new WaitForSeconds(checkInterval);
+            Vector3 spawnerPosition = this.gameObject.transform.position;
+            Vector3 cameraOffset = new Vector3(-189f, 0f, -185f); // Your camera offset
+            Vector3 targetPosition = spawnerPosition + cameraOffset;
+        
+            // Keep original Y position
+            targetPosition.y = _smoothCamera.transform.position.y;
+            
+            _smoothCamera.MoveCameraTo(targetPosition);
+            _zoomCamera.SetZoom(5f);
+            StartSpawning();
         }
     }
 
@@ -68,27 +89,59 @@ public class AreaWaveSpawner : MonoBehaviour
     {
         foreach (WaveUnit unit in waveUnits)
         {
-            for (int i = 0; i < GetWaveAmount(unit, waveNumber); i++)
+            int amount = GetWaveAmount(unit, waveNumber);
+            if (amount <= 0 || unit.unitPrefab == null) continue;
+            
+            for (int i = 0; i < amount; i++)
             {
-                Vector3 spawnPosition = transform.position + new Vector3(
-                    Random.Range(-spawnAreaSize.x/2, spawnAreaSize.x/2),
-                    0,
-                    Random.Range(-spawnAreaSize.z/2, spawnAreaSize.z/2)
-                );
-
-                Instantiate(unit.unitPrefab, spawnPosition, Quaternion.identity);
+                Vector3 spawnPosition = GetRandomBorderPosition(spawnBounds);
+                GameObject instantiatedUnit = Instantiate(unit.unitPrefab, spawnPosition, Quaternion.identity);
+                UnitMovement unitMovement = instantiatedUnit.GetComponent<UnitMovement>();
+                unitMovement.agent.SetDestination(transform.position);
             }
         }
+    }
+
+    private Vector3 GetRandomBorderPosition(Bounds bounds)
+    {
+        float x, z;
+
+        // Randomly select which edge to spawn on: 0 = min Z, 1 = max Z, 2 = min X, 3 = max X
+        int edge = Random.Range(0, 4);
+
+        if (edge == 0) // Min Z border
+        {
+            x = Random.Range(bounds.min.x, bounds.max.x);
+            z = bounds.min.z;
+        }
+        else if (edge == 1) // Max Z border
+        {
+            x = Random.Range(bounds.min.x, bounds.max.x);
+            z = bounds.max.z;
+        }
+        else if (edge == 2) // Min X border
+        {
+            x = bounds.min.x;
+            z = Random.Range(bounds.min.z, bounds.max.z);
+        }
+        else // Max X border
+        {
+            x = bounds.max.x;
+            z = Random.Range(bounds.min.z, bounds.max.z);
+        }
+
+        return new Vector3(x, transform.position.y, z);
     }
 
     private int GetWaveAmount(WaveUnit unit, int waveNumber)
     {
         return waveNumber == 1 ? unit.wave1Amount : unit.wave2Amount;
     }
-
-    private void OnDrawGizmosSelected()
+    
+    // Draw the spawn area in the editor for visualization
+    private void OnDrawGizmos()
     {
-        Gizmos.color = Color.cyan;
-        Gizmos.DrawWireCube(transform.position, spawnAreaSize);
+        Gizmos.color = gizmoColor;
+        Gizmos.DrawCube(transform.position, spawnAreaSize);
     }
 }

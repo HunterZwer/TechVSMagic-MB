@@ -23,7 +23,7 @@ namespace CameraRelated
 
         private void LateUpdate()
         {
-            if(_cameraTransform == null) return;
+            if(_cameraTransform is null) return;
         
             // Calculate rotation once per frame
             Vector3 directionToCamera = _selfTransform.position - _cameraTransform.position;

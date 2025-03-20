@@ -22,6 +22,7 @@ public class UnitMovement : MonoBehaviour
     
     private void Awake()
     {
+        agent = GetComponent<NavMeshAgent>();
         _unit = GetComponent<Unit>();
         // Cache components in Awake
         _transform = transform;
@@ -31,7 +32,6 @@ public class UnitMovement : MonoBehaviour
     private void Start()
     {
         _cam = Camera.main;
-        agent = GetComponent<NavMeshAgent>();
         unitStats = JsonLoader.LoadUnitStats(_unit.unitClass, _unit.IsPlayer);
         agent.speed = agent.speed * unitStats.SpeedMultiplier[_SpeedUprgadeLevel];
     }
