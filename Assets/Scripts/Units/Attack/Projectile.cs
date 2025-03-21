@@ -36,10 +36,10 @@ public class Projectile : MonoBehaviour
 
     void HitTarget()
     {
-        if (!target)
+        if (target != null)  // Changed from "if (!target)" - this was the bug!
         {
             Unit targetUnit = target.GetComponent<Unit>();
-            if (!targetUnit)
+            if (targetUnit != null)  // Changed from "if (!targetUnit)" - this was also a bug!
             {
                 targetUnit.TakeDamage(damage);
             }
@@ -51,5 +51,4 @@ public class Projectile : MonoBehaviour
     {
         ObjectPool.Instance.ReturnObjectToPool(gameObject);
     }
-    
 }
