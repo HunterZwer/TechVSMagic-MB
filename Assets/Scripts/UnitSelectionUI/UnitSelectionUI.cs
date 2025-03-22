@@ -22,16 +22,17 @@ public class UnitSelectionUI : MonoBehaviour
     public Image healthFill;
 
     private List<GameObject> iconInstances = new List<GameObject>();
+    private List<Unit> cachedSelectedUnits = new List<Unit>();
 
     private readonly Color greenColor = Color.green;
-    private readonly Color yellowColor = Color.yellow;
     private readonly Color redColor = Color.red;
+
+    private float healthUpdateTimer = 0f;
+    private const float healthUpdateInterval = 0.2f;
 
     private void Start()
     {
         UnitSelectionManager.Instance.onSelectionChanged += UpdateSelectionUI;
-        Unit.onUnitStatsChanged += UpdateSelectionUI;
-        Unit.onUnitClassChanged += UpdateSelectionUI;
         Unit.onUnitDied += HandleUnitDeath;
         UpdateSelectionUI();
     }
@@ -39,19 +40,27 @@ public class UnitSelectionUI : MonoBehaviour
     private void OnDestroy()
     {
         UnitSelectionManager.Instance.onSelectionChanged -= UpdateSelectionUI;
-        Unit.onUnitStatsChanged -= UpdateSelectionUI;
-        Unit.onUnitClassChanged -= UpdateSelectionUI;
         Unit.onUnitDied -= HandleUnitDeath;
+    }
+
+    private void Update()
+    {
+        healthUpdateTimer += Time.deltaTime;
+        if (healthUpdateTimer >= healthUpdateInterval)
+        {
+            healthUpdateTimer = 0f;
+            RefreshGridHealth();
+        }
     }
 
     private void UpdateSelectionUI()
     {
         List<GameObject> selectedUnits = UnitSelectionManager.Instance.unitSelected;
-
-        // 🔥 Удаляем мертвых юнитов из списка
         selectedUnits.RemoveAll(unit => unit == null || unit.GetComponent<Unit>()?.IsDead == true);
 
-        UpdateGridHealth();
+        cachedSelectedUnits.Clear();
+        foreach (GameObject unit in selectedUnits)
+            cachedSelectedUnits.Add(unit.GetComponent<Unit>());
 
         if (selectedUnits.Count == 0)
         {
@@ -74,7 +83,6 @@ public class UnitSelectionUI : MonoBehaviour
         panelSingleUnit.SetActive(false);
         gridMultiUnits.SetActive(false);
         profileImage.sprite = defaultProfileSprite;
-        profileImage.gameObject.SetActive(false);
         healthSlider.gameObject.SetActive(false);
         healthText.gameObject.SetActive(false);
         ClearIcons();
@@ -90,24 +98,21 @@ public class UnitSelectionUI : MonoBehaviour
         {
             profileImage.sprite = unitComponent.GetUnitIcon() ?? defaultProfileSprite;
             unitNameText.text = unit.name;
-
             profileImage.gameObject.SetActive(true);
             healthSlider.gameObject.SetActive(true);
             healthText.gameObject.SetActive(true);
 
             string attackInfo = "Нет атаки";
-            MeleeAttackController melee = unit.GetComponent<MeleeAttackController>();
-            RangeAttackController ranged = unit.GetComponent<RangeAttackController>();
-
-            if (melee != null)
+            if (unitComponent.TryGetComponent(out MeleeAttackController melee))
                 attackInfo = $"Урон: {melee.unitDamage}";
-            else if (ranged != null)
+            else if (unitComponent.TryGetComponent(out RangeAttackController ranged))
                 attackInfo = $"Урон: {ranged.projectileDamage}";
 
             unitAttackText.text = attackInfo;
 
-            NavMeshAgent agent = unit.GetComponent<NavMeshAgent>();
-            unitSpeedText.text = agent != null ? $"Скорость: {agent.speed}" : "Скорость: N/A";
+            unitSpeedText.text = unitComponent.TryGetComponent(out NavMeshAgent agent)
+                ? $"Скорость: {agent.speed}"
+                : "Скорость: N/A";
 
             UpdateHealthUI(unitComponent);
         }
@@ -118,7 +123,6 @@ public class UnitSelectionUI : MonoBehaviour
         panelSingleUnit.SetActive(false);
         gridMultiUnits.SetActive(true);
 
-        // 🔥 Оставляем профиль и слайдер здоровья для первого юнита
         Unit firstUnit = selectedUnits[0].GetComponent<Unit>();
         if (firstUnit != null)
         {
@@ -147,8 +151,11 @@ public class UnitSelectionUI : MonoBehaviour
             float healthPercentage = health / maxHealth;
 
             healthSlider.maxValue = maxHealth;
-            healthSlider.value = health;
-            healthText.text = $"{health} / {maxHealth}";
+
+           
+            healthSlider.value = Mathf.Lerp(healthSlider.value, health, Time.deltaTime * 10f);
+
+            healthText.text = $"{Mathf.Round(health)} / {maxHealth}";
 
             healthFill.color = Color.Lerp(redColor, greenColor, healthPercentage);
         }
@@ -156,53 +163,60 @@ public class UnitSelectionUI : MonoBehaviour
 
     private void UpdateGrid(List<GameObject> selectedUnits)
     {
-        ClearIcons();
+        int existingIcons = iconInstances.Count;
+        int newIconsNeeded = selectedUnits.Count - existingIcons;
 
-        foreach (GameObject unit in selectedUnits)
+        for (int i = 0; i < newIconsNeeded; i++)
         {
-            Unit unitComponent = unit.GetComponent<Unit>();
-            if (unitComponent == null || unitComponent.GetUnitIcon() == null) continue;
-
             GameObject newIcon = Instantiate(unitIconPrefab, unitIconsContainer);
-            newIcon.GetComponent<Image>().sprite = unitComponent.GetUnitIcon();
+            iconInstances.Add(newIcon);
+        }
 
-            // Найдём слайдер внутри нового объекта
-            Slider healthSlider = newIcon.GetComponentInChildren<Slider>();
+        for (int i = 0; i < selectedUnits.Count; i++)
+        {
+            Unit unitComponent = selectedUnits[i].GetComponent<Unit>();
+            if (unitComponent == null) continue;
+
+            GameObject icon = iconInstances[i];
+            icon.GetComponent<Image>().sprite = unitComponent.GetUnitIcon();
+
+            Slider healthSlider = icon.GetComponentInChildren<Slider>();
             if (healthSlider != null)
             {
                 healthSlider.maxValue = unitComponent.unitMaxHealth;
                 healthSlider.value = unitComponent.GetCurrentHealth();
             }
+            icon.SetActive(true);
+        }
 
-            // Добавляем в список для динамического обновления
-            iconInstances.Add(newIcon);
+        for (int i = selectedUnits.Count; i < iconInstances.Count; i++)
+        {
+            iconInstances[i].SetActive(false);
         }
     }
 
-
-    private void UpdateGridHealth()
+    private void RefreshGridHealth()
     {
-        for (int i = 0; i < iconInstances.Count; i++)
+        for (int i = 0; i < cachedSelectedUnits.Count && i < iconInstances.Count; i++)
         {
-            if (i >= UnitSelectionManager.Instance.unitSelected.Count) break;
-
-            GameObject unit = UnitSelectionManager.Instance.unitSelected[i];
-            Unit unitComponent = unit.GetComponent<Unit>();
+            Unit unitComponent = cachedSelectedUnits[i];
             if (unitComponent == null) continue;
 
             Slider healthSlider = iconInstances[i].GetComponentInChildren<Slider>();
-            if (healthSlider == null) continue;
+            if (healthSlider != null)
+            {
+                healthSlider.maxValue = unitComponent.unitMaxHealth;
 
-            float health = unitComponent.GetCurrentHealth();
-            float maxHealth = unitComponent.unitMaxHealth;
+                
+                healthSlider.value = Mathf.Lerp(healthSlider.value, unitComponent.GetCurrentHealth(), Time.deltaTime * 10f);
+            }
+        }
 
-            // Обновляем значение слайдера
-            healthSlider.maxValue = maxHealth;
-            healthSlider.value = health;
+        if (cachedSelectedUnits.Count > 0)
+        {
+            UpdateHealthUI(cachedSelectedUnits[0]); 
         }
     }
-
-
 
     private void ClearIcons()
     {
