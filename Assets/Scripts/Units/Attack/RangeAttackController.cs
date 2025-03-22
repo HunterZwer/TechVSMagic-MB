@@ -8,15 +8,22 @@ public class RangeAttackController : AttackController
     [Header("Combat Settings")]
     public float attackRange = 10f;
     public float attackCooldown = 1f;
-    public int projectileDamage = 10;
     public float projectileSpeed = 20f;
 
     private float lastAttackTime;
     private float attackRangeSq;
+    
+    [Header("Upgrade Levels")]
+    private int _rangeUprgadeLevel = 0;
+    private int _reloadUprgadeLevel = 0;
+    private int _damageUprgadeLevel = 0;
 
     void Start()
     {
         targetTag = SetTargetTag(_unit);
+        attackRange = attackRange * unitStats.RangeMultiplier[_rangeUprgadeLevel];
+        attackCooldown = attackCooldown * unitStats.ReloadMultiplier[_reloadUprgadeLevel];
+        unitDamage = unitDamage * unitStats.DamageMultiplier[_damageUprgadeLevel];
         attackRangeSq = attackRange * attackRange;
         lastAttackTime = Time.time - attackCooldown;
         FindNearestTarget();
@@ -77,10 +84,7 @@ public class RangeAttackController : AttackController
 
         targetToAttack = closestTarget;
     }
-
-
-
-
+    
     public void Attack()
     {
         
@@ -103,7 +107,7 @@ public class RangeAttackController : AttackController
                 projectileScript = projectile.AddComponent<Projectile>();
             }
 
-            projectileScript.Initialize(targetToAttack, projectileDamage, projectileSpeed, _unit.IsPlayer);
+            projectileScript.Initialize(targetToAttack, unitDamage, projectileSpeed, _unit.IsPlayer);
             projectile.SetActive(true);
         }
     }

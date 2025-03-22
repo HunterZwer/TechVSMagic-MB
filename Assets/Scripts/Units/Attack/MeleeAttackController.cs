@@ -25,8 +25,6 @@ public class MeleeAttackController : AttackController
         attackRangeSquared = attackRange * attackRange;
         StartCoroutine(AttackLoop());
         
-        unitStats = JsonLoader.LoadUnitStats(_unit.unitClass, _unit.IsPlayer);
-
         // Override combat settings with JSON data
         attackRange = attackRange * unitStats.RangeMultiplier[_rangeUprgadeLevel];
         attackCooldown = attackCooldown * unitStats.ReloadMultiplier[_reloadUprgadeLevel];

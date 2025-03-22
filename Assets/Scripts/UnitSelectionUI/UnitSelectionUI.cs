@@ -56,11 +56,12 @@ public class UnitSelectionUI : MonoBehaviour
     private void UpdateSelectionUI()
     {
         List<GameObject> selectedUnits = UnitSelectionManager.Instance.unitSelected;
-        selectedUnits.RemoveAll(unit => unit == null || unit.GetComponent<Unit>()?.IsDead == true);
+        selectedUnits.RemoveAll(unit => !unit.TryGetComponent<Unit>(out var u) || u.IsDead);
 
         cachedSelectedUnits.Clear();
         foreach (GameObject unit in selectedUnits)
-            cachedSelectedUnits.Add(unit.GetComponent<Unit>());
+            if (unit.TryGetComponent<Unit>(out var u))
+                cachedSelectedUnits.Add(u);
 
         if (selectedUnits.Count == 0)
         {
@@ -93,8 +94,8 @@ public class UnitSelectionUI : MonoBehaviour
         panelSingleUnit.SetActive(true);
         gridMultiUnits.SetActive(false);
 
-        Unit unitComponent = unit.GetComponent<Unit>();
-        if (unitComponent != null)
+        unit.TryGetComponent(out Unit unitComponent);
+        if (unitComponent)
         {
             profileImage.sprite = unitComponent.GetUnitIcon() ?? defaultProfileSprite;
             unitNameText.text = unit.name;
@@ -106,7 +107,7 @@ public class UnitSelectionUI : MonoBehaviour
             if (unitComponent.TryGetComponent(out MeleeAttackController melee))
                 attackInfo = $"Урон: {melee.unitDamage}";
             else if (unitComponent.TryGetComponent(out RangeAttackController ranged))
-                attackInfo = $"Урон: {ranged.projectileDamage}";
+                attackInfo = $"Урон: {ranged.unitDamage}";
 
             unitAttackText.text = attackInfo;
 
@@ -123,8 +124,8 @@ public class UnitSelectionUI : MonoBehaviour
         panelSingleUnit.SetActive(false);
         gridMultiUnits.SetActive(true);
 
-        Unit firstUnit = selectedUnits[0].GetComponent<Unit>();
-        if (firstUnit != null)
+        selectedUnits[0].TryGetComponent(out Unit firstUnit);
+        if (firstUnit)
         {
             profileImage.sprite = firstUnit.GetUnitIcon() ?? defaultProfileSprite;
             profileImage.gameObject.SetActive(true);
@@ -144,7 +145,7 @@ public class UnitSelectionUI : MonoBehaviour
 
     private void UpdateHealthUI(Unit unit)
     {
-        if (healthSlider != null && healthText != null && healthFill != null)
+        if (healthSlider && healthText && healthFill)
         {
             float health = unit.GetCurrentHealth();
             float maxHealth = unit.unitMaxHealth;
@@ -174,14 +175,15 @@ public class UnitSelectionUI : MonoBehaviour
 
         for (int i = 0; i < selectedUnits.Count; i++)
         {
-            Unit unitComponent = selectedUnits[i].GetComponent<Unit>();
-            if (unitComponent == null) continue;
+            selectedUnits[i].TryGetComponent(out Unit unitComponent);
+            if (!unitComponent) continue;
 
             GameObject icon = iconInstances[i];
-            icon.GetComponent<Image>().sprite = unitComponent.GetUnitIcon();
+            icon.TryGetComponent(out Image iconImage);
+            iconImage.sprite = unitComponent.GetUnitIcon();
 
             Slider healthSlider = icon.GetComponentInChildren<Slider>();
-            if (healthSlider != null)
+            if (healthSlider)
             {
                 healthSlider.maxValue = unitComponent.unitMaxHealth;
                 healthSlider.value = unitComponent.GetCurrentHealth();
@@ -200,10 +202,10 @@ public class UnitSelectionUI : MonoBehaviour
         for (int i = 0; i < cachedSelectedUnits.Count && i < iconInstances.Count; i++)
         {
             Unit unitComponent = cachedSelectedUnits[i];
-            if (unitComponent == null) continue;
+            if (!unitComponent) continue;
 
             Slider healthSlider = iconInstances[i].GetComponentInChildren<Slider>();
-            if (healthSlider != null)
+            if (healthSlider)
             {
                 healthSlider.maxValue = unitComponent.unitMaxHealth;
 

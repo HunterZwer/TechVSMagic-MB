@@ -10,6 +10,7 @@ public class AttackController : MonoBehaviour
     private void Awake()
     {
         _unit = GetComponent<Unit>();
+        unitStats = JsonLoader.LoadUnitStats(_unit.unitClass, _unit.IsPlayer);
     }
     public bool IsTargetDead(Transform targetToAttack)
     {

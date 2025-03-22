@@ -3,11 +3,11 @@ using UnityEngine;
 public class Projectile : MonoBehaviour
 {
     private Transform target;
-    private int damage;
+    private float damage;
     private float speed;
     private bool isPlayerProjectile;
 
-    public void Initialize(Transform target, int damage, float speed, bool isPlayer)
+    public void Initialize(Transform target, float damage, float speed, bool isPlayer)
     {
         this.target = target;
         this.damage = damage;
