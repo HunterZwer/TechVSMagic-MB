@@ -27,12 +27,16 @@ public class AreaWaveSpawner : MonoBehaviour
     private ZoomCamera _zoomCamera;
     private BoxCollider triggerCollider;
     private Bounds spawnBounds;
+    private KeyboardCameraMovement _keyboardCameraMovement;
+    private EdgeScroller _edgeScroller;
 
     private void Awake()
     {
         GameObject cameraHolder = GameObject.FindGameObjectWithTag("CameraHolder");
         _smoothCamera = cameraHolder.GetComponent<SmoothCameraChange>();
         _zoomCamera = cameraHolder.GetComponent<ZoomCamera>();
+        _keyboardCameraMovement = cameraHolder.GetComponent<KeyboardCameraMovement>();
+        _edgeScroller = cameraHolder.GetComponent<EdgeScroller>();
         
         // Get the trigger collider
         triggerCollider = GetComponent<BoxCollider>();
@@ -42,7 +46,6 @@ public class AreaWaveSpawner : MonoBehaviour
         }
         else
         {
-            // Make sure it's set as a trigger
             triggerCollider.isTrigger = true;
         }
         
@@ -55,15 +58,16 @@ public class AreaWaveSpawner : MonoBehaviour
         if (other.CompareTag(playerTag) && !hasSpawned)
         {
             Vector3 spawnerPosition = this.gameObject.transform.position;
-            Vector3 cameraOffset = new Vector3(-189f, 0f, -185f); // Your camera offset
+            Vector3 cameraOffset = new Vector3(-187f, 0f, -183f); // Your camera offset
             Vector3 targetPosition = spawnerPosition + cameraOffset;
         
             // Keep original Y position
             targetPosition.y = _smoothCamera.transform.position.y;
-            
+            DisableAnyMovement();
             _smoothCamera.MoveCameraTo(targetPosition);
             _zoomCamera.SetZoom(5f);
             StartSpawning();
+            DisableAnyMovement();
         }
     }
 
@@ -96,7 +100,7 @@ public class AreaWaveSpawner : MonoBehaviour
             {
                 Vector3 spawnPosition = GetRandomBorderPosition(spawnBounds);
                 GameObject instantiatedUnit = Instantiate(unit.unitPrefab, spawnPosition, Quaternion.identity);
-                UnitMovement unitMovement = instantiatedUnit.GetComponent<UnitMovement>();
+                instantiatedUnit.TryGetComponent(out UnitMovement unitMovement);
                 unitMovement.agent.SetDestination(transform.position);
             }
         }
@@ -143,5 +147,22 @@ public class AreaWaveSpawner : MonoBehaviour
     {
         Gizmos.color = gizmoColor;
         Gizmos.DrawCube(transform.position, spawnAreaSize);
+    }
+
+    private void DisableAnyMovement()
+    {
+        void DisableAndEnable()
+        {
+            _keyboardCameraMovement.enabled = false;
+            _edgeScroller.enabled = false;
+            Invoke(nameof(ReEnable), 1f);  // Calls ReEnable after 1 second
+        }
+
+        void ReEnable()
+        {
+            _keyboardCameraMovement.enabled = true;
+            _edgeScroller.enabled = true;
+        }
+        
     }
 }

@@ -1,16 +1,17 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class AttackController : MonoBehaviour
 {
     public Transform targetToAttack;
     public float unitDamage;
     public string targetTag;
-    public Unit _unit;
+    public Unit ThisUnit;
     public UnitStats unitStats;
     private void Awake()
     {
-        _unit = GetComponent<Unit>();
-        unitStats = JsonLoader.LoadUnitStats(_unit.unitClass, _unit.IsPlayer);
+        ThisUnit = GetComponent<Unit>();
+        unitStats = JsonLoader.LoadUnitStats(ThisUnit.unitClass, ThisUnit.IsPlayer);
     }
     public bool IsTargetDead(Transform targetToAttack)
     {

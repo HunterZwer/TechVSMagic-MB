@@ -16,44 +16,13 @@ namespace CameraRelated
         
         private void Awake()
         {
-            CacheMainCamera();
-            
-            if (_mainCamera != null)
-                _targetOrthoSize = _mainCamera.orthographicSize;
-        }
-        
-        private void CacheMainCamera()
-        {
-            // Try Camera.main first, which is more efficient than FindWithTag
             _mainCamera = Camera.main;
-            
-            // Fallback to FindWithTag if Camera.main fails
-            if (_mainCamera == null)
-            {
-                var mainCameraObj = GameObject.FindWithTag("MainCamera");
-                if (mainCameraObj != null)
-                {
-                    _mainCamera = mainCameraObj.GetComponent<Camera>();
-                    if (_mainCamera == null)
-                        Debug.LogWarning("Main camera object doesn't have Camera component!");
-                }
-                else
-                {
-                    Debug.LogWarning("No object with 'MainCamera' tag found!");
-                }
-            }
+            if (!_mainCamera) {Debug.LogError("No main camera");}
+            _targetOrthoSize = _mainCamera.orthographicSize;
         }
         
         private void LateUpdate()
         {
-            if (_mainCamera == null)
-            {
-                CacheMainCamera();
-                if (_mainCamera == null) return;
-                
-                _targetOrthoSize = _mainCamera.orthographicSize;
-            }
-            
             HandleZoom();
         }
         

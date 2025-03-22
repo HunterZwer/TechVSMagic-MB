@@ -11,7 +11,6 @@ public class MeleeAttackController : AttackController
     private float attackRangeSquared;
     
     
-    [Header("Upgrade Levels")]
     private int _rangeUprgadeLevel = 0;
     private int _reloadUprgadeLevel = 0;
     private int _damageUprgadeLevel = 0;
@@ -21,7 +20,7 @@ public class MeleeAttackController : AttackController
     private void Start()
     {
         
-        targetTag = SetTargetTag(_unit);
+        targetTag = SetTargetTag(ThisUnit);
         attackRangeSquared = attackRange * attackRange;
         StartCoroutine(AttackLoop());
         
@@ -89,7 +88,7 @@ public class MeleeAttackController : AttackController
             CleanupDeadTargets();
             targetToAttack = GetClosestEnemy();
 
-            if (targetToAttack && !_unit.IsDead && !isAttacking)
+            if (targetToAttack && !ThisUnit.IsDead && !isAttacking)
             {
                 Vector3 direction = targetToAttack.position - transform.position;
                 if (direction.sqrMagnitude <= attackRangeSquared)
@@ -116,7 +115,7 @@ public class MeleeAttackController : AttackController
 
     public void Attack()
     {
-        if (_unit.IsDead) return;
+        if (ThisUnit.IsDead) return;
         
         if (targetToAttack && targetToAttack.TryGetComponent(out Unit targetUnit))
         {

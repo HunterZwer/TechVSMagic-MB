@@ -13,14 +13,13 @@ public class RangeAttackController : AttackController
     private float lastAttackTime;
     private float attackRangeSq;
     
-    [Header("Upgrade Levels")]
     private int _rangeUprgadeLevel = 0;
     private int _reloadUprgadeLevel = 0;
     private int _damageUprgadeLevel = 0;
 
     void Start()
     {
-        targetTag = SetTargetTag(_unit);
+        targetTag = SetTargetTag(ThisUnit);
         attackRange = attackRange * unitStats.RangeMultiplier[_rangeUprgadeLevel];
         attackCooldown = attackCooldown * unitStats.ReloadMultiplier[_reloadUprgadeLevel];
         unitDamage = unitDamage * unitStats.DamageMultiplier[_damageUprgadeLevel];
@@ -88,7 +87,7 @@ public class RangeAttackController : AttackController
     public void Attack()
     {
         
-        if (_unit.IsDead)
+        if (ThisUnit.IsDead)
         {
             return;
         }
@@ -107,7 +106,7 @@ public class RangeAttackController : AttackController
                 projectileScript = projectile.AddComponent<Projectile>();
             }
 
-            projectileScript.Initialize(targetToAttack, unitDamage, projectileSpeed, _unit.IsPlayer);
+            projectileScript.Initialize(targetToAttack, unitDamage, projectileSpeed, ThisUnit.IsPlayer);
             projectile.SetActive(true);
         }
     }
