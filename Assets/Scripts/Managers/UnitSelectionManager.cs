@@ -14,11 +14,12 @@ public class UnitSelectionManager : MonoBehaviour
     public LayerMask clickable;
     public LayerMask ground;
     public LayerMask attackable;
-    public GameObject groundMarker;
+    [Space] [SerializeField] private Renderer ClickIcon;
     public bool attackCursorVisible;
 
     private Camera cam;
     private bool _hasOffensiveUnits;
+    private static readonly int CLCIK_TIME_PROPERTY = Shader.PropertyToID("_ClickTime");
 
     public delegate void SelectionChanged();
     public event SelectionChanged onSelectionChanged;
@@ -75,12 +76,15 @@ public class UnitSelectionManager : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(1))
         {
+            //Click
             Ray ray = cam.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, clickable))
+            if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, ground))
             {
-                groundMarker.transform.position = hit.point;
-                groundMarker.SetActive(true);
-
+                if (unitSelected.Count > 0)
+                {
+                    ClickIcon.transform.position = hit.point + Vector3.up * 0.01f;
+                    ClickIcon.material.SetFloat(CLCIK_TIME_PROPERTY, Time.time);
+                }
             }
 
             if (_hasOffensiveUnits && Physics.Raycast(ray, out hit, Mathf.Infinity, attackable))
@@ -102,24 +106,9 @@ public class UnitSelectionManager : MonoBehaviour
 
             Ray ray2 = cam.ScreenPointToRay(Input.mousePosition);
             Plane groundPlane = new Plane(Vector3.up, Vector3.zero); 
-
-            float distance;
-            if (groundPlane.Raycast(ray2, out distance))
-            {
-                Vector3 point = ray2.GetPoint(distance); 
-                groundMarker.transform.position = point;
-                StartCoroutine(EnableDisableGroundMarker());
-            }
         }
     }
-    private IEnumerator EnableDisableGroundMarker()
-    {
-        if (unitSelected.Count > 0) {
-            groundMarker.SetActive(true);
-            yield return new WaitForSeconds(0.15f);
-            groundMarker.SetActive(false);
-        }
-    }
+    
     private void UpdateAttackCursor()
     {
         if (_hasOffensiveUnits)
@@ -198,7 +187,6 @@ public class UnitSelectionManager : MonoBehaviour
         unitSelected.Clear();
         selectedUnitsSet.Clear();
         selectedUnitsWithAttack.Clear();
-        groundMarker.SetActive(false);
         _hasOffensiveUnits = false;
         onSelectionChanged?.Invoke();
     }
