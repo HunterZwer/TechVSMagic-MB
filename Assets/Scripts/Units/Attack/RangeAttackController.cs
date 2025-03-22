@@ -1,8 +1,7 @@
 using UnityEngine;
 
-public class RangeAttackController : MonoBehaviour
+public class RangeAttackController : AttackController
 {
-    public Transform targetToAttack;
     public GameObject projectilePrefab;
     public Transform projectileSpawnPoint;
 
@@ -13,14 +12,11 @@ public class RangeAttackController : MonoBehaviour
     public float projectileSpeed = 20f;
 
     private float lastAttackTime;
-    private string targetTag;
-    private Unit _unit;
     private float attackRangeSq;
 
     void Start()
     {
-        _unit = GetComponent<Unit>();
-        SetTargetTag();
+        targetTag = SetTargetTag(_unit);
         attackRangeSq = attackRange * attackRange;
         lastAttackTime = Time.time - attackCooldown;
         FindNearestTarget();
@@ -29,7 +25,7 @@ public class RangeAttackController : MonoBehaviour
     void Update()
     {
         // Check if the target is null or dead and find a new target if necessary
-        if (targetToAttack == null || IsTargetDead())
+        if (IsTargetDead(targetToAttack))
         {
             FindNearestTarget();
         }
@@ -51,26 +47,21 @@ public class RangeAttackController : MonoBehaviour
             }
         }
     }
-
-    void SetTargetTag()
-    {
-        targetTag = _unit.IsPlayer ? "Enemy" : "Player";
-    }
+    
 
     void FindNearestTarget()
     {
+        if (string.IsNullOrEmpty(targetTag)) return;
         Collider[] hitColliders = new Collider[100];
         int hitCount = Physics.OverlapSphereNonAlloc(transform.position, attackRange, hitColliders);
         float closestDistanceSq = Mathf.Infinity;
         Transform closestTarget = null;
-
         for (int i = 0; i < hitCount; i++)
         {
             Collider hitCollider = hitColliders[i];
-            if (targetTag is null) return;
             if (hitCollider.CompareTag(targetTag))
             {
-                Unit unit = hitCollider.GetComponent<Unit>();
+                hitCollider.TryGetComponent(out Unit unit);
                 if (unit && !unit.IsDead)
                 {
                     float distanceSq = (hitCollider.transform.position - transform.position).sqrMagnitude;
@@ -88,15 +79,7 @@ public class RangeAttackController : MonoBehaviour
     }
 
 
-    bool IsTargetDead()
-    {
-        if (targetToAttack)
-        {
-            Unit unit = targetToAttack.GetComponent<Unit>();
-            return unit is null || !unit.IsDead;
-        }
-        return true;
-    }
+
 
     public void Attack()
     {
@@ -106,7 +89,7 @@ public class RangeAttackController : MonoBehaviour
             return;
         }
 
-        if (projectilePrefab && projectileSpawnPoint && targetToAttack != null)
+        if (projectilePrefab && projectileSpawnPoint && targetToAttack)
         {
             GameObject projectile = ObjectPool.Instance.GetPooledObject(projectilePrefab.name);
             if (!projectile)
@@ -114,7 +97,7 @@ public class RangeAttackController : MonoBehaviour
                 projectile = Instantiate(projectilePrefab, projectileSpawnPoint.position, Quaternion.identity);
             }
 
-            Projectile projectileScript = projectile.GetComponent<Projectile>();
+            projectile.TryGetComponent(out Projectile projectileScript);
             if (!projectileScript)
             {
                 projectileScript = projectile.AddComponent<Projectile>();

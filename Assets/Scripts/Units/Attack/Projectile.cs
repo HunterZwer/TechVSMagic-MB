@@ -18,11 +18,12 @@ public class Projectile : MonoBehaviour
 
     void Update()
     {
-        if (target == null || target.GetComponent<Unit>()?.GetCurrentHealth() <= 0)
+        if (!target || (target.TryGetComponent(out Unit unit) && unit.IsDead))
         {
             DestroyProjectile();
             return;
         }
+
 
         transform.LookAt(target);
         transform.Translate(Vector3.forward * (speed * Time.deltaTime));
@@ -36,13 +37,9 @@ public class Projectile : MonoBehaviour
 
     void HitTarget()
     {
-        if (target != null)  // Changed from "if (!target)" - this was the bug!
+        if (target && target.TryGetComponent(out Unit targetUnit))
         {
-            Unit targetUnit = target.GetComponent<Unit>();
-            if (targetUnit != null)  // Changed from "if (!targetUnit)" - this was also a bug!
-            {
-                targetUnit.TakeDamage(damage);
-            }
+            targetUnit.TakeDamage(damage);
         }
         DestroyProjectile();
     }

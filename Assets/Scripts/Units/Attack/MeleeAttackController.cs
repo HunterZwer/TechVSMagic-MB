@@ -2,19 +2,14 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
-public class MeleeAttackController : MonoBehaviour
+public class MeleeAttackController : AttackController
 {
-    public Transform targetToAttack;
-    public float unitDamage;
-    private string _targetTag;
-
     [Header("Combat Settings")]
     public float attackRange = 1.5f;
     public float attackCooldown = 1.0f;
     private bool isAttacking;
     private float attackRangeSquared;
-    private Unit _unit;
-    private UnitStats unitStats;
+    
     
     [Header("Upgrade Levels")]
     private int _rangeUprgadeLevel = 0;
@@ -25,8 +20,8 @@ public class MeleeAttackController : MonoBehaviour
 
     private void Start()
     {
-        _unit = GetComponent<Unit>();
-        SetTargetTag();
+        
+        targetTag = SetTargetTag(_unit);
         attackRangeSquared = attackRange * attackRange;
         StartCoroutine(AttackLoop());
         
@@ -40,8 +35,8 @@ public class MeleeAttackController : MonoBehaviour
     
     private void OnTriggerEnter(Collider other)
     {
-        if (_targetTag == null) return;
-        if (other.CompareTag(_targetTag))
+        if (string.IsNullOrEmpty(targetTag)) return;
+        if (other.CompareTag(targetTag))
         {
             Unit unit = other.GetComponent<Unit>();
             if (unit != null && !unit.IsDead)
@@ -54,7 +49,7 @@ public class MeleeAttackController : MonoBehaviour
     private void OnTriggerExit(Collider other)
     {
         if (other.tag is null) return;
-        if (other.CompareTag(_targetTag))
+        if (other.CompareTag(targetTag))
         {
             enemiesInRange.RemoveAll(ei => ei.Transform == other.transform);
             
@@ -86,10 +81,6 @@ public class MeleeAttackController : MonoBehaviour
         return closestEnemy;
     }
 
-    private void SetTargetTag()
-    {
-        _targetTag = _unit.IsPlayer ? "Enemy" : "Player";
-    }
 
     private IEnumerator AttackLoop()
     {
@@ -100,7 +91,7 @@ public class MeleeAttackController : MonoBehaviour
             CleanupDeadTargets();
             targetToAttack = GetClosestEnemy();
 
-            if (targetToAttack != null && !_unit.IsDead && !isAttacking)
+            if (targetToAttack && !_unit.IsDead && !isAttacking)
             {
                 Vector3 direction = targetToAttack.position - transform.position;
                 if (direction.sqrMagnitude <= attackRangeSquared)
@@ -128,10 +119,9 @@ public class MeleeAttackController : MonoBehaviour
     public void Attack()
     {
         if (_unit.IsDead) return;
-
-        if (targetToAttack)
+        
+        if (targetToAttack && targetToAttack.TryGetComponent(out Unit targetUnit))
         {
-            Unit targetUnit = targetToAttack.GetComponent<Unit>();
             if (targetUnit && !targetUnit.IsDead)
             {
                 targetUnit.TakeDamage(unitDamage);

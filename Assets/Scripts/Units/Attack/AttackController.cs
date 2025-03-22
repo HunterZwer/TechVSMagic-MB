@@ -2,64 +2,28 @@ using UnityEngine;
 
 public class AttackController : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     public Transform targetToAttack;
-
-    public Material idleStateMaterial;
-    public Material followStateMaterial;
-    public Material attackStateMaterial;
-
-    public bool isPlayer;
-    public int unitDamage;
-
-    private void OnTriggerEnter(Collider other)
+    public float unitDamage;
+    public string targetTag;
+    public Unit _unit;
+    public UnitStats unitStats;
+    private void Awake()
     {
-        if (isPlayer && other.CompareTag("Enemy") && targetToAttack == null)
-        {
-            targetToAttack = other.transform;
-        }
+        _unit = GetComponent<Unit>();
     }
-
-    private void OnTriggerStay(Collider other)
+    public bool IsTargetDead(Transform targetToAttack)
     {
-        if (isPlayer && other.CompareTag("Enemy") && targetToAttack == null)
+        if (targetToAttack)
         {
-            targetToAttack = other.transform;
+            targetToAttack.TryGetComponent(out Unit unit);
+            return unit is null || !unit.IsDead;
         }
-    }
-
-    private void OnTriggerExit(Collider other)
-    {
-        if (isPlayer && other.CompareTag("Enemy") && targetToAttack != null)
-        {
-            targetToAttack = null;
-        }
-    }
-
-    public void SetIdleMaterial()
-    {
-        GetComponent<Renderer>().material = idleStateMaterial;
+        return true;
     }
     
-    public void SetFollowMaterial()
+    public string SetTargetTag(Unit unit)
     {
-        GetComponent<Renderer>().material = followStateMaterial;
-    }
-    
-    public void SetAttackMaterial()
-    {
-        GetComponent<Renderer>().material = attackStateMaterial;
+        return unit.IsPlayer ? "Enemy" : "Player";
     }
 
-    private void OnDrawGizmos()
-    {
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(transform.position, 10f*0.2f);
-
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, 1f);
-
-        Gizmos.color = Color.blue;
-        Gizmos.DrawWireSphere(transform.position,1.2f);
-    }
 }
