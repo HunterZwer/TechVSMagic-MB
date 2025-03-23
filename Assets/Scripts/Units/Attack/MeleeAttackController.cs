@@ -19,8 +19,6 @@ public class MeleeAttackController : AttackController
 
     private void Start()
     {
-        
-        targetTag = SetTargetTag(ThisUnit);
         attackRangeSquared = attackRange * attackRange;
         StartCoroutine(AttackLoop());
         

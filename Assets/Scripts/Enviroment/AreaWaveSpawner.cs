@@ -151,13 +151,10 @@ public class AreaWaveSpawner : MonoBehaviour
 
     private void DisableAnyMovement()
     {
-        void DisableAndEnable()
-        {
-            _keyboardCameraMovement.enabled = false;
-            _edgeScroller.enabled = false;
-            Invoke(nameof(ReEnable), 1f);  // Calls ReEnable after 1 second
-        }
 
+        _keyboardCameraMovement.enabled = false;
+        _edgeScroller.enabled = false;
+        Invoke(nameof(ReEnable), 1f);  // Calls ReEnable after 1 second
         void ReEnable()
         {
             _keyboardCameraMovement.enabled = true;

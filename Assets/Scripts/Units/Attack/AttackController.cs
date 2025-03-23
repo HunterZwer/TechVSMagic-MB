@@ -14,10 +14,9 @@ public class AttackController : MonoBehaviour
         ThisUnit = GetComponent<Unit>();
         unitStats = JsonLoader.LoadUnitStats(ThisUnit.unitClass, ThisUnit.IsPlayer);
         unitDamage = 10f;
+        targetTag = ThisUnit.IsPlayer ? "Enemy" : "Player";
     }
 
     protected bool IsTargetDead(Transform target) => 
         !target || !target.TryGetComponent(out Unit unit) || unit.IsDead;
-    protected static string SetTargetTag(Unit unit) => unit.IsPlayer ? "Enemy" : "Player";
-
 }

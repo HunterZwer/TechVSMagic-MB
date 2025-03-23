@@ -19,7 +19,6 @@ public class RangeAttackController : AttackController
 
     void Start()
     {
-        targetTag = SetTargetTag(ThisUnit);
         attackRange = attackRange * unitStats.RangeMultiplier[_rangeUprgadeLevel];
         attackCooldown = attackCooldown * unitStats.ReloadMultiplier[_reloadUprgadeLevel];
         unitDamage = unitDamage * unitStats.DamageMultiplier[_damageUprgadeLevel];

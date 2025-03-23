@@ -27,7 +27,8 @@ public class OffScreenUnitIndicator : MonoBehaviour
         mainCamera = cameraHolder.GetComponentInChildren<Camera>();
         
         // Initialize units
-        Unit[] existingUnits = FindObjectsOfType<Unit>();
+        Unit[] existingUnits = FindObjectsByType<Unit>(FindObjectsSortMode.None);
+
         allUnits.AddRange(existingUnits);
         
         // Create and hide indicator
