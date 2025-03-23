@@ -152,8 +152,8 @@ public class UnitSelectionManager : MonoBehaviour
         selectedUnitsSet.Add(unit);
         SelectUnit(unit, true);
 
-        MeleeAttackController melee = unit.GetComponent<MeleeAttackController>();
-        RangeAttackController ranged = unit.GetComponent<RangeAttackController>();
+        unit.TryGetComponent(out MeleeAttackController melee);
+        unit.TryGetComponent(out RangeAttackController ranged);
         if (melee != null || ranged != null)
         {
             selectedUnitsWithAttack.Add(new SelectedUnitData(unit, melee, ranged));
