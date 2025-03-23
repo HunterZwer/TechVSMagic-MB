@@ -27,7 +27,8 @@ namespace CameraRelated
             RIGHT,
             DEFAULT
         }
-        void LateUpdate()
+
+        private void LateUpdate()
         {
             EdgeScrollMovement();
         }

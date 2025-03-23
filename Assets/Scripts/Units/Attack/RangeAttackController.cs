@@ -27,7 +27,7 @@ public class RangeAttackController : AttackController
         FindNearestTarget();
     }
 
-    void Update()
+    void FixedUpdate()
     {
         // Check if the target is null or dead and find a new target if necessary
         if (IsTargetDead(targetToAttack))

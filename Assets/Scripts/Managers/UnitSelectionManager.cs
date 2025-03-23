@@ -41,7 +41,7 @@ public class UnitSelectionManager : MonoBehaviour
         cam = Camera.main;
     }
 
-    void Update()
+    void FixedUpdate()
     {
         HandleLeftClick();
         HandleRightClick();
