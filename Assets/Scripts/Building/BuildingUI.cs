@@ -139,7 +139,7 @@ public class BuildingUI : MonoBehaviour
     {
         if (queueButtonsList.Count > 0)
         {
-            GameObject queueButton = queueButtonsList[0]; // Удаляем самую первую кнопку
+            GameObject queueButton = queueButtonsList[0]; 
             queueButtonsList.RemoveAt(0);
             Destroy(queueButton);
         }
@@ -156,7 +156,7 @@ public class BuildingUI : MonoBehaviour
 
     public void Hide()
     {
-        ClearQueueVisuals();
+        //ClearQueueVisuals();
         buildingUI.SetActive(false);
         currentBuilding = null;
     }

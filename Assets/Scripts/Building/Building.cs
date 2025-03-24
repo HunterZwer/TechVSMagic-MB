@@ -16,7 +16,8 @@ public class Building : MonoBehaviour
     [SerializeField] private Transform spawnPoint;
     [SerializeField] private BuildingUI uiManager;
     [SerializeField] private int maxQueueSize = 5;
-    
+    [SerializeField] float spawnRadius = 2f;
+
     private bool isProducing = false;
     private Queue<int> productionQueue = new Queue<int>();
     public event System.Action<int> OnUnitProduced;
@@ -74,7 +75,7 @@ public class Building : MonoBehaviour
     {
         UnitData unit = availableUnits[unitIndex];
         float timer = 0;
-        
+
         while (timer < unit.productionTime)
         {
             timer += Time.deltaTime;
@@ -82,10 +83,21 @@ public class Building : MonoBehaviour
             uiManager.UpdateProgress(progress, unit.unitName);
             yield return null;
         }
-        
+
         productionQueue.Dequeue();
-        Instantiate(unit.unitPrefab, spawnPoint.position, spawnPoint.rotation);
+
         
+       
+        Vector3 randomOffset = new Vector3(
+            Random.Range(-spawnRadius, spawnRadius),
+            0,
+            Random.Range(-spawnRadius, spawnRadius)
+        );
+
+        Vector3 spawnPosition = spawnPoint.position + randomOffset;
+
+        Instantiate(unit.unitPrefab, spawnPosition, spawnPoint.rotation);
+
         uiManager.UpdateQueueStatus(productionQueue.Count, maxQueueSize);
         uiManager.RemoveCompletedUnitFromQueue(unitIndex);
         ProcessProductionQueue();
