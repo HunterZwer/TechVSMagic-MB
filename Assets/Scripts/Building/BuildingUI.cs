@@ -1,152 +1,163 @@
 using UnityEngine;
 using UnityEngine.UI;
-using System.Collections;
 using System.Collections.Generic;
 
 public class BuildingUI : MonoBehaviour
 {
     [SerializeField] private GameObject buildingUI;
-    [SerializeField] private Button[] unitButtons; // 4 buttons for each unit type
+    [SerializeField] private Button[] unitButtons; // Оригинальные кнопки выбора юнитов
     [SerializeField] private Slider progressBar;
     [SerializeField] private Text progressText;
-    [SerializeField] private Text queueText; // Text to show queue status
-    [SerializeField] private Button cancelButton; // Button to cancel current production
-    [SerializeField] private Button clearQueueButton; // Button to clear the entire queue
-    
+    [SerializeField] private Text queueText;
+    [SerializeField] private Button cancelButton;
+    [SerializeField] private Button clearQueueButton;
+
+    [SerializeField] private Transform queueGrid; // Контейнер для отображения очереди
+    [SerializeField] private GameObject queueButtonPrefab; // Префаб кнопки в очереди
+
     private Building currentBuilding;
-    
+    private List<GameObject> queueButtonsList = new List<GameObject>(); // Список кнопок в очереди
+
+   
+
     private void Start()
     {
         buildingUI.SetActive(false);
-        
-        // Set up cancel button
+
         if (cancelButton != null)
         {
-            cancelButton.onClick.AddListener(() => {
-                if (currentBuilding != null)
-                {
-                    currentBuilding.CancelProduction();
-                }
-            });
+            cancelButton.onClick.AddListener(() => currentBuilding?.CancelProduction());
         }
-        
-        // Set up clear queue button
+
         if (clearQueueButton != null)
         {
-            clearQueueButton.onClick.AddListener(() => {
-                if (currentBuilding != null)
-                {
-                    currentBuilding.ClearQueue();
-                }
+            clearQueueButton.onClick.AddListener(() =>
+            {
+                currentBuilding?.ClearQueue();
+                ClearQueueVisuals();
             });
         }
     }
-    
+
+
+
+
+
     public void ShowForBuilding(Building building)
     {
         currentBuilding = building;
         buildingUI.SetActive(true);
-        
-        // Set up button listeners
+
         for (int i = 0; i < unitButtons.Length; i++)
         {
-            int unitIndex = i; // Important to avoid closure issues
+            int unitIndex = i;
             unitButtons[i].onClick.RemoveAllListeners();
-            unitButtons[i].onClick.AddListener(() => {
-                Debug.Log($"Button {unitIndex} clicked: {building.GetUnitName(unitIndex)}");
-                currentBuilding.StartProducingUnit(unitIndex);
+            unitButtons[i].onClick.AddListener(() =>
+            {
+                if (currentBuilding.StartProducingUnit(unitIndex)) 
+                {
+                    AddToQueue(unitIndex);
+                }
             });
         }
-        
-        // Reset progress bar
+
         progressBar.value = 0;
         progressText.text = "Select Unit";
-        
-        // Update queue status
-        UpdateQueueStatus(currentBuilding.QueueCount, 5); // Assuming max queue size is 5
+        UpdateQueueStatus(currentBuilding.QueueCount, 5);
     }
-    
+
     public void UpdateProgress(float progress, string unitName)
     {
         progressBar.value = progress;
         progressText.text = $"Creating {unitName}: {(progress * 100):0}%";
     }
-    
+
+
+
+
     public void UpdateQueueStatus(int currentCount, int maxCount)
     {
         if (queueText != null)
         {
             queueText.text = $"Queue: {currentCount}/{maxCount}";
-            
-            // Option: Color-code the text based on queue fullness
-            if (currentCount >= maxCount)
-            {
-                queueText.color = Color.red; // Queue full
-            }
-            else if (currentCount > 0)
-            {
-                queueText.color = Color.yellow; // Units in queue
-            }
-            else
-            {
-                queueText.color = Color.white; // Empty queue
-            }
+            queueText.color = (currentCount >= maxCount) ? Color.red :
+                              (currentCount > 0) ? Color.yellow : Color.white;
+        }
+
+        foreach (Button button in unitButtons)
+        {
+            button.interactable = currentCount < maxCount;
+        }
+    }
+
+    private void AddToQueue(int unitIndex)
+    {
+        if (currentBuilding == null) return;
+
+        GameObject queueButton = Instantiate(queueButtonPrefab, queueGrid);
+
+        Text queueButtonText = queueButton.GetComponentInChildren<Text>();
+        if (queueButtonText != null)
+        {
+            queueButtonText.text = currentBuilding.GetUnitName(unitIndex);
+        }
+       
+
+        
+        Image originalIcon = unitButtons[unitIndex].GetComponentInChildren<Image>();
+        Image queueIcon = queueButton.GetComponentInChildren<Image>();
+        if (originalIcon != null && queueIcon != null)
+        {
+            queueIcon.sprite = originalIcon.sprite;
         }
         
-        // Disable unit buttons if queue is full
-        if (currentCount >= maxCount)
+        queueButtonsList.Add(queueButton);
+
+        
+        queueButton.GetComponent<Button>().onClick.AddListener(() => RemoveFromQueue(queueButton, unitIndex));
+        
+    }
+
+    private void RemoveFromQueue(GameObject queueButton, int unitIndex)
+    {
+        if (queueButtonsList.Contains(queueButton))
         {
-            foreach (Button button in unitButtons)
-            {
-                button.interactable = false;
-            }
+            queueButtonsList.Remove(queueButton);
+            Destroy(queueButton);
+            currentBuilding.RemoveUnitFromQueue(unitIndex);
+            UpdateQueueStatus(currentBuilding.QueueCount, 5);
+            
         }
-        else
+
+        if (queueButtonsList.Count == 0)
+            currentBuilding.ClearQueue();
+
+
+    }
+
+    public void RemoveCompletedUnitFromQueue(int unitIndex)
+    {
+        if (queueButtonsList.Count > 0)
         {
-            foreach (Button button in unitButtons)
-            {
-                button.interactable = true;
-            }
+            GameObject queueButton = queueButtonsList[0]; // Удаляем самую первую кнопку
+            queueButtonsList.RemoveAt(0);
+            Destroy(queueButton);
         }
     }
-    
+
+    public void ClearQueueVisuals()
+    {
+        foreach (GameObject button in queueButtonsList)
+        {
+            Destroy(button);
+        }
+        queueButtonsList.Clear();
+    }
+
     public void Hide()
     {
+        ClearQueueVisuals();
         buildingUI.SetActive(false);
         currentBuilding = null;
-    }
-    
-    // Add this to your BuildingUI class
-    [SerializeField] private Transform queueIconsContainer;
-    [SerializeField] private GameObject queueIconPrefab;
-    private List<GameObject> queueIcons = new List<GameObject>();
-
-    public void UpdateQueueVisuals()
-    {
-        // Clear existing icons
-        foreach (GameObject icon in queueIcons)
-        {
-            Destroy(icon);
-        }
-        queueIcons.Clear();
-    
-        if (currentBuilding == null) return;
-    
-        // Get queue info from building
-        // This would require modifying the Building class to expose queue information
-        int[] queuedUnitIndices = currentBuilding.GetQueuedUnitIndices();
-    
-        // Create icons for each queued unit
-        foreach (int unitIndex in queuedUnitIndices)
-        {
-            GameObject icon = Instantiate(queueIconPrefab, queueIconsContainer);
-            // Set icon image or text based on unit type
-            Text iconText = icon.GetComponentInChildren<Text>();
-            if (iconText != null)
-            {
-                iconText.text = currentBuilding.GetUnitName(unitIndex);
-            }
-            queueIcons.Add(icon);
-        }
     }
 }

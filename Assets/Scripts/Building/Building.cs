@@ -12,23 +12,24 @@ public class Building : MonoBehaviour
         public float productionTime;
     }
     
-    [SerializeField] private UnitData[] availableUnits; // Your 4 different unit types
+    [SerializeField] private UnitData[] availableUnits; 
     [SerializeField] private Transform spawnPoint;
     [SerializeField] private BuildingUI uiManager;
-    [SerializeField] private int maxQueueSize = 5; // Maximum number of units that can be queued
+    [SerializeField] private int maxQueueSize = 5;
     
     private bool isProducing = false;
-    private Queue<int> productionQueue = new Queue<int>(); // Queue of unit indices to produce
-    
+    private Queue<int> productionQueue = new Queue<int>();
+    public event System.Action<int> OnUnitProduced;
+
     public int QueueCount => productionQueue.Count;
     public bool IsQueueFull => productionQueue.Count >= maxQueueSize;
     
     private void OnMouseDown()
     {
-        // When player clicks on building, show UI
-        Debug.Log($"Building clicked: {gameObject.name}");
         uiManager.ShowForBuilding(this);
     }
+
+
     
     public string GetUnitName(int index)
     {
@@ -37,36 +38,24 @@ public class Building : MonoBehaviour
         return "Unknown";
     }
     
-    public void StartProducingUnit(int unitIndex)
+    public bool StartProducingUnit(int unitIndex)
     {
-        if (unitIndex < 0 || unitIndex >= availableUnits.Length)
+        if (unitIndex < 0 || unitIndex >= availableUnits.Length || IsQueueFull)
         {
-            Debug.LogError($"Invalid unit index: {unitIndex}");
-            return;
+            return false;
         }
-        
-        // Check if the queue is full
-        if (IsQueueFull)
-        {
-            Debug.LogWarning($"Production queue is full! Cannot add {availableUnits[unitIndex].unitName}");
-            // You could show a message to the player here
-            return;
-        }
-        
-        // Add unit to the queue
+
         productionQueue.Enqueue(unitIndex);
-        Debug.Log($"Added {availableUnits[unitIndex].unitName} to production queue. Queue size: {productionQueue.Count}");
-        
-        // Update UI to show queue status
         uiManager.UpdateQueueStatus(productionQueue.Count, maxQueueSize);
-        
-        // If we're not already producing, start the production process
+
         if (!isProducing)
         {
             ProcessProductionQueue();
         }
+
+        return true;
     }
-    
+
     private void ProcessProductionQueue()
     {
         if (productionQueue.Count == 0)
@@ -77,7 +66,7 @@ public class Building : MonoBehaviour
         }
         
         isProducing = true;
-        int unitIndex = productionQueue.Peek(); // Look at the next unit but don't remove it yet
+        int unitIndex = productionQueue.Peek();
         StartCoroutine(ProduceUnit(unitIndex));
     }
     
@@ -86,33 +75,28 @@ public class Building : MonoBehaviour
         UnitData unit = availableUnits[unitIndex];
         float timer = 0;
         
-        Debug.Log($"Starting production of {unit.unitName} - Production time: {unit.productionTime}s");
-        
         while (timer < unit.productionTime)
         {
             timer += Time.deltaTime;
             float progress = timer / unit.productionTime;
-            
-            // Update progress bar
             uiManager.UpdateProgress(progress, unit.unitName);
-            
             yield return null;
         }
         
-        // Remove the unit from the queue now that it's complete
         productionQueue.Dequeue();
+        Instantiate(unit.unitPrefab, spawnPoint.position, spawnPoint.rotation);
         
-        // Spawn the unit
-        GameObject newUnit = Instantiate(unit.unitPrefab, spawnPoint.position, spawnPoint.rotation);
-        Debug.Log($"Unit spawned: {unit.unitName} at position {spawnPoint.position}");
-        
-        // Update queue status
         uiManager.UpdateQueueStatus(productionQueue.Count, maxQueueSize);
-        
-        // Process the next unit in the queue
+        uiManager.RemoveCompletedUnitFromQueue(unitIndex);
         ProcessProductionQueue();
     }
-    
+
+
+    private void UnitProductionCompleted(int unitIndex)
+    {
+        OnUnitProduced?.Invoke(unitIndex);
+    }
+
     public void CancelProduction()
     {
         if (isProducing)
@@ -120,17 +104,13 @@ public class Building : MonoBehaviour
             StopAllCoroutines();
             isProducing = false;
             
-            // Only cancel the current unit being produced
             if (productionQueue.Count > 0)
             {
-                int cancelledUnitIndex = productionQueue.Dequeue();
-                Debug.Log($"Cancelled production of {availableUnits[cancelledUnitIndex].unitName}");
+                productionQueue.Dequeue();
             }
-            
+
             uiManager.UpdateQueueStatus(productionQueue.Count, maxQueueSize);
             uiManager.UpdateProgress(0, "Cancelled");
-            
-            // Process the next unit in the queue
             ProcessProductionQueue();
         }
     }
@@ -140,22 +120,31 @@ public class Building : MonoBehaviour
         StopAllCoroutines();
         productionQueue.Clear();
         isProducing = false;
-        
         uiManager.UpdateQueueStatus(0, maxQueueSize);
         uiManager.UpdateProgress(0, "Queue Cleared");
-        
-        Debug.Log("Production queue cleared");
     }
-    
+
+    public void RemoveUnitFromQueue(int unitIndex)
+    {
+        Queue<int> newQueue = new Queue<int>();
+        bool removed = false;
+
+        foreach (int queuedIndex in productionQueue)
+        {
+            if (queuedIndex == unitIndex && !removed)
+            {
+                removed = true;
+                continue;
+            }
+            newQueue.Enqueue(queuedIndex);
+        }
+
+        productionQueue = newQueue;
+        uiManager.UpdateQueueStatus(productionQueue.Count, maxQueueSize);
+    }
+
     private void OnDestroy()
     {
-        // Ensure coroutines are stopped if building is destroyed
         StopAllCoroutines();
-    }
-    
-    // Add this to your Building class
-    public int[] GetQueuedUnitIndices()
-    {
-        return productionQueue.ToArray();
     }
 }
