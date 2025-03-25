@@ -33,7 +33,7 @@ public class HoverEffect : MonoBehaviour, IPointerExitHandler, IPointerEnterHand
         if (unitComponent.TryGetComponent(out MeleeAttackController melee))
             attackInfo = $"{melee.unitDamage}";
         else if (unitComponent.TryGetComponent(out RangeAttackController ranged))
-            attackInfo = $" {ranged.projectileDamage}";
+            attackInfo = $" {ranged.unitDamage}";
         PanelInfoUnits.Instance.TransformingPanel(transform.position.x);
         PanelInfoUnits.Instance.SetInfo($"Name: {_unit.name}", $"Damage: {attackInfo}", $"Speed {agent.speed}");
         PanelInfoUnits.Instance.SetActivePanelInfo(true);

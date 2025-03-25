@@ -112,7 +112,7 @@ public class UnitSelectionUI : MonoBehaviour
             if (unitComponent.TryGetComponent(out MeleeAttackController melee))
                 attackInfo = $"Урон: {melee.unitDamage}";
             else if (unitComponent.TryGetComponent(out RangeAttackController ranged))
-                attackInfo = $"Урон: {ranged.projectileDamage}";
+                attackInfo = $"Урон: {ranged.unitDamage}";
 
             unitAttackText.text = attackInfo;
 
