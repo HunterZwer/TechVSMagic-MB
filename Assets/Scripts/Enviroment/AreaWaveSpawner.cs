@@ -21,14 +21,15 @@ public class AreaWaveSpawner : MonoBehaviour
     [Header("Unit Configuration")]
     [SerializeField] private WaveUnit[] waveUnits = new WaveUnit[4];
     [SerializeField] private string playerTag = "Player";
+    [SerializeField] private Transform[] SpawnPositions;
     
     private bool hasSpawned = false;
     private SmoothCameraChange _smoothCamera;
     private ZoomCamera _zoomCamera;
     private BoxCollider triggerCollider;
-    private Bounds spawnBounds;
     private KeyboardCameraMovement _keyboardCameraMovement;
     private EdgeScroller _edgeScroller;
+    
 
     private void Awake()
     {
@@ -50,7 +51,6 @@ public class AreaWaveSpawner : MonoBehaviour
         }
         
         // Define the spawn bounds (area where enemies will spawn)
-        spawnBounds = new Bounds(transform.position, spawnAreaSize);
     }
 
     private void OnTriggerEnter(Collider other)
@@ -58,7 +58,7 @@ public class AreaWaveSpawner : MonoBehaviour
         if (other.CompareTag(playerTag) && !hasSpawned)
         {
             Vector3 spawnerPosition = this.gameObject.transform.position;
-            Vector3 cameraOffset = new Vector3(-187f, 0f, -183f); // Your camera offset
+            Vector3 cameraOffset = new Vector3(-8f, 0f, -2.5f); // Your camera offset
             Vector3 targetPosition = spawnerPosition + cameraOffset;
         
             // Keep original Y position
@@ -98,7 +98,7 @@ public class AreaWaveSpawner : MonoBehaviour
             
             for (int i = 0; i < amount; i++)
             {
-                Vector3 spawnPosition = GetRandomBorderPosition(spawnBounds);
+                Vector3 spawnPosition = GetRandomSpawnPosition(SpawnPositions);
                 GameObject instantiatedUnit = Instantiate(unit.unitPrefab, spawnPosition, Quaternion.identity);
                 instantiatedUnit.TryGetComponent(out UnitMovement unitMovement);
                 unitMovement.agent.SetDestination(transform.position);
@@ -106,35 +106,9 @@ public class AreaWaveSpawner : MonoBehaviour
         }
     }
 
-    private Vector3 GetRandomBorderPosition(Bounds bounds)
+    private Vector3 GetRandomSpawnPosition(Transform[] spawnPositions)
     {
-        float x, z;
-
-        // Randomly select which edge to spawn on: 0 = min Z, 1 = max Z, 2 = min X, 3 = max X
-        int edge = Random.Range(0, 4);
-
-        if (edge == 0) // Min Z border
-        {
-            x = Random.Range(bounds.min.x, bounds.max.x);
-            z = bounds.min.z;
-        }
-        else if (edge == 1) // Max Z border
-        {
-            x = Random.Range(bounds.min.x, bounds.max.x);
-            z = bounds.max.z;
-        }
-        else if (edge == 2) // Min X border
-        {
-            x = bounds.min.x;
-            z = Random.Range(bounds.min.z, bounds.max.z);
-        }
-        else // Max X border
-        {
-            x = bounds.max.x;
-            z = Random.Range(bounds.min.z, bounds.max.z);
-        }
-
-        return new Vector3(x, transform.position.y, z);
+        return spawnPositions[Random.Range(0, spawnPositions.Length)].position;
     }
 
     private int GetWaveAmount(WaveUnit unit, int waveNumber)

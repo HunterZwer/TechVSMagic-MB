@@ -165,7 +165,8 @@ public class OffScreenUnitIndicator : MonoBehaviour
 
     IEnumerator SmoothCameraMove(Vector3 targetPosition)
     {
-        Vector3 cameraOffset = new Vector3(-187f, 0f, -183f);
+        Debug.Log(targetPosition);
+        Vector3 cameraOffset = new Vector3(-8f, 0f, -2.5f);
         Vector3 targetHolderPosition = targetPosition + cameraOffset;
     
         float elapsed = 0f;
