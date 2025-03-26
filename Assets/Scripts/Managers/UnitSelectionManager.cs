@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.EventSystems;
 using System.Collections.Generic;
 using System.Collections;
 
@@ -14,7 +15,7 @@ public class UnitSelectionManager : MonoBehaviour
     public LayerMask clickable;
     public LayerMask ground;
     public LayerMask attackable;
-    [Space] [SerializeField] private Renderer ClickIcon;
+    [Space][SerializeField] private Renderer ClickIcon;
     public bool attackCursorVisible;
 
     private Camera cam;
@@ -41,7 +42,7 @@ public class UnitSelectionManager : MonoBehaviour
         cam = Camera.main;
     }
 
-    void FixedUpdate()
+    void Update()
     {
         HandleLeftClick();
         HandleRightClick();
@@ -52,6 +53,9 @@ public class UnitSelectionManager : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0))
         {
+            // Добавляем проверку на клик по UI
+            if (IsPointerOverUI()) return;
+
             Ray ray = cam.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, clickable))
             {
@@ -76,7 +80,9 @@ public class UnitSelectionManager : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(1))
         {
-            //Click
+            // Добавляем проверку на клик по UI
+            if (IsPointerOverUI()) return;
+
             Ray ray = cam.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, ground))
             {
@@ -101,14 +107,15 @@ public class UnitSelectionManager : MonoBehaviour
                         unitData.rangeAttack.targetToAttack = target;
                     }
                 }
-
             }
-
-            Ray ray2 = cam.ScreenPointToRay(Input.mousePosition);
-            Plane groundPlane = new Plane(Vector3.up, Vector3.zero); 
         }
     }
-    
+
+    private bool IsPointerOverUI()
+    {
+        return EventSystem.current.IsPointerOverGameObject();
+    }
+
     private void UpdateAttackCursor()
     {
         if (_hasOffensiveUnits)
@@ -152,8 +159,8 @@ public class UnitSelectionManager : MonoBehaviour
         selectedUnitsSet.Add(unit);
         SelectUnit(unit, true);
 
-        unit.TryGetComponent(out MeleeAttackController melee);
-        unit.TryGetComponent(out RangeAttackController ranged);
+        MeleeAttackController melee = unit.GetComponent<MeleeAttackController>();
+        RangeAttackController ranged = unit.GetComponent<RangeAttackController>();
         if (melee != null || ranged != null)
         {
             selectedUnitsWithAttack.Add(new SelectedUnitData(unit, melee, ranged));
@@ -184,6 +191,7 @@ public class UnitSelectionManager : MonoBehaviour
         {
             SelectUnit(unit, false);
         }
+
         unitSelected.Clear();
         selectedUnitsSet.Clear();
         selectedUnitsWithAttack.Clear();
@@ -197,7 +205,6 @@ public class UnitSelectionManager : MonoBehaviour
         {
             unitSelected.Add(unit);
             SelectUnit(unit, true);
-         
             onSelectionChanged?.Invoke();
         }
     }
