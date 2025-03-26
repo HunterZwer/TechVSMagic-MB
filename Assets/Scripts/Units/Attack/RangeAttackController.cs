@@ -2,81 +2,86 @@ using UnityEngine;
 
 public class RangeAttackController : AttackController
 {
+    [Header("Projectile Settings")]
     public GameObject projectilePrefab;
     public Transform projectileSpawnPoint;
-    [SerializeField] private LayerMask _enemyLayerMask;
+    
     [Header("Combat Settings")]
     public float attackRange = 10f;
     public float attackCooldown = 1f;
     public float projectileSpeed = 20f;
+    [SerializeField] private LayerMask _enemyLayerMask;
 
-    private float lastAttackTime;
-    private float attackRangeSq;
+    private float _lastAttackTime;
+    private float _attackRangeSq;
+    private Collider[] _hitCollidersCache = new Collider[100]; // Cache collider array to avoid allocations
     
-    private int _rangeUprgadeLevel = 0;
-    private int _reloadUprgadeLevel = 0;
-    private int _damageUprgadeLevel = 0;
-    
+    // Upgrade levels - consider using a struct if these are always used together
+    private int _rangeUpgradeLevel = 0;
+    private int _reloadUpgradeLevel = 0;
+    private int _damageUpgradeLevel = 0;
 
-    void Start()
+    protected void Start()
     {
-        attackRange = attackRange * unitStats.RangeMultiplier[_rangeUprgadeLevel];
-        attackCooldown = attackCooldown * unitStats.ReloadMultiplier[_reloadUprgadeLevel];
-        unitDamage = unitDamage * unitStats.DamageMultiplier[_damageUprgadeLevel];
-        attackRangeSq = attackRange * attackRange;
-        lastAttackTime = Time.time - attackCooldown;
+        
+        // Cache calculations
+        attackRange *= unitStats.RangeMultiplier[_rangeUpgradeLevel];
+        attackCooldown *= unitStats.ReloadMultiplier[_reloadUpgradeLevel];
+        unitDamage *= unitStats.DamageMultiplier[_damageUpgradeLevel];
+        _attackRangeSq = attackRange * attackRange;
+        _lastAttackTime = Time.time - attackCooldown; // Allow immediate first attack
+        
         FindNearestTarget();
     }
 
     void FixedUpdate()
     {
-        // Check if the target is null or dead and find a new target if necessary
+        if (ThisUnit.IsDead) return;
+        
+        // Check target validity
         if (IsTargetDead(targetToAttack))
         {
             FindNearestTarget();
-        }
-
-        // If there is no valid target, return early
-        if (targetToAttack is null)
-        {
             return;
         }
 
-        // Check if it's time to attack
-        if (Time.time - lastAttackTime >= attackCooldown)
+        if (targetToAttack == null) return;
+
+        // Check attack cooldown and range
+        if (Time.time - _lastAttackTime >= attackCooldown && 
+            (targetToAttack.position - transform.position).sqrMagnitude <= _attackRangeSq)
         {
-            Vector3 direction = targetToAttack.position - transform.position;
-            if (direction.sqrMagnitude <= attackRangeSq)
-            {
-                Attack();
-                lastAttackTime = Time.time;
-            }
+            Attack();
+            _lastAttackTime = Time.time;
         }
     }
-    
 
     void FindNearestTarget()
     {
         if (string.IsNullOrEmpty(targetTag)) return;
-        Collider[] hitColliders = new Collider[100];
-        int hitCount = Physics.OverlapSphereNonAlloc(transform.position, attackRange, hitColliders, _enemyLayerMask);
-        float closestDistanceSq = Mathf.Infinity;
+        
+        int hitCount = Physics.OverlapSphereNonAlloc(
+            transform.position, 
+            attackRange, 
+            _hitCollidersCache, 
+            _enemyLayerMask
+        );
+
         Transform closestTarget = null;
+        float closestDistanceSq = float.MaxValue;
+
         for (int i = 0; i < hitCount; i++)
         {
-            Collider hitCollider = hitColliders[i];
-            if (hitCollider.CompareTag(targetTag))
+            var hitCollider = _hitCollidersCache[i];
+            if (!hitCollider.CompareTag(targetTag)) continue;
+            
+            if (hitCollider.TryGetComponent(out Unit unit) && !unit.IsDead)
             {
-                hitCollider.TryGetComponent(out Unit unit);
-                if (unit && !unit.IsDead)
+                float distanceSq = (hitCollider.transform.position - transform.position).sqrMagnitude;
+                if (distanceSq < closestDistanceSq)
                 {
-                    float distanceSq = (hitCollider.transform.position - transform.position).sqrMagnitude;
-
-                    if (distanceSq < closestDistanceSq)
-                    {
-                        closestDistanceSq = distanceSq;
-                        closestTarget = hitCollider.transform;
-                    }
+                    closestDistanceSq = distanceSq;
+                    closestTarget = hitCollider.transform;
                 }
             }
         }
@@ -86,28 +91,21 @@ public class RangeAttackController : AttackController
     
     public void Attack()
     {
-        
-        if (ThisUnit.IsDead)
-        {
+        if (projectilePrefab == null || projectileSpawnPoint == null || targetToAttack == null) 
             return;
-        }
 
-        if (projectilePrefab && projectileSpawnPoint && targetToAttack)
+        // Get or create projectile
+        GameObject projectile = ObjectPool.Instance.GetPooledObject(projectilePrefab.name) ?? 
+                              Instantiate(projectilePrefab, projectileSpawnPoint.position, Quaternion.identity);
+
+        // Get or add projectile component
+        if (!projectile.TryGetComponent(out Projectile projectileScript))
         {
-            GameObject projectile = ObjectPool.Instance.GetPooledObject(projectilePrefab.name);
-            if (!projectile)
-            {
-                projectile = Instantiate(projectilePrefab, projectileSpawnPoint.position, Quaternion.identity);
-            }
-
-            projectile.TryGetComponent(out Projectile projectileScript);
-            if (!projectileScript)
-            {
-                projectileScript = projectile.AddComponent<Projectile>();
-            }
-
-            projectileScript.Initialize(targetToAttack, unitDamage, projectileSpeed, ThisUnit.IsPlayer);
-            projectile.SetActive(true);
+            projectileScript = projectile.AddComponent<Projectile>();
         }
+
+        // Initialize and activate
+        projectileScript.Initialize(targetToAttack, unitDamage, projectileSpeed, ThisUnit.IsPlayer);
+        projectile.SetActive(true);
     }
 }
