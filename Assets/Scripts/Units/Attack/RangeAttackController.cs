@@ -4,7 +4,7 @@ public class RangeAttackController : AttackController
 {
     public GameObject projectilePrefab;
     public Transform projectileSpawnPoint;
-
+    [SerializeField] private LayerMask _enemyLayerMask;
     [Header("Combat Settings")]
     public float attackRange = 10f;
     public float attackCooldown = 1f;
@@ -16,6 +16,7 @@ public class RangeAttackController : AttackController
     private int _rangeUprgadeLevel = 0;
     private int _reloadUprgadeLevel = 0;
     private int _damageUprgadeLevel = 0;
+    
 
     void Start()
     {
@@ -58,7 +59,7 @@ public class RangeAttackController : AttackController
     {
         if (string.IsNullOrEmpty(targetTag)) return;
         Collider[] hitColliders = new Collider[100];
-        int hitCount = Physics.OverlapSphereNonAlloc(transform.position, attackRange, hitColliders);
+        int hitCount = Physics.OverlapSphereNonAlloc(transform.position, attackRange, hitColliders, _enemyLayerMask);
         float closestDistanceSq = Mathf.Infinity;
         Transform closestTarget = null;
         for (int i = 0; i < hitCount; i++)

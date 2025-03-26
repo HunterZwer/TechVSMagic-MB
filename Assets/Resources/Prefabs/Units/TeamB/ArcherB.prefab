@@ -6557,11 +6557,24 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   targetToAttack: {fileID: 0}
+  unitDamage: 0
+  targetTag: 
+  ThisUnit: {fileID: 0}
+  unitStats:
+    HealthMultiplier: []
+    DamageMultiplier: []
+    RangeMultiplier: []
+    AttackRangeMultiplier: []
+    SpeedMultiplier: []
+    ReloadMultiplier: []
+    RotationMultiplier: []
   projectilePrefab: {fileID: 4579222575667263265, guid: 67e113c11cfa0aa4f93262672f602ecc, type: 3}
   projectileSpawnPoint: {fileID: 7103533937180720165}
+  _enemyLayerMask:
+    serializedVersion: 2
+    m_Bits: 128
   attackRange: 10
   attackCooldown: 1
-  projectileDamage: 10
   projectileSpeed: 20
 --- !u!1 &9070793813795105996
 GameObject:
