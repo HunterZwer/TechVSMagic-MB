@@ -859,6 +859,7 @@ MonoBehaviour:
   healthSlider: {fileID: 5704975449492017877}
   healthText: {fileID: 9123371504735570531}
   healthFill: {fileID: 4548836004042731711}
+  _buildingUIPanel: {fileID: 4276305954177353860, guid: c1a14b0302d83c64db6d5d16765c28dd, type: 3}
 --- !u!1 &4779746923936591634
 GameObject:
   m_ObjectHideFlags: 0
