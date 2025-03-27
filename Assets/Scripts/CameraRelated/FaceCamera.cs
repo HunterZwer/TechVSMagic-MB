@@ -11,23 +11,12 @@ namespace CameraRelated
         {
             // Cache references once
             _selfTransform = transform;
-            CacheMainCamera();
         }
-
-        private void CacheMainCamera()
-        {
-            // Find camera once using tag instead of Camera.main
-            GameObject mainCamera = GameObject.FindWithTag("MainCamera");
-            if(mainCamera) _cameraTransform = mainCamera.transform;
-        }
+        
 
         private void LateUpdate()
         {
-            if(_cameraTransform is null) return;
-        
-            // Calculate rotation once per frame
-            Vector3 directionToCamera = _selfTransform.position - _cameraTransform.position;
-            _selfTransform.rotation = Quaternion.LookRotation(directionToCamera);
+            _selfTransform.rotation = new Quaternion(0.32612f, 0.36653f,-0.13895f, 0.86023f);
         }
     }
 }

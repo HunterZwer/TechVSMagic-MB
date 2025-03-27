@@ -187,8 +187,5 @@ public class OffScreenUnitIndicator : MonoBehaviour
         targetHolderPosition.y = 0;
         cameraHolder.position = targetHolderPosition;
     }
-
-    public void RegisterUnit(Unit unit) => allUnits.Add(unit);
-    public void UnregisterUnit(Unit unit) => allUnits.Remove(unit);
 }
 }

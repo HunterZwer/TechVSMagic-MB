@@ -63,11 +63,9 @@ public class AreaWaveSpawner : MonoBehaviour
         
             // Keep original Y position
             targetPosition.y = _smoothCamera.transform.position.y;
-            DisableAnyMovement();
             _smoothCamera.MoveCameraTo(targetPosition);
             _zoomCamera.SetZoom(5f);
             StartSpawning();
-            DisableAnyMovement();
         }
     }
 
@@ -121,19 +119,5 @@ public class AreaWaveSpawner : MonoBehaviour
     {
         Gizmos.color = gizmoColor;
         Gizmos.DrawCube(transform.position, spawnAreaSize);
-    }
-
-    private void DisableAnyMovement()
-    {
-
-        _keyboardCameraMovement.enabled = false;
-        _edgeScroller.enabled = false;
-        Invoke(nameof(ReEnable), 1f);  // Calls ReEnable after 1 second
-        void ReEnable()
-        {
-            _keyboardCameraMovement.enabled = true;
-            _edgeScroller.enabled = true;
-        }
-        
     }
 }
