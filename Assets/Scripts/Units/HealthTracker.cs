@@ -1,4 +1,4 @@
-using System.Collections;
+using System.Threading.Tasks;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Jobs;
@@ -27,7 +27,7 @@ public class HealthTracker : MonoBehaviour
     {
         if (healthPercentageArray.IsCreated)
         {
-            healthJobHandle.Complete(); // Ensure no running job before disposal
+            healthJobHandle.Complete();
             healthPercentageArray.Dispose();
         }
     }
@@ -46,34 +46,41 @@ public class HealthTracker : MonoBehaviour
             Result = healthPercentageArray
         };
 
-        healthJobHandle = healthJob.Schedule(healthJobHandle); // Chain jobs correctly
+        healthJobHandle = healthJob.Schedule();
 
-        StartCoroutine(WaitForJobCompletion());
+        // Wait for the job to complete without using Update
+        WaitForJobCompletion();
     }
 
-    // Coroutine to wait for the job asynchronously
-    private IEnumerator WaitForJobCompletion()
+    // Uses async/await instead of Update()
+    private async void WaitForJobCompletion()
     {
-        yield return new WaitUntil(() => healthJobHandle.IsCompleted);
-        healthJobHandle.Complete();
+        while (!healthJobHandle.IsCompleted) // Non-blocking wait
+        {
+            await Task.Yield();
+        }
 
+        healthJobHandle.Complete();
         targetHealthPercentage = healthPercentageArray[0];
 
-        StartCoroutine(SmoothHealthChange(targetHealthPercentage, 0.5f));
-
+        // Smooth transition of health bar
+        await SmoothHealthChange(targetHealthPercentage, 0.5f);
         UpdateColor(targetHealthPercentage);
     }
 
-    // Coroutine for smooth health change using MoveTowards
-    private IEnumerator SmoothHealthChange(float targetValue, float duration)
+    // Smooth health bar change without coroutines
+    private async Task SmoothHealthChange(float targetValue, float duration)
     {
         float elapsedTime = 0f;
+        float initialValue = HealthBarSlider.value;
+
         while (elapsedTime < duration)
         {
-            HealthBarSlider.value = Mathf.MoveTowards(HealthBarSlider.value, targetValue, Time.deltaTime / duration);
+            HealthBarSlider.value = Mathf.Lerp(initialValue, targetValue, elapsedTime / duration);
             elapsedTime += Time.deltaTime;
-            yield return null;
+            await Task.Yield(); // Non-blocking delay
         }
+
         HealthBarSlider.value = targetValue;
     }
 

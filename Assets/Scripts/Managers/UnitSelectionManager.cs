@@ -53,7 +53,7 @@ public class UnitSelectionManager : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0))
         {
-            // Добавляем проверку на клик по UI
+            // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅ UI
             if (IsPointerOverUI()) return;
 
             Ray ray = cam.ScreenPointToRay(Input.mousePosition);
@@ -80,7 +80,7 @@ public class UnitSelectionManager : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(1))
         {
-            // Добавляем проверку на клик по UI
+            // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅ UI
             if (IsPointerOverUI()) return;
 
             Ray ray = cam.ScreenPointToRay(Input.mousePosition);
@@ -159,8 +159,8 @@ public class UnitSelectionManager : MonoBehaviour
         selectedUnitsSet.Add(unit);
         SelectUnit(unit, true);
 
-        MeleeAttackController melee = unit.GetComponent<MeleeAttackController>();
-        RangeAttackController ranged = unit.GetComponent<RangeAttackController>();
+        unit.TryGetComponent(out MeleeAttackController melee);
+        unit.TryGetComponent(out RangeAttackController ranged);
         if (melee != null || ranged != null)
         {
             selectedUnitsWithAttack.Add(new SelectedUnitData(unit, melee, ranged));
@@ -211,12 +211,9 @@ public class UnitSelectionManager : MonoBehaviour
 
     private void SelectUnit(GameObject unit, bool isSelected)
     {
-        if (unit == null) return;
-        Transform circleIndicator = unit.transform.Find("CircleIndicator");
-        if (circleIndicator != null)
-        {
-            circleIndicator.gameObject.SetActive(isSelected);
-        }
+        unit.TryGetComponent(out Unit unitComponent);
+        if (unitComponent == null || unitComponent.circleIndicator == null) return;
+        unitComponent.circleIndicator.gameObject.SetActive(isSelected);
     }
 
     private struct SelectedUnitData

@@ -27,8 +27,8 @@ public class UnitSelectionUI : MonoBehaviour
     public TextMeshProUGUI healthText;
     public Image healthFill;
 
-    private List<GameObject> iconInstances = new List<GameObject>();
-    private List<Unit> cachedSelectedUnits = new List<Unit>();
+    private List<GameObject> iconInstances = new List<GameObject>(200);
+    private List<Unit> cachedSelectedUnits = new List<Unit>(200);
 
     private int currentPage = 0;
     private const int UNITS_PER_PAGE = 30;
@@ -220,7 +220,7 @@ public class UnitSelectionUI : MonoBehaviour
                 }
 
                 // Добавляем обработчик нажатия для фокусировки на юните
-                Button button = icon.GetComponent<Button>();
+                icon.TryGetComponent(out Button button);
                 if (button != null)
                 {
                     button.onClick.RemoveAllListeners();

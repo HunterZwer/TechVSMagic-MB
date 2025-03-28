@@ -16,6 +16,7 @@ public class Unit : MonoBehaviour
     private Animator _animator;
     private UnitMovement _movement;
     public HealthTracker healthTracker;
+    public Transform circleIndicator;
     
     [Header("Upgrade Levels")]
     private int _healthUprgadeLevel = 0;
@@ -31,6 +32,7 @@ public class Unit : MonoBehaviour
     {
         _animator = GetComponent<Animator>();
         _movement = GetComponent<UnitMovement>();
+        circleIndicator = transform.Find("CircleIndicator");
     }
 
     private void Start()
