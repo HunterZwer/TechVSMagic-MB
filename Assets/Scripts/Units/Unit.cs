@@ -54,14 +54,6 @@ public class Unit : MonoBehaviour
         }
     }
 
-    private IEnumerator DeathCoroutine()
-    {
-        yield return new WaitForSeconds(3.2f);
-        Destroy(gameObject);
-    }
-
-   
-
     private void UpdateHealthUI(bool invokeEvent = true)
     {
         if (healthTracker != null)
@@ -102,8 +94,8 @@ public class Unit : MonoBehaviour
             _animator.SetTrigger(DeadTrigger);
         }
 
-        // Удаление юнита через корутину
-        StartCoroutine(DeathCoroutine());
+        // Удаление юнита
+        Destroy(gameObject, 3.2f);;
     }
 
     public void TakeDamage(float damageToInflict)
