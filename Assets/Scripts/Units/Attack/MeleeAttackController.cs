@@ -1,8 +1,6 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.Mathematics;
-using Unity.Collections.LowLevel.Unsafe;
 
 public class MeleeAttackController : AttackController
 {
@@ -30,8 +28,8 @@ public class MeleeAttackController : AttackController
     
     private void OnTriggerEnter(Collider other)
     {
-        if (string.IsNullOrEmpty(targetTag) || !other.CompareTag(targetTag)) return;
-        
+        if (!IsValidTarget(other)) return;
+
         if (other.TryGetComponent(out Unit unit) && !unit.IsDead)
         {
             enemiesInRange.Add(new EnemyInfo(other.transform, unit));
@@ -40,15 +38,21 @@ public class MeleeAttackController : AttackController
 
     private void OnTriggerExit(Collider other)
     {
-        if (string.IsNullOrEmpty(targetTag) || !other.CompareTag(targetTag)) return;
-        
+        if (!IsValidTarget(other)) return;
+
         enemiesInRange.RemoveWhere(ei => ei.Transform == other.transform);
-        
-        if (targetToAttack != null && targetToAttack == other.transform)
+
+        if (targetToAttack == other.transform)
         {
             targetToAttack = GetClosestEnemy();
         }
     }
+
+    private bool IsValidTarget(Collider other)
+    {
+        return !(string.IsNullOrEmpty(targetTag) || !other.CompareTag(targetTag));
+    }
+
 
     private Transform GetClosestEnemy()
     {
