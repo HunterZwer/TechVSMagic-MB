@@ -6348,6 +6348,7 @@ GameObject:
   - component: {fileID: 4986614543121173279}
   - component: {fileID: 7422442726696333297}
   - component: {fileID: 8009543317875024894}
+  - component: {fileID: 2120167676528888969}
   m_Layer: 8
   m_Name: ArcherB
   m_TagString: Enemy
@@ -6570,12 +6571,39 @@ MonoBehaviour:
     RotationMultiplier: []
   projectilePrefab: {fileID: 4579222575667263265, guid: 67e113c11cfa0aa4f93262672f602ecc, type: 3}
   projectileSpawnPoint: {fileID: 7103533937180720165}
-  _enemyLayerMask:
-    serializedVersion: 2
-    m_Bits: 128
   attackRange: 10
   attackCooldown: 1
   projectileSpeed: 20
+  _enemyLayerMask:
+    serializedVersion: 2
+    m_Bits: 128
+--- !u!54 &2120167676528888969
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9016114144046474163}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 0
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!1 &9070793813795105996
 GameObject:
   m_ObjectHideFlags: 0

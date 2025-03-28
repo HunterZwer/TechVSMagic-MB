@@ -6162,6 +6162,7 @@ GameObject:
   - component: {fileID: 8567624190553361147}
   - component: {fileID: 5919841473883921500}
   - component: {fileID: 8457068086413945631}
+  - component: {fileID: 8479423922506703422}
   m_Layer: 7
   m_Name: ArcherA
   m_TagString: Player
@@ -6384,12 +6385,39 @@ MonoBehaviour:
     RotationMultiplier: []
   projectilePrefab: {fileID: 4579222575667263265, guid: 67e113c11cfa0aa4f93262672f602ecc, type: 3}
   projectileSpawnPoint: {fileID: 109296686808876108}
-  _enemyLayerMask:
-    serializedVersion: 2
-    m_Bits: 256
   attackRange: 10
   attackCooldown: 1
   projectileSpeed: 20
+  _enemyLayerMask:
+    serializedVersion: 2
+    m_Bits: 256
+--- !u!54 &8479423922506703422
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8383154584205355589}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 0
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!1 &8399565841835284486
 GameObject:
   m_ObjectHideFlags: 0

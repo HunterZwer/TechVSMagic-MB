@@ -1616,6 +1616,7 @@ GameObject:
   - component: {fileID: 2380522604425923415}
   - component: {fileID: 1058048121292335567}
   - component: {fileID: 8323046428196292981}
+  - component: {fileID: 7849519779998859564}
   m_Layer: 7
   m_Name: ShamanA
   m_TagString: Player
@@ -1794,12 +1795,12 @@ MonoBehaviour:
     RotationMultiplier: []
   projectilePrefab: {fileID: 8605033768028374068, guid: 4fc28388e87b5a442aa96232cb8d77c9, type: 3}
   projectileSpawnPoint: {fileID: 1492447456819656153}
-  _enemyLayerMask:
-    serializedVersion: 2
-    m_Bits: 256
   attackRange: 20
   attackCooldown: 50
   projectileSpeed: 2
+  _enemyLayerMask:
+    serializedVersion: 2
+    m_Bits: 256
 --- !u!135 &1058048121292335567
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -1843,6 +1844,33 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!54 &7849519779998859564
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2905507000728761543}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 0
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!1 &3114120801454182133
 GameObject:
   m_ObjectHideFlags: 0
