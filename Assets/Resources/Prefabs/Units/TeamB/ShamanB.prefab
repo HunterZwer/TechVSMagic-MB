@@ -1815,7 +1815,6 @@ GameObject:
   - component: {fileID: 2114002798083710915}
   - component: {fileID: 5183148184970667956}
   - component: {fileID: 2380522604425923415}
-  - component: {fileID: 1058048121292335567}
   - component: {fileID: 8323046428196292981}
   - component: {fileID: 8142417040449150065}
   m_Layer: 8
@@ -1934,7 +1933,7 @@ NavMeshAgent:
   m_Height: 2
   m_BaseOffset: 1
   m_WalkableMask: 4294967295
-  m_ObstacleAvoidanceType: 4
+  m_ObstacleAvoidanceType: 1
 --- !u!114 &2114002798083710915
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1970,6 +1969,7 @@ MonoBehaviour:
   _unitHealth: 0
   unitMaxHealth: 100
   healthTracker: {fileID: 6072512414593477620}
+  circleIndicator: {fileID: 0}
 --- !u!114 &2380522604425923415
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2002,27 +2002,6 @@ MonoBehaviour:
   _enemyLayerMask:
     serializedVersion: 2
     m_Bits: 128
---- !u!135 &1058048121292335567
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2905507000728761543}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Radius: 15
-  m_Center: {x: 0.0000076293945, y: -0.00000047683716, z: 0.0000038146973}
 --- !u!95 &8323046428196292981
 Animator:
   serializedVersion: 7

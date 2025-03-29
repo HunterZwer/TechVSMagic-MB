@@ -3785,7 +3785,7 @@ NavMeshAgent:
   m_Height: 2
   m_BaseOffset: 1
   m_WalkableMask: 4294967295
-  m_ObstacleAvoidanceType: 4
+  m_ObstacleAvoidanceType: 1
 --- !u!114 &9134472924409280118
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3821,6 +3821,7 @@ MonoBehaviour:
   _unitHealth: 0
   unitMaxHealth: 150
   healthTracker: {fileID: 3331138851283688299}
+  circleIndicator: {fileID: 0}
 --- !u!114 &5124030722077707608
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3835,6 +3836,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetToAttack: {fileID: 0}
   unitDamage: 12
+  targetTag: 
+  ThisUnit: {fileID: 0}
+  unitStats:
+    HealthMultiplier: []
+    DamageMultiplier: []
+    RangeMultiplier: []
+    AttackRangeMultiplier: []
+    SpeedMultiplier: []
+    ReloadMultiplier: []
+    RotationMultiplier: []
   attackRange: 10
   attackCooldown: 1
 --- !u!135 &6457240231487787683

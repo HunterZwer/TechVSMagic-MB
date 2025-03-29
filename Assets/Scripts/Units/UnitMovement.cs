@@ -4,61 +4,50 @@ using System.Collections.Generic;
 
 public class UnitMovement : MonoBehaviour
 {
-    // Cached references
     private Camera _cam;
-    public NavMeshAgent agent; // Public as requested
+    public NavMeshAgent agent;
     private Animator _animator;
     private Transform _transform;
     private static readonly int IsMoving = Animator.StringToHash("isMoving");
     private UnitStats unitStats;
     private Unit _unit;
-    
+
     [Header("Upgrade Levels")]
     private int _SpeedUprgadeLevel = 0;
-    
-    // Public fields
+
     public LayerMask ground;
     public bool isCommandToMove;
-    
+
     private void Awake()
     {
         agent = GetComponent<NavMeshAgent>();
         _unit = GetComponent<Unit>();
-        // Cache components in Awake
         _transform = transform;
         _animator = GetComponent<Animator>();
     }
-    
+
     private void Start()
     {
         _cam = Camera.main;
         unitStats = JsonLoader.LoadUnitStats(_unit.unitClass, _unit.IsPlayer);
-        agent.speed = agent.speed * unitStats.SpeedMultiplier[_SpeedUprgadeLevel];
+        agent.speed *= unitStats.SpeedMultiplier[_SpeedUprgadeLevel];
     }
-    
+
     private void Update()
     {
-        // Process mouse input
         if (Input.GetMouseButtonDown(1))
         {
             List<GameObject> selectedUnits = UnitSelectionManager.Instance.unitSelected;
-            
-            foreach (GameObject unit in selectedUnits)
+
+            if (selectedUnits.Count == 0) return;
+
+            Ray ray = _cam.ScreenPointToRay(Input.mousePosition);
+            if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, ground))
             {
-                if (unit == gameObject)
-                {
-                    Ray ray = _cam.ScreenPointToRay(Input.mousePosition);
-                    
-                    if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, ground))
-                    {
-                        isCommandToMove = true;
-                        agent.SetDestination(hit.point);
-                        _animator.SetBool(IsMoving, true);
-                    }
-                }
+                AssignFormationMovement(selectedUnits, hit.point);
             }
         }
-        
+
         if (!agent.hasPath || agent.remainingDistance <= agent.stoppingDistance)
         {
             isCommandToMove = false;
@@ -67,6 +56,38 @@ public class UnitMovement : MonoBehaviour
         else
         {
             _animator.SetBool(IsMoving, true);
+        }
+    }
+
+    private void AssignFormationMovement(List<GameObject> units, Vector3 centerPoint)
+    {
+        int unitCount = units.Count;
+        int rowCount = Mathf.CeilToInt(Mathf.Sqrt(unitCount)); // Number of rows
+        int columnCount = Mathf.CeilToInt((float)unitCount / rowCount); // Number of columns
+        float spacing = 0.5f; // Distance between units
+
+        int row = 0;
+        int col = 0;
+
+        foreach (GameObject unit in units)
+        {
+            if (unit.TryGetComponent(out NavMeshAgent unitAgent))
+            {
+                Vector3 offset = new Vector3(col * spacing, 0, row * spacing) - 
+                                 new Vector3((columnCount - 1) * spacing / 2, 0, (rowCount - 1) * spacing / 2);
+                Vector3 targetPosition = centerPoint + offset;
+
+                unitAgent.SetDestination(targetPosition);
+                unit.GetComponent<UnitMovement>().isCommandToMove = true;
+                unit.GetComponent<Animator>().SetBool(IsMoving, true);
+            }
+
+            col++;
+            if (col >= columnCount)
+            {
+                col = 0;
+                row++;
+            }
         }
     }
 }

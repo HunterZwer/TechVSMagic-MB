@@ -37,13 +37,12 @@ public class UnitSelectionBox : MonoBehaviour
         }
         else if (Input.GetMouseButtonUp(0) && isSelecting)
         {
-            // Only select units if we actually made a box (not just a click)
             if (HasMinimumSize())
             {
-                SelectUnits();
+                UnitSelectionManager.Instance.DeselectAll(); // Deselect everything first
+                SelectUnits(); // Then select new ones
             }
-            
-            // Reset state
+    
             isSelecting = false;
             boxVisual.gameObject.SetActive(false);
         }
@@ -70,20 +69,20 @@ public class UnitSelectionBox : MonoBehaviour
     
     private void UpdateVisual()
     {
-        // Calculate center and size
-        Vector2 boxCenter = (startPosition + endPosition) * 0.5f;
-        Vector2 boxSize = new Vector2(
+        Vector2 newBoxCenter = (startPosition + endPosition) * 0.5f;
+        Vector2 newBoxSize = new Vector2(
             Mathf.Abs(endPosition.x - startPosition.x),
             Mathf.Abs(endPosition.y - startPosition.y)
         );
-        
-        // Update visual transform
-        boxVisual.position = boxCenter;
-        boxVisual.sizeDelta = boxSize;
-        
-        // Make visual visible if we have minimum size
-        boxVisual.gameObject.SetActive(HasMinimumSize());
+
+        if (boxVisual.position != (Vector3)newBoxCenter || boxVisual.sizeDelta != newBoxSize)
+        {
+            boxVisual.position = newBoxCenter;
+            boxVisual.sizeDelta = newBoxSize;
+            boxVisual.gameObject.SetActive(HasMinimumSize());
+        }
     }
+
     
     private bool HasMinimumSize()
     {
@@ -93,15 +92,13 @@ public class UnitSelectionBox : MonoBehaviour
     
     private void SelectUnits()
     {
-        // Optimization: cache the unit list
         var units = UnitSelectionManager.Instance.allUnitSelected;
-        Vector2 screenPosition = Vector2.zero;
-        
+    
         foreach (var unit in units)
         {
             if (unit != null)
             {
-                screenPosition = myCam.WorldToScreenPoint(unit.transform.position);
+                Vector3 screenPosition = myCam.WorldToScreenPoint(unit.transform.position);
                 if (selectionBox.Contains(screenPosition))
                 {
                     UnitSelectionManager.Instance.DragSelect(unit);
@@ -109,4 +106,5 @@ public class UnitSelectionBox : MonoBehaviour
             }
         }
     }
+
 }
