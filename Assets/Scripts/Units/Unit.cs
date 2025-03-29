@@ -33,6 +33,10 @@ public class Unit : MonoBehaviour
         _animator = GetComponent<Animator>();
         _movement = GetComponent<UnitMovement>();
         circleIndicator = transform.Find("CircleIndicator");
+        if (IsPlayer)
+        {
+            UnitSelectionManager.RegisterPlayerUnit(gameObject);
+        }
     }
 
     private void Start()
@@ -53,6 +57,10 @@ public class Unit : MonoBehaviour
         if (UnitSelectionManager.Instance != null)
         {
             UnitSelectionManager.Instance.allUnitSelected.Remove(gameObject);
+        }
+        if (IsPlayer)
+        {
+            UnitSelectionManager.UnregisterPlayerUnit(gameObject);
         }
     }
 
@@ -123,5 +131,5 @@ public class Unit : MonoBehaviour
         unitIcon = newIcon;
         onUnitClassChanged?.Invoke();
     }
-    
+
 }

@@ -10,7 +10,7 @@ namespace CameraRelated
         [SerializeField] private Camera mainCamera;
         [SerializeField] private float baseSize = 5f;
         [SerializeField] private float baseDistance = 10f;
-        [SerializeField] private KeyCode focusKey;
+        [SerializeField] private KeyCode focusKey = KeyCode.F2;
         [SerializeField] private float focusSpeed = 5f;
         [SerializeField] private Button focusButton;
 

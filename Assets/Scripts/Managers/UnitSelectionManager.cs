@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 using System.Collections.Generic;
-using System.Collections;
+using UnityEngine.UI;
 
 public class UnitSelectionManager : MonoBehaviour
 {
@@ -16,11 +16,16 @@ public class UnitSelectionManager : MonoBehaviour
     public LayerMask ground;
     public LayerMask attackable;
     [Space][SerializeField] private Renderer ClickIcon;
+    
     public bool attackCursorVisible;
-
+    [Header("UI References")]
+    [SerializeField] private Text selectionButtonText;
+    [SerializeField] private Button _selectAllUnitsButton;
+    
     private Camera cam;
     private bool _hasOffensiveUnits;
     private static readonly int CLCIK_TIME_PROPERTY = Shader.PropertyToID("_ClickTime");
+    private static HashSet<GameObject> allPlayerUnits = new HashSet<GameObject>();
 
     public delegate void SelectionChanged();
     public event SelectionChanged onSelectionChanged;
@@ -41,6 +46,8 @@ public class UnitSelectionManager : MonoBehaviour
     {
         cam = Camera.main;
         Time.fixedDeltaTime = 0.05f;
+        UpdateSelectionButtonText();
+        _selectAllUnitsButton.onClick.AddListener(SelectAllPlayerUnits);
     }
 
     void Update()
@@ -48,8 +55,44 @@ public class UnitSelectionManager : MonoBehaviour
         HandleLeftClick();
         HandleRightClick();
         UpdateAttackCursor();
+
+        if (Input.GetKeyDown(KeyCode.F1))
+        {
+            SelectAllPlayerUnits();
+        }
+    }
+    
+    public static void RegisterPlayerUnit(GameObject unit)
+    {
+        allPlayerUnits.Add(unit);
+        Instance?.UpdateSelectionButtonText();
     }
 
+    public static void UnregisterPlayerUnit(GameObject unit)
+    {
+        allPlayerUnits.Remove(unit);
+        Instance?.UpdateSelectionButtonText();
+    }
+
+    public void SelectAllPlayerUnits()
+    {
+        DeselectAll();
+        foreach (GameObject unit in allPlayerUnits)
+        {
+            AddToSelection(unit);
+        }
+        onSelectionChanged?.Invoke();
+        UpdateSelectionButtonText();
+    }
+
+    private void UpdateSelectionButtonText()
+    {
+        if (selectionButtonText != null)
+        {
+            selectionButtonText.text = $"{allPlayerUnits.Count}";
+        }
+    }
+    
     private void HandleLeftClick()
     {
         if (Input.GetMouseButtonDown(0))
