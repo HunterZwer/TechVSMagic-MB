@@ -40,6 +40,7 @@ public class UnitSelectionManager : MonoBehaviour
     void Start()
     {
         cam = Camera.main;
+        Time.fixedDeltaTime = 0.05f;
     }
 
     void Update()
