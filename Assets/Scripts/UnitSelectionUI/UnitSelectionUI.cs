@@ -18,7 +18,7 @@ public class UnitSelectionUI : MonoBehaviour
     public Transform unitIconsContainer;
 
    
-    public Button[] pageButtons; // 5 кнопок для страниц
+    public Button[] pageButtons; 
 
     public Image profileImage;
     public Sprite defaultProfileSprite;
@@ -27,11 +27,11 @@ public class UnitSelectionUI : MonoBehaviour
     public TextMeshProUGUI healthText;
     public Image healthFill;
 
-    private List<GameObject> iconInstances = new List<GameObject>(200);
-    private List<Unit> cachedSelectedUnits = new List<Unit>(200);
+    private List<GameObject> iconInstances = new List<GameObject>();
+    private List<Unit> cachedSelectedUnits = new List<Unit>();
 
     private int currentPage = 0;
-    private const int UNITS_PER_PAGE = 30;
+    private const int UNITS_PER_PAGE = 27;
 
     private readonly Color greenColor = Color.green;
     private readonly Color redColor = Color.red;
@@ -220,7 +220,7 @@ public class UnitSelectionUI : MonoBehaviour
                 }
 
                 // Добавляем обработчик нажатия для фокусировки на юните
-                icon.TryGetComponent(out Button button);
+                Button button = icon.GetComponent<Button>();
                 if (button != null)
                 {
                     button.onClick.RemoveAllListeners();
