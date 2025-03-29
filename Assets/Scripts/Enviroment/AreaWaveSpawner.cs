@@ -24,21 +24,10 @@ public class AreaWaveSpawner : MonoBehaviour
     [SerializeField] private Transform[] SpawnPositions;
     
     private bool hasSpawned = false;
-    private SmoothCameraChange _smoothCamera;
-    private ZoomCamera _zoomCamera;
     private BoxCollider triggerCollider;
-    private KeyboardCameraMovement _keyboardCameraMovement;
-    private EdgeScroller _edgeScroller;
-    
 
     private void Awake()
     {
-        GameObject cameraHolder = GameObject.FindGameObjectWithTag("CameraHolder");
-        _smoothCamera = cameraHolder.GetComponent<SmoothCameraChange>();
-        _zoomCamera = cameraHolder.GetComponent<ZoomCamera>();
-        _keyboardCameraMovement = cameraHolder.GetComponent<KeyboardCameraMovement>();
-        _edgeScroller = cameraHolder.GetComponent<EdgeScroller>();
-        
         // Get the trigger collider
         triggerCollider = GetComponent<BoxCollider>();
         if (triggerCollider == null)
@@ -57,14 +46,6 @@ public class AreaWaveSpawner : MonoBehaviour
     {
         if (other.CompareTag(playerTag) && !hasSpawned)
         {
-            Vector3 spawnerPosition = this.gameObject.transform.position;
-            Vector3 cameraOffset = new Vector3(-8f, 0f, -2.5f); // Your camera offset
-            Vector3 targetPosition = spawnerPosition + cameraOffset;
-        
-            // Keep original Y position
-            targetPosition.y = _smoothCamera.transform.position.y;
-            _smoothCamera.MoveCameraTo(targetPosition);
-            _zoomCamera.SetZoom(5f);
             StartSpawning();
         }
     }

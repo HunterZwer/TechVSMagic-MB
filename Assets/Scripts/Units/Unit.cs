@@ -79,7 +79,6 @@ public class Unit : MonoBehaviour
     private void Die()
     {
         IsDead = true;
-
         // Оповещаем подписчиков о смерти юнита
         onUnitDied?.Invoke(this);
 
@@ -124,4 +123,5 @@ public class Unit : MonoBehaviour
         unitIcon = newIcon;
         onUnitClassChanged?.Invoke();
     }
+    
 }
