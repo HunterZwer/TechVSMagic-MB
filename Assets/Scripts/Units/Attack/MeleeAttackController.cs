@@ -1,5 +1,4 @@
 using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
 
 public class MeleeAttackController : AttackController
@@ -7,7 +6,7 @@ public class MeleeAttackController : AttackController
     [Header("Combat Settings")]
     public float attackRange = 1.5f;
     public float attackCooldown = 1.0f;
-    
+
     private bool isAttacking;
     private float attackRangeSquared;
     private int _rangeUpgradeLevel = 0;
@@ -18,14 +17,16 @@ public class MeleeAttackController : AttackController
     private void Start()
     {
         attackRangeSquared = attackRange * attackRange;
-        StartCoroutine(AttackLoop());
-        
+
         // Apply upgrades
         attackRange *= unitStats.RangeMultiplier[_rangeUpgradeLevel];
         attackCooldown *= unitStats.ReloadMultiplier[_reloadUpgradeLevel];
         unitDamage *= unitStats.DamageMultiplier[_damageUpgradeLevel];
+
+        // Start periodic enemy checks
+        InvokeRepeating(nameof(UpdateTarget), 0f, 0.25f);
     }
-    
+
     private void OnTriggerEnter(Collider other)
     {
         if (!IsValidTarget(other)) return;
@@ -53,6 +54,22 @@ public class MeleeAttackController : AttackController
         return !(string.IsNullOrEmpty(targetTag) || !other.CompareTag(targetTag));
     }
 
+    private void UpdateTarget()
+    {
+        if (ThisUnit.IsDead) return;
+
+        CleanupDeadTargets();
+        targetToAttack = GetClosestEnemy();
+
+        if (targetToAttack != null && !isAttacking)
+        {
+            float distanceSq = (targetToAttack.position - transform.position).sqrMagnitude;
+            if (distanceSq <= attackRangeSquared)
+            {
+                PerformAttack();
+            }
+        }
+    }
 
     private Transform GetClosestEnemy()
     {
@@ -75,35 +92,20 @@ public class MeleeAttackController : AttackController
         return closestEnemy;
     }
 
-    private IEnumerator AttackLoop()
+    private void PerformAttack()
     {
-        WaitForSeconds waitInterval = new WaitForSeconds(0.2f);
-        WaitForSeconds cooldownWait = new WaitForSeconds(attackCooldown);
-        
-        while (true)
-        {
-            yield return waitInterval;
-            
-            CleanupDeadTargets();
-            targetToAttack = GetClosestEnemy();
+        if (isAttacking || ThisUnit.IsDead || targetToAttack == null) return;
 
-            if (targetToAttack != null && !ThisUnit.IsDead && !isAttacking)
-            {
-                float distanceSq = (targetToAttack.position - transform.position).sqrMagnitude;
-                if (distanceSq <= attackRangeSquared)
-                {
-                    StartCoroutine(PerformAttack(cooldownWait));
-                }
-            }
+        if (targetToAttack.TryGetComponent(out Unit targetUnit) && targetUnit != null && !targetUnit.IsDead)
+        {
+            isAttacking = true;
+            Attack();
+            Invoke(nameof(ResetAttack), attackCooldown);
         }
     }
 
-    private IEnumerator PerformAttack(WaitForSeconds cooldownWait)
+    private void ResetAttack()
     {
-        isAttacking = true;
-        yield return null; // WaitForEndOfFrame is less efficient than yield return null
-        Attack();
-        yield return cooldownWait;
         isAttacking = false;
     }
 
@@ -115,7 +117,7 @@ public class MeleeAttackController : AttackController
     public void Attack()
     {
         if (ThisUnit.IsDead || targetToAttack == null) return;
-        
+
         if (targetToAttack.TryGetComponent(out Unit targetUnit) && targetUnit != null && !targetUnit.IsDead)
         {
             targetUnit.TakeDamage(unitDamage);

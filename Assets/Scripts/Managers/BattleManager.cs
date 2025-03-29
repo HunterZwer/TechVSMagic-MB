@@ -4,6 +4,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using Unity.Burst;
+using Unity.Collections;
+using Unity.Mathematics;
     
     
 [BurstCompile]
@@ -80,9 +82,6 @@ public class BattleManager : MonoBehaviour
 
         // Spawn teams
         SpawnTeams();
-
-        // Set initial tags
-        SetTeamTags();
     }
 
     private void Update()
@@ -159,22 +158,6 @@ public class BattleManager : MonoBehaviour
         }
     }
 
-    private void SetTeamTags()
-    {
-        // Set Team A as "Player"
-        foreach (GameObject unit in teamAUnits)
-        {
-            if (unit != null)
-                unit.tag = "Player";
-        }
-
-        // Set Team B as "Enemy"
-        foreach (GameObject unit in teamBUnits)
-        {
-            if (unit != null)
-                unit.tag = "Enemy";
-        }
-    }
 
     private void UpdateDistanceTexts()
     {
@@ -185,60 +168,116 @@ public class BattleManager : MonoBehaviour
 
         // Calculate average distance between teams
         float teamDistance = CalculateAverageTeamDistance(teamAUnits, teamBUnits);
-
-        // Update UI
-        if (allyDistanceText != null)
-            allyDistanceText.text = $"Avg Ally Distance: {averageAllyDistance:F1}";
-        
-        if (teamDistanceText != null)
-            teamDistanceText.text = $"Avg Team Distance: {teamDistance:F1}";
     }
 
+public struct UnitPosition
+    {
+        public float x;
+        public float y;
+        public float z;
+    }
+
+    // Modified methods that could benefit from Burst
     private float CalculateAverageDistance(List<GameObject> units)
     {
         if (units.Count <= 1) return 0;
 
+        // Convert to Burst-compatible data structure
+        var positions = new NativeArray<UnitPosition>(units.Count, Allocator.Temp);
+        for (int i = 0; i < units.Count; i++)
+        {
+            if (units[i] != null)
+            {
+                var pos = units[i].transform.position;
+                positions[i] = new UnitPosition { x = pos.x, y = pos.y, z = pos.z };
+            }
+        }
+
+        // Run the calculation with Burst
+        float result = BurstAverageDistance(positions);
+
+        // Clean up
+        positions.Dispose();
+
+        return result;
+    }
+
+    [BurstCompile]
+    private static float BurstAverageDistance(NativeArray<UnitPosition> positions)
+    {
         float totalDistance = 0;
         int validPairs = 0;
 
-        // Clean up null references (destroyed units)
-        units.RemoveAll(unit => unit == null);
-
-        // Calculate distances between all pairs
-        for (int i = 0; i < units.Count; i++)
+        for (int i = 0; i < positions.Length; i++)
         {
-            for (int j = i + 1; j < units.Count; j++)
+            var pos1 = positions[i];
+            for (int j = i + 1; j < positions.Length; j++)
             {
-                if (units[i] != null && units[j] != null)
-                {
-                    totalDistance += Vector3.Distance(units[i].transform.position, units[j].transform.position);
-                    validPairs++;
-                }
+                var pos2 = positions[j];
+                float dx = pos2.x - pos1.x;
+                float dy = pos2.y - pos1.y;
+                float dz = pos2.z - pos1.z;
+                totalDistance += math.sqrt(dx*dx + dy*dy + dz*dz);
+                validPairs++;
             }
         }
 
         return validPairs > 0 ? totalDistance / validPairs : 0;
     }
 
+    // Similarly modify the team distance calculation
     private float CalculateAverageTeamDistance(List<GameObject> teamA, List<GameObject> teamB)
+    {
+        if (teamA.Count == 0 || teamB.Count == 0) return 0;
+
+        // Convert positions
+        var positionsA = new NativeArray<UnitPosition>(teamA.Count, Allocator.Temp);
+        var positionsB = new NativeArray<UnitPosition>(teamB.Count, Allocator.Temp);
+
+        for (int i = 0; i < teamA.Count; i++)
+        {
+            if (teamA[i] != null)
+            {
+                var pos = teamA[i].transform.position;
+                positionsA[i] = new UnitPosition { x = pos.x, y = pos.y, z = pos.z };
+            }
+        }
+
+        for (int i = 0; i < teamB.Count; i++)
+        {
+            if (teamB[i] != null)
+            {
+                var pos = teamB[i].transform.position;
+                positionsB[i] = new UnitPosition { x = pos.x, y = pos.y, z = pos.z };
+            }
+        }
+
+        // Run calculation
+        float result = BurstAverageTeamDistance(positionsA, positionsB);
+
+        // Clean up
+        positionsA.Dispose();
+        positionsB.Dispose();
+
+        return result;
+    }
+
+    [BurstCompile]
+    private static float BurstAverageTeamDistance(NativeArray<UnitPosition> positionsA, NativeArray<UnitPosition> positionsB)
     {
         float totalDistance = 0;
         int validPairs = 0;
 
-        // Clean up null references
-        teamA.RemoveAll(unit => unit == null);
-        teamB.RemoveAll(unit => unit == null);
-
-        // Calculate distance between every unit in team A and every unit in team B
-        foreach (GameObject unitA in teamA)
+        for (int i = 0; i < positionsA.Length; i++)
         {
-            if (unitA == null) continue;
-
-            foreach (GameObject unitB in teamB)
+            var posA = positionsA[i];
+            for (int j = 0; j < positionsB.Length; j++)
             {
-                if (unitB == null) continue;
-
-                totalDistance += Vector3.Distance(unitA.transform.position, unitB.transform.position);
+                var posB = positionsB[j];
+                float dx = posB.x - posA.x;
+                float dy = posB.y - posA.y;
+                float dz = posB.z - posA.z;
+                totalDistance += math.sqrt(dx*dx + dy*dy + dz*dz);
                 validPairs++;
             }
         }
@@ -278,7 +317,7 @@ public class BattleManager : MonoBehaviour
             resultPanel.SetActive(true);
             
         // Optional: Slow down time to emphasize the end
-        timeScale = 0.5f;
+        // timeScale = 0.5f;
         UpdateTimeScaleText();
     }
 
