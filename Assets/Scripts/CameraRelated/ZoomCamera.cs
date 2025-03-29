@@ -33,7 +33,8 @@ namespace CameraRelated
             if (scrollInput != 0)
             {
                 // Update target size based on scroll input
-                _targetOrthoSize -= scrollInput * zoomSpeed;
+                float dynamicZoomSpeed = zoomSpeed * (_targetOrthoSize / maxOrthoSize);
+                _targetOrthoSize -= scrollInput * dynamicZoomSpeed;
                 _targetOrthoSize = Mathf.Clamp(_targetOrthoSize, minOrthoSize, maxOrthoSize);
             }
             

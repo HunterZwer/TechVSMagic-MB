@@ -7,13 +7,19 @@ namespace CameraRelated
         [SerializeField] private float movementSensitivity = 1f;
         [SerializeField] private float fastSpeed = 4f;
         [SerializeField] private float normalSpeed = 2f;
-        
-        private CursorArrow _currentCursor = CursorArrow.DEFAULT;
+        [SerializeField] public float _maxSpeedMultiplier = 10f;
+
+        // Cursor textures for cardinal directions.
         public Texture2D cursorArrowUp;
         public Texture2D cursorArrowDown;
         public Texture2D cursorArrowLeft;
         public Texture2D cursorArrowRight;
-        
+        // Cursor textures for diagonal directions.
+        public Texture2D cursorArrowUpLeft;
+        public Texture2D cursorArrowUpRight;
+        public Texture2D cursorArrowDownLeft;
+        public Texture2D cursorArrowDownRight;
+
         private Vector3 _newPosition;
         private bool _isCursorSet;
         private const float EdgeSize = 50f;
@@ -25,8 +31,14 @@ namespace CameraRelated
             DOWN,
             LEFT,
             RIGHT,
+            UP_LEFT,
+            UP_RIGHT,
+            DOWN_LEFT,
+            DOWN_RIGHT,
             DEFAULT
         }
+
+        private CursorArrow _currentCursor = CursorArrow.DEFAULT;
 
         private void LateUpdate()
         {
@@ -35,66 +47,85 @@ namespace CameraRelated
 
         void EdgeScrollMovement()
         {
+            // Flags for edge detection.
+            float distanceRight = Screen.width - Input.mousePosition.x;
+            float distanceLeft = Input.mousePosition.x;
+            float distanceUp = Screen.height - Input.mousePosition.y;
+            float distanceDown = Input.mousePosition.y;
             
-            if (Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt))
-            {
-                _movementSpeed = fastSpeed;
-            }
+            float speedMultiplier = 1f;
+
+// Calculate speed multiplier based on proximity to edge.
+            if (distanceRight < EdgeSize)
+                speedMultiplier = Mathf.Lerp(1f, _maxSpeedMultiplier, 1 - (distanceRight / EdgeSize));
+            else if (distanceLeft < EdgeSize)
+                speedMultiplier = Mathf.Lerp(1f, _maxSpeedMultiplier, 1 - (distanceLeft / EdgeSize));
+            else if (distanceUp < EdgeSize)
+                speedMultiplier = Mathf.Lerp(1f, _maxSpeedMultiplier, 1 - (distanceUp / EdgeSize));
+            else if (distanceDown < EdgeSize)
+                speedMultiplier = Mathf.Lerp(1f, _maxSpeedMultiplier, 1 - (distanceDown / EdgeSize));
+
+            _movementSpeed = ((Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt)) ? fastSpeed : normalSpeed) * speedMultiplier;
+            
+            // Flags for edge detection.
+            bool moveRight = Input.mousePosition.x > Screen.width - EdgeSize;
+            bool moveLeft = Input.mousePosition.x < EdgeSize;
+            bool moveUp = Input.mousePosition.y > Screen.height - EdgeSize;
+            bool moveDown = Input.mousePosition.y < EdgeSize;
+
+            // Calculate movement direction.
+            Vector3 movementDir = Vector3.zero;
+            if (moveRight)
+                movementDir += transform.right;
+            if (moveLeft)
+                movementDir -= transform.right;
+            if (moveUp)
+                movementDir += transform.forward;
+            if (moveDown)
+                movementDir -= transform.forward;
+
+            // Determine which cursor to display based on the combination of directions.
+            if (moveUp && moveRight)
+                ChangeCursor(CursorArrow.UP_RIGHT);
+            else if (moveUp && moveLeft)
+                ChangeCursor(CursorArrow.UP_LEFT);
+            else if (moveDown && moveRight)
+                ChangeCursor(CursorArrow.DOWN_RIGHT);
+            else if (moveDown && moveLeft)
+                ChangeCursor(CursorArrow.DOWN_LEFT);
+            else if (moveUp)
+                ChangeCursor(CursorArrow.UP);
+            else if (moveDown)
+                ChangeCursor(CursorArrow.DOWN);
+            else if (moveRight)
+                ChangeCursor(CursorArrow.RIGHT);
+            else if (moveLeft)
+                ChangeCursor(CursorArrow.LEFT);
             else
             {
-                _movementSpeed = normalSpeed;
-            }
-            _newPosition = transform.position;
-            // Move Right
-            if (Input.mousePosition.x > Screen.width - EdgeSize)
-            {
-                _newPosition += (transform.right * _movementSpeed);
-                ChangeCursor(CursorArrow.RIGHT);
-                _isCursorSet = true;
+                ChangeCursor(CursorArrow.DEFAULT);
+                _isCursorSet = false;
             }
 
-            // Move Left
-            else if (Input.mousePosition.x < EdgeSize)
+            // Normalize the movement vector to ensure consistent speed diagonally.
+            if (movementDir != Vector3.zero)
             {
-                _newPosition += (transform.right * -_movementSpeed);
-                ChangeCursor(CursorArrow.LEFT);
-                _isCursorSet = true;
-            }
-
-            // Move Up
-            else if (Input.mousePosition.y > Screen.height - EdgeSize)
-            {
-                _newPosition += (transform.forward * _movementSpeed);
-                ChangeCursor(CursorArrow.UP);
-                _isCursorSet = true;
-            }
-
-            // Move Down
-            else if (Input.mousePosition.y < EdgeSize)
-            {
-                _newPosition += (transform.forward * -_movementSpeed);
-                ChangeCursor(CursorArrow.DOWN);
+                movementDir.Normalize();
+                _newPosition = transform.position + movementDir * _movementSpeed;
                 _isCursorSet = true;
             }
             else
             {
                 _newPosition = transform.position;
-                if (_isCursorSet)
-                {
-                    ChangeCursor(CursorArrow.DEFAULT);
-                    _isCursorSet = false;
-                }
             }
 
             transform.position = Vector3.Lerp(transform.position, _newPosition, Time.deltaTime * movementSensitivity);
-
-            Cursor.lockState =
-                CursorLockMode.Confined; // If we have an extra monitor we don't want to exit screen bounds
+            Cursor.lockState = CursorLockMode.Confined;
         }
 
         void ChangeCursor(CursorArrow newCursor)
         {
-            // Only change cursor if it's not the same cursor
+            // Only update the cursor if it differs from the current one.
             if (_currentCursor != newCursor)
             {
                 switch (newCursor)
@@ -103,23 +134,30 @@ namespace CameraRelated
                         Cursor.SetCursor(cursorArrowUp, Vector2.zero, CursorMode.Auto);
                         break;
                     case CursorArrow.DOWN:
-                        Cursor.SetCursor(cursorArrowDown,
-                            new Vector2(cursorArrowDown.width, cursorArrowDown.height),
-                            CursorMode.Auto); // So the Cursor will stay inside view
+                        Cursor.SetCursor(cursorArrowDown, new Vector2(cursorArrowDown.width, cursorArrowDown.height), CursorMode.Auto);
                         break;
                     case CursorArrow.LEFT:
                         Cursor.SetCursor(cursorArrowLeft, Vector2.zero, CursorMode.Auto);
                         break;
                     case CursorArrow.RIGHT:
-                        Cursor.SetCursor(cursorArrowRight,
-                            new Vector2(cursorArrowRight.width, cursorArrowRight.height),
-                            CursorMode.Auto); // So the Cursor will stay inside view
+                        Cursor.SetCursor(cursorArrowRight, new Vector2(cursorArrowRight.width, cursorArrowRight.height), CursorMode.Auto);
+                        break;
+                    case CursorArrow.UP_LEFT:
+                        Cursor.SetCursor(cursorArrowUpLeft, Vector2.zero, CursorMode.Auto);
+                        break;
+                    case CursorArrow.UP_RIGHT:
+                        Cursor.SetCursor(cursorArrowUpRight, new Vector2(cursorArrowUpRight.width, cursorArrowUpRight.height), CursorMode.Auto);
+                        break;
+                    case CursorArrow.DOWN_LEFT:
+                        Cursor.SetCursor(cursorArrowDownLeft, Vector2.zero, CursorMode.Auto);
+                        break;
+                    case CursorArrow.DOWN_RIGHT:
+                        Cursor.SetCursor(cursorArrowDownRight, new Vector2(cursorArrowDownRight.width, cursorArrowDownRight.height), CursorMode.Auto);
                         break;
                     case CursorArrow.DEFAULT:
                         Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
                         break;
                 }
-
                 _currentCursor = newCursor;
             }
         }
