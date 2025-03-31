@@ -18,6 +18,9 @@ public class RangeAttackController : AttackController
     private Transform _cachedTransform; // Cache self transform
     private Unit _cachedUnit; // Cache unit component
 
+    private float closestDistanceSq;
+    private Transform closestTarget;
+    private int hitCount;
     // Upgrade levels
     private int _rangeUpgradeLevel = 0;
     private int _reloadUpgradeLevel = 0;
@@ -34,25 +37,25 @@ public class RangeAttackController : AttackController
         _attackRangeSq = attackRange * attackRange;
         _lastAttackTime = Time.time - attackCooldown;
 
-        // Call FindNearestTarget every 0.3 seconds
-        InvokeRepeating(nameof(FindNearestTarget), 0f, 0.3f);
+
+        InvokeRepeating(nameof(FindNearestTarget), Random.Range(0f, 0.3f), 0.5f);
     }
 
     private void FindNearestTarget()
     {
         if (_cachedUnit.IsDead) return; // Use cached unit reference
 
-        int hitCount = Physics.OverlapSphereNonAlloc(
+        hitCount = Physics.OverlapSphereNonAlloc(
             _cachedTransform.position, attackRange, _hitCollidersCache, _enemyLayerMask
         );
 
-        Transform closestTarget = null;
-        float closestDistanceSq = float.MaxValue;
+        closestTarget = null;
+        closestDistanceSq = float.MaxValue;
 
         for (int i = 0; i < hitCount; i++)
         {
             Collider hitCollider = _hitCollidersCache[i];
-            Unit unit = hitCollider.GetComponent<Unit>(); // Directly get component reference
+            hitCollider.TryGetComponent(out Unit unit); // Directly get component reference
 
             if (unit == null || unit.IsDead) continue;
 

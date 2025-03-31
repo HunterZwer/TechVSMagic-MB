@@ -8,24 +8,19 @@ public class Unit : MonoBehaviour
     public UnitClass unitClass;
     public bool IsPlayer;    
     public Sprite unitIcon;
-
-    [SerializeField] private float _unitHealth;
-    public float unitMaxHealth;
-    private UnitStats unitStats;
-
-    private Animator _animator;
-    private UnitMovement _movement;
     public HealthTracker healthTracker;
     public Transform circleIndicator;
-    
-    [Header("Upgrade Levels")]
-    private int _healthUprgadeLevel = 0;
+    public float unitMaxHealth;
     public bool IsDead { get; private set; } = false;
+    [SerializeField] private float _unitHealth;
+    private UnitStats unitStats;
+    private Animator _animator;
+    private UnitMovement _movement;
+    private int _healthUprgadeLevel = 0;
+    
     private static readonly int DeadTrigger = Animator.StringToHash("Dead");
-
     public static event Action onUnitStatsChanged;
     public static event Action onUnitClassChanged;
-
     public static event Action<Unit> onUnitDied;
 
     private void Awake()
@@ -58,78 +53,49 @@ public class Unit : MonoBehaviour
         {
             UnitSelectionManager.Instance.allUnitSelected.Remove(gameObject);
         }
-        if (IsPlayer)
-        {
-            UnitSelectionManager.UnregisterPlayerUnit(gameObject);
-        }
+        if (IsPlayer) UnitSelectionManager.UnregisterPlayerUnit(gameObject);
     }
-
-    private void UpdateHealthUI(bool invokeEvent = true)
-    {
-        if (healthTracker != null)
-        {
-            healthTracker.UpdateSliderValue(_unitHealth, unitMaxHealth);
-        }
-
-        if (invokeEvent)
-        {
-            onUnitStatsChanged?.Invoke(); 
-        }
-
-        if (_unitHealth <= 0 && !IsDead)
-        {
-            Die();
-        }
-    }
-
-   
-
-    private void Die()
-    {
-        IsDead = true;
-        // Оповещаем подписчиков о смерти юнита
-        onUnitDied?.Invoke(this);
-
-        // Останавливаем движение
-        if (_movement != null && _movement.agent != null)
-        {
-            _movement.agent.isStopped = true;
-            _movement.isCommandToMove = false;
-        }
-
-        // Анимация смерти
-        if (_animator != null)
-        {
-            _animator.SetTrigger(DeadTrigger);
-        }
-
-        // Удаление юнита
-        Destroy(gameObject, 3.2f);;
-    }
-
-    public void TakeDamage(float damageToInflict)
-    {
-        if (IsDead) return;
-
-        _unitHealth = Mathf.Max(0, _unitHealth - damageToInflict);
-        UpdateHealthUI();
-    }
-
-    public float GetCurrentHealth()
-    {
-        return _unitHealth;
-    }
-
-    public Sprite GetUnitIcon()
-    {
-        return unitIcon;
-    }
-
+    
     public void SetUnitClass(UnitClass newClass, Sprite newIcon)
     {
         unitClass = newClass;
         unitIcon = newIcon;
         onUnitClassChanged?.Invoke();
+    }
+
+    private void UpdateHealthUI(bool invokeEvent = true)
+    {
+        if (IsDead) return;
+        if (healthTracker) healthTracker.UpdateSliderValue(_unitHealth, unitMaxHealth);
+        if (invokeEvent && onUnitStatsChanged != null)
+            onUnitStatsChanged.Invoke();
+        if (_unitHealth <= 0) Die();
+    }
+    
+    public float GetCurrentHealth() => _unitHealth;
+    public Sprite GetUnitIcon() => unitIcon;
+    
+    public void TakeDamage(float damageToInflict)
+    {
+        if (IsDead) return;
+        _unitHealth = Mathf.Max(0, _unitHealth - damageToInflict);
+        UpdateHealthUI();
+    }
+
+    private void Die()
+    {
+        // Оповещаем подписчиков о смерти юнита
+        onUnitDied?.Invoke(this);
+        IsDead = true;
+        
+        // Останавливаем движение
+        if (_movement.agent) 
+        { 
+            _movement.agent.isStopped = true;
+            _movement.isCommandToMove = false; 
+        }
+        if (_animator) _animator.SetTrigger(DeadTrigger);
+        Destroy(gameObject, 3.2f);;
     }
 
 }

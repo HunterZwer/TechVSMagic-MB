@@ -203,7 +203,7 @@ public struct UnitPosition
     }
 
     [BurstCompile]
-    private static float BurstAverageDistance(NativeArray<UnitPosition> positions)
+    private static float BurstAverageDistance(NativeSlice<UnitPosition> positions)
     {
         float totalDistance = 0;
         int validPairs = 0;
@@ -263,7 +263,7 @@ public struct UnitPosition
     }
 
     [BurstCompile]
-    private static float BurstAverageTeamDistance(NativeArray<UnitPosition> positionsA, NativeArray<UnitPosition> positionsB)
+    private static float BurstAverageTeamDistance(NativeSlice<UnitPosition> positionsA, NativeSlice<UnitPosition> positionsB)
     {
         float totalDistance = 0;
         int validPairs = 0;
