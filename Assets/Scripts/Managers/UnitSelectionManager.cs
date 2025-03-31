@@ -26,6 +26,9 @@ public class UnitSelectionManager : MonoBehaviour
     private bool _hasOffensiveUnits;
     private static readonly int CLCIK_TIME_PROPERTY = Shader.PropertyToID("_ClickTime");
     private static HashSet<GameObject> allPlayerUnits = new HashSet<GameObject>();
+    
+    private float lastClickTime;
+    private const float doubleClickThreshold = 0.3f; 
 
     public delegate void SelectionChanged();
     public event SelectionChanged onSelectionChanged;
@@ -104,7 +107,14 @@ public class UnitSelectionManager : MonoBehaviour
             if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, clickable))
             {
                 GameObject clickedUnit = hit.collider.gameObject;
-                if (Input.GetKey(KeyCode.LeftShift))
+                float timeSinceLastClick = Time.time - lastClickTime;
+                lastClickTime = Time.time;
+
+                if (timeSinceLastClick <= doubleClickThreshold)
+                {
+                    SelectAllUnitsOfSameType(clickedUnit);
+                }
+                else if (Input.GetKey(KeyCode.LeftShift))
                 {
                     MultiSelect(clickedUnit);
                 }
@@ -154,6 +164,26 @@ public class UnitSelectionManager : MonoBehaviour
             }
         }
     }
+    
+    private void SelectAllUnitsOfSameType(GameObject unit)
+    {
+        if (!unit.TryGetComponent(out Unit unitComponent)) return;
+
+        DeselectAll(); // Deselect everything first
+        Unit.UnitClass selectedClass = unitComponent.unitClass;
+
+        foreach (GameObject playerUnit in allPlayerUnits)
+        {
+            if (playerUnit.TryGetComponent(out Unit playerUnitComponent) &&
+                playerUnitComponent.unitClass == selectedClass)
+            {
+                AddToSelection(playerUnit);
+            }
+        }
+
+        onSelectionChanged?.Invoke();
+    }
+
 
     private bool IsPointerOverUI()
     {
