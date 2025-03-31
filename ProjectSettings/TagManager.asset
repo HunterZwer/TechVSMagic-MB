@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Enemy
   - CameraHolder
+  - MiniMap
   layers:
   - Default
   - TransparentFX

@@ -891,7 +891,7 @@ GameObject:
   - component: {fileID: 217475403}
   m_Layer: 5
   m_Name: Camera
-  m_TagString: Untagged
+  m_TagString: MiniMap
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -4307,6 +4307,7 @@ GameObject:
   - component: {fileID: 1172126168}
   - component: {fileID: 1172126169}
   - component: {fileID: 1172126170}
+  - component: {fileID: 1172126171}
   m_Layer: 0
   m_Name: Camera_Rig
   m_TagString: Untagged
@@ -4386,6 +4387,18 @@ MonoBehaviour:
   cursorArrowUpRight: {fileID: 2800000, guid: bd83cc6c2b366ad458e43fbb87a81026, type: 3}
   cursorArrowDownLeft: {fileID: 2800000, guid: f2514d15279e45b4595e8575fe1f48d2, type: 3}
   cursorArrowDownRight: {fileID: 2800000, guid: bd83cc6c2b366ad458e43fbb87a81026, type: 3}
+--- !u!114 &1172126171
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1172126165}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fa8c9e451be1479da146c2e074504be4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1196324374
 GameObject:
   m_ObjectHideFlags: 0
