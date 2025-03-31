@@ -1877,9 +1877,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 535a30c733e84a6c944305f94b351f3f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  selectedUnits: []
-  selectAllButton: {fileID: 0}
-  countText: {fileID: 0}
 --- !u!1 &659205652
 GameObject:
   m_ObjectHideFlags: 0
@@ -12489,9 +12486,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 512cf0b88e9319b42a710297d5d88740, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ascendHeight: 8
+  ascendHeight: 100
   flightSpeed: 2
-  disappearTime: 30
+  disappearTime: 20
 --- !u!65 &4172088945994457487
 BoxCollider:
   m_ObjectHideFlags: 0
