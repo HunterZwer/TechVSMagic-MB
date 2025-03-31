@@ -136,7 +136,7 @@ public class UnitSelectionUI : MonoBehaviour
         if (unitComponent != null)
         {
             profileImage.sprite = unitComponent.GetUnitIcon() ?? defaultProfileSprite;
-            unitNameText.text = unit.name;
+            unitNameText.text = unitComponent.InGameName;
             profileImage.gameObject.SetActive(true);
             healthSlider.gameObject.SetActive(true);
             healthText.gameObject.SetActive(true);

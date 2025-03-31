@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections;
+using System.IO;
 using UnityEngine;
+using Random = Unity.Mathematics.Random;
 
 public class Unit : MonoBehaviour
 {
@@ -17,11 +19,13 @@ public class Unit : MonoBehaviour
     private Animator _animator;
     private UnitMovement _movement;
     private int _healthUprgadeLevel = 0;
+    public string InGameName;
     
     private static readonly int DeadTrigger = Animator.StringToHash("Dead");
     public static event Action onUnitStatsChanged;
     public static event Action onUnitClassChanged;
     public static event Action<Unit> onUnitDied;
+    private static readonly Random _rand = new Random();
 
     private void Awake()
     {
@@ -32,6 +36,13 @@ public class Unit : MonoBehaviour
         {
             UnitSelectionManager.RegisterPlayerUnit(gameObject);
         }
+
+        var path = "Assets/Resources/Config/Units/Names&Surnames.txt";
+        if (this.unitClass == UnitClass.Archer) { path = "Assets/Resources/Config/Units/FemaleNames&Surnames.txt";}
+        var FileNames = File.ReadAllLines(path); // Read all lines into an array
+        var FileNamesLenHalf = FileNames.Length / 2;
+        InGameName = FileNames[UnityEngine.Random.Range(0, FileNamesLenHalf)] + " " + 
+                     FileNames[UnityEngine.Random.Range(FileNamesLenHalf, FileNames.Length)];
     }
 
     private void Start()
