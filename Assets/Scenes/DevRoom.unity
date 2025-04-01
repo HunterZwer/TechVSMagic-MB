@@ -3931,6 +3931,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: BruteA
       objectReference: {fileID: 0}
+    - target: {fileID: 9127385823901640187, guid: a5d85412c53985b418434af9fbf84f2d, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9127385823901640187, guid: a5d85412c53985b418434af9fbf84f2d, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -4586,7 +4594,7 @@ Transform:
   m_GameObject: {fileID: 1172126165}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: 0.38268343, z: -0, w: 0.92387956}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 12.12, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -7419,6 +7427,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: ShamanA
       objectReference: {fileID: 0}
+    - target: {fileID: 6309564520597871009, guid: 4c97bdff49d404c4aaafffbe72502519, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6309564520597871009, guid: 4c97bdff49d404c4aaafffbe72502519, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -8523,6 +8539,14 @@ PrefabInstance:
       propertyPath: m_LocalPosition.x
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6502628278375641793, guid: 367a263b1b8c5b0478262c731ca6f59b, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6502628278375641793, guid: 367a263b1b8c5b0478262c731ca6f59b, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8829081743538213828, guid: 367a263b1b8c5b0478262c731ca6f59b, type: 3}
       propertyPath: m_Name
       value: PaladinA
@@ -8620,6 +8644,14 @@ PrefabInstance:
     - target: {fileID: 8383154584205355589, guid: 942f583f1f1fd9a418de7080f67cf98a, type: 3}
       propertyPath: m_Name
       value: ArcherA
+      objectReference: {fileID: 0}
+    - target: {fileID: 8747924910869452341, guid: 942f583f1f1fd9a418de7080f67cf98a, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8747924910869452341, guid: 942f583f1f1fd9a418de7080f67cf98a, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

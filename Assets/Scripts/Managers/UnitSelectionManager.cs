@@ -1,37 +1,29 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 using System.Collections.Generic;
-using UnityEngine.UI;
 
-public class UnitSelectionManager : MonoBehaviour
+public class UnitSelectionManager : SelectionMethods
 {
     public static UnitSelectionManager Instance { get; private set; }
 
     public List<GameObject> allUnitSelected = new List<GameObject>();
-    public List<GameObject> unitSelected = new List<GameObject>();
-    private List<SelectedUnitData> selectedUnitsWithAttack = new List<SelectedUnitData>();
-    private HashSet<GameObject> selectedUnitsSet = new HashSet<GameObject>();
-
+    
     public LayerMask clickable;
     public LayerMask ground;
     public LayerMask attackable;
     [Space][SerializeField] private Renderer ClickIcon;
     
     public bool attackCursorVisible;
-    [Header("UI References")]
-    [SerializeField] private Text selectionButtonText;
-    [SerializeField] private Button _selectAllUnitsButton;
     
     private Camera cam;
-    private bool _hasOffensiveUnits;
     private static readonly int CLCIK_TIME_PROPERTY = Shader.PropertyToID("_ClickTime");
-    private static HashSet<GameObject> allPlayerUnits = new HashSet<GameObject>();
+    
     
     private float lastClickTime;
     private const float doubleClickThreshold = 0.3f; 
 
     public delegate void SelectionChanged();
-    public event SelectionChanged onSelectionChanged;
+    
 
     private void Awake()
     {
@@ -57,44 +49,12 @@ public class UnitSelectionManager : MonoBehaviour
     {
         HandleLeftClick();
         HandleRightClick();
-        UpdateAttackCursor();
-
         if (Input.GetKeyDown(KeyCode.F1))
         {
             SelectAllPlayerUnits();
         }
     }
     
-    public static void RegisterPlayerUnit(GameObject unit)
-    {
-        allPlayerUnits.Add(unit);
-        Instance?.UpdateSelectionButtonText();
-    }
-
-    public static void UnregisterPlayerUnit(GameObject unit)
-    {
-        allPlayerUnits.Remove(unit);
-        Instance?.UpdateSelectionButtonText();
-    }
-
-    public void SelectAllPlayerUnits()
-    {
-        DeselectAll();
-        foreach (GameObject unit in allPlayerUnits)
-        {
-            AddToSelection(unit);
-        }
-        onSelectionChanged?.Invoke();
-        UpdateSelectionButtonText();
-    }
-
-    private void UpdateSelectionButtonText()
-    {
-        if (selectionButtonText != null)
-        {
-            selectionButtonText.text = $"{allPlayerUnits.Count}";
-        }
-    }
     
     private void HandleLeftClick()
     {
@@ -165,142 +125,10 @@ public class UnitSelectionManager : MonoBehaviour
         }
     }
     
-    private void SelectAllUnitsOfSameType(GameObject unit)
-    {
-        if (!unit.TryGetComponent(out Unit unitComponent)) return;
-
-        DeselectAll(); // Deselect everything first
-        Unit.UnitClass selectedClass = unitComponent.unitClass;
-
-        foreach (GameObject playerUnit in allPlayerUnits)
-        {
-            if (playerUnit.TryGetComponent(out Unit playerUnitComponent) &&
-                playerUnitComponent.unitClass == selectedClass)
-            {
-                AddToSelection(playerUnit);
-            }
-        }
-
-        onSelectionChanged?.Invoke();
-    }
-
 
     private bool IsPointerOverUI()
     {
         return EventSystem.current.IsPointerOverGameObject();
     }
-
-    private void UpdateAttackCursor()
-    {
-        if (_hasOffensiveUnits)
-        {
-            Ray ray = cam.ScreenPointToRay(Input.mousePosition);
-            attackCursorVisible = Physics.Raycast(ray, out _, Mathf.Infinity, attackable);
-        }
-        else
-        {
-            attackCursorVisible = false;
-        }
-    }
-
-    private void SelectByClicking(GameObject unit)
-    {
-        DeselectAll();
-        AddToSelection(unit);
-        onSelectionChanged?.Invoke();
-    }
-
-    private void MultiSelect(GameObject unit)
-    {
-        if (!unitSelected.Contains(unit))
-        {
-            unitSelected.Add(unit);
-            SelectUnit(unit, true);
-            AddToSelection(unit);
-        }
-        else
-        {
-            SelectUnit(unit, false);
-            unitSelected.Remove(unit);
-            RemoveFromSelection(unit);
-        }
-        onSelectionChanged?.Invoke();
-    }
-
-    private void AddToSelection(GameObject unit)
-    {
-        unitSelected.Add(unit);
-        selectedUnitsSet.Add(unit);
-        SelectUnit(unit, true);
-
-        unit.TryGetComponent(out MeleeAttackController melee);
-        unit.TryGetComponent(out RangeAttackController ranged);
-        if (melee != null || ranged != null)
-        {
-            selectedUnitsWithAttack.Add(new SelectedUnitData(unit, melee, ranged));
-            _hasOffensiveUnits = true;
-        }
-    }
-
-    private void RemoveFromSelection(GameObject unit)
-    {
-        unitSelected.Remove(unit);
-        selectedUnitsSet.Remove(unit);
-        SelectUnit(unit, false);
-
-        for (int i = 0; i < selectedUnitsWithAttack.Count; i++)
-        {
-            if (selectedUnitsWithAttack[i].unit == unit)
-            {
-                selectedUnitsWithAttack.RemoveAt(i);
-                break;
-            }
-        }
-        _hasOffensiveUnits = selectedUnitsWithAttack.Count > 0;
-    }
-
-    public void DeselectAll()
-    {
-        foreach (var unit in unitSelected)
-        {
-            SelectUnit(unit, false);
-        }
-
-        unitSelected.Clear();
-        selectedUnitsSet.Clear();
-        selectedUnitsWithAttack.Clear();
-        _hasOffensiveUnits = false;
-        onSelectionChanged?.Invoke();
-    }
-
-    internal void DragSelect(GameObject unit)
-    {
-        if (!unitSelected.Contains(unit))
-        {
-            unitSelected.Add(unit);
-            SelectUnit(unit, true);
-            onSelectionChanged?.Invoke();
-        }
-    }
-
-    private void SelectUnit(GameObject unit, bool isSelected)
-    {
-        unit.TryGetComponent(out Unit unitComponent);
-        if (unitComponent == null || unitComponent.circleIndicator == null) return;
-        unitComponent.circleIndicator.gameObject.SetActive(isSelected);
-    }
-
-    private struct SelectedUnitData
-    {
-        public GameObject unit;
-        public MeleeAttackController meleeAttack;
-        public RangeAttackController rangeAttack;
-
-        public SelectedUnitData(GameObject unit, MeleeAttackController melee, RangeAttackController ranged)
-        {
-            this.unit = unit;
-            this.meleeAttack = melee;
-            this.rangeAttack = ranged;
-        }
-    }
+    
 }

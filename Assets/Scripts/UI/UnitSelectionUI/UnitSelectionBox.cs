@@ -13,11 +13,8 @@ public class UnitSelectionBox : MonoBehaviour
     
     private void Start()
     {
-        // Find the main camera if not assigned in inspector
         if (myCam == null)
             myCam = Camera.main;
-            
-        // Ensure the box visual is hidden at start
         boxVisual.gameObject.SetActive(false);
     }
     

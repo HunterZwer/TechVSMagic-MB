@@ -34,7 +34,7 @@ public class Unit : MonoBehaviour
         circleIndicator = transform.Find("CircleIndicator");
         if (IsPlayer)
         {
-            UnitSelectionManager.RegisterPlayerUnit(gameObject);
+            UnitRegistryManager.RegisterPlayerUnit(gameObject);
         }
 
         var path = "Assets/Resources/Config/Units/Names&Surnames.txt";
@@ -64,7 +64,7 @@ public class Unit : MonoBehaviour
         {
             UnitSelectionManager.Instance.allUnitSelected.Remove(gameObject);
         }
-        if (IsPlayer) UnitSelectionManager.UnregisterPlayerUnit(gameObject);
+        if (IsPlayer) UnitRegistryManager.UnregisterPlayerUnit(gameObject);
     }
     
     public void SetUnitClass(UnitClass newClass, Sprite newIcon)

@@ -11,9 +11,11 @@ public class UnitMovement : MonoBehaviour
     private static readonly int IsMoving = Animator.StringToHash("isMoving");
     private UnitStats unitStats;
     private Unit _unit;
+    private readonly float _rotationSpeed = 1500f;
 
     [Header("Upgrade Levels")]
     private int _SpeedUprgadeLevel = 0;
+    private int _RotationUprgadeLevel = 0;
 
     public LayerMask ground;
     public bool isCommandToMove;
@@ -31,6 +33,7 @@ public class UnitMovement : MonoBehaviour
         _cam = Camera.main;
         unitStats = JsonLoader.LoadUnitStats(_unit.unitClass, _unit.IsPlayer);
         agent.speed *= unitStats.SpeedMultiplier[_SpeedUprgadeLevel];
+        agent.angularSpeed = unitStats.RotationMultiplier[_RotationUprgadeLevel] * _rotationSpeed;
     }
 
     private void Update()
@@ -76,7 +79,6 @@ public class UnitMovement : MonoBehaviour
                 Vector3 offset = new Vector3(col * spacing, 0, row * spacing) - 
                                  new Vector3((columnCount - 1) * spacing / 2, 0, (rowCount - 1) * spacing / 2);
                 Vector3 targetPosition = centerPoint + offset;
-
                 unitAgent.SetDestination(targetPosition);
                 unit.GetComponent<UnitMovement>().isCommandToMove = true;
                 unit.GetComponent<Animator>().SetBool(IsMoving, true);
