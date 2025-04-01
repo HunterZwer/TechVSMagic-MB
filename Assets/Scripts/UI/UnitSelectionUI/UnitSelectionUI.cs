@@ -37,7 +37,7 @@ public class UnitSelectionUI : MonoBehaviour
     private readonly Color redColor = Color.red;
 
     private float healthUpdateTimer = 0f;
-    private const float healthUpdateInterval = 0.2f;
+    private const float healthUpdateInterval = 0f;
 
     [SerializeField] private BuildingUI _buildingUIPanel;
 
@@ -175,10 +175,9 @@ public class UnitSelectionUI : MonoBehaviour
             float healthPercentage = health / maxHealth;
 
             healthSlider.maxValue = maxHealth;
-            healthSlider.value = Mathf.Lerp(healthSlider.value, health, Time.deltaTime * 10f);
+            healthSlider.value = health; 
 
             healthText.text = $"{Mathf.Round(health)} / {maxHealth}";
-
             healthFill.color = Color.Lerp(redColor, greenColor, healthPercentage);
         }
     }
@@ -188,19 +187,19 @@ public class UnitSelectionUI : MonoBehaviour
         int startIndex = currentPage * UNITS_PER_PAGE;
         int endIndex = Mathf.Min(startIndex + UNITS_PER_PAGE, cachedSelectedUnits.Count);
 
-        // Обновляем кнопки страниц
+        
         UpdatePageButtons();
 
         
 
-        // Создаём недостающие иконки
+        
         while (iconInstances.Count < UNITS_PER_PAGE)
         {
             GameObject newIcon = Instantiate(unitIconPrefab, unitIconsContainer);
             iconInstances.Add(newIcon);
         }
 
-        // Обновляем существующие иконки
+       
         for (int i = 0; i < iconInstances.Count; i++)
         {
             GameObject icon = iconInstances[i];
@@ -219,7 +218,7 @@ public class UnitSelectionUI : MonoBehaviour
                     healthSlider.value = unitComponent.GetCurrentHealth();
                 }
 
-                // Добавляем обработчик нажатия для фокусировки на юните
+                
                 Button button = icon.GetComponent<Button>();
                 if (button != null)
                 {
@@ -255,20 +254,20 @@ public class UnitSelectionUI : MonoBehaviour
     {
         if (mainCamera != null && unit != null)
         {
-            float baseSize = 5f; // Базовый размер камеры
-            float baseDistance = 10f; // Базовое расстояние
+            float baseSize = 5f; 
+            float baseDistance = 10f; 
 
-            // Коэффициент изменения отступа
+            
             float sizeFactor = mainCamera.orthographicSize / baseSize;
             float adjustedDistance = baseDistance * sizeFactor;
 
             Vector3 unitPosition = unit.transform.position;
 
-            // Смещаем камеру так, чтобы она смотрела ровно на центр юнита
+      
             Vector3 offset = new Vector3(-adjustedDistance, adjustedDistance * 1.3f, -adjustedDistance);
             mainCamera.transform.position = unitPosition + offset;
 
-            // Фиксируем угол
+          
             mainCamera.transform.rotation = Quaternion.Euler(45f, 45f, 0f);
         }
     }
@@ -289,7 +288,7 @@ public class UnitSelectionUI : MonoBehaviour
             if (healthSlider != null)
             {
                 healthSlider.maxValue = unitComponent.unitMaxHealth;
-                healthSlider.value = Mathf.Lerp(healthSlider.value, unitComponent.GetCurrentHealth(), Time.deltaTime * 10f);
+                healthSlider.value = unitComponent.GetCurrentHealth(); // Убираем анимацию, теперь обновляется сразу
             }
         }
 
@@ -299,23 +298,7 @@ public class UnitSelectionUI : MonoBehaviour
         }
     }
 
-    private void PrevPage()
-    {
-        if (currentPage > 0)
-        {
-            currentPage--;
-            UpdateGrid();
-        }
-    }
 
-    private void NextPage()
-    {
-        if ((currentPage + 1) * UNITS_PER_PAGE < cachedSelectedUnits.Count)
-        {
-            currentPage++;
-            UpdateGrid();
-        }
-    }
 
     private void ClearIcons()
     {

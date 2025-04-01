@@ -470,7 +470,7 @@ MonoBehaviour:
   HealthBarSlider: {fileID: 2851240447946641353}
   sliderFill: {fileID: 4600212034954217540}
   greenEmission: {fileID: 2100000, guid: b6792c775e4a2db41be35dca149451ad, type: 2}
-  yellowEmission: {fileID: 2100000, guid: 24d407e1623c7d04c83de985a691b964, type: 2}
+  yellowEmission: {fileID: 2100000, guid: 46b2a40f9563d3d498ebea5d92055380, type: 2}
   redEmission: {fileID: 2100000, guid: f50e0e76d22307d4a91cce8388bef323, type: 2}
 --- !u!114 &3352966536325845110
 MonoBehaviour:
