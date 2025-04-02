@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class EconomyManager : MonoBehaviour
 {
@@ -12,6 +13,8 @@ public class EconomyManager : MonoBehaviour
     [SerializeField] private int silverPerSecond = 10;
     [SerializeField] private int startGold = 100;
     [SerializeField] private int startSilver = 100;
+    [SerializeField] private Text goldAmountUI;
+    [SerializeField] private Text silverAmountUI;
 
     private void Awake()
     {
@@ -23,6 +26,7 @@ public class EconomyManager : MonoBehaviour
         Gold = startGold;
         Silver = startSilver;
         StartCoroutine(PassiveIncomeRoutine());
+        UpdateUI();
     }
 
     private IEnumerator PassiveIncomeRoutine()
@@ -31,6 +35,7 @@ public class EconomyManager : MonoBehaviour
         {
             yield return new WaitForSeconds(1);
             AddResources(goldPerSecond, silverPerSecond);
+            UpdateUI();
         }
     }
 
@@ -55,7 +60,7 @@ public class EconomyManager : MonoBehaviour
 
     private void UpdateUI()
     {
-        // Implement your UI update logic here
-        Debug.Log($"Resources: {Gold} Gold, {Silver} Silver");
+        goldAmountUI.text = $"{Gold}";
+        silverAmountUI.text = $"{Silver}";
     }
 }

@@ -10,6 +10,8 @@ public class Building : MonoBehaviour
         public string unitName;
         public GameObject unitPrefab;
         public float productionTime;
+        public int goldCost;
+        public int silverCost;
     }
     
     [SerializeField] private UnitData[] availableUnits; 
@@ -42,17 +44,19 @@ public class Building : MonoBehaviour
     public bool StartProducingUnit(int unitIndex)
     {
         if (unitIndex < 0 || unitIndex >= availableUnits.Length || IsQueueFull)
-        {
             return false;
-        }
 
+        UnitData unit = availableUnits[unitIndex];
+        
+        if (!EconomyManager.Instance.CanAfford(unit.goldCost, unit.silverCost))
+            return false;
+
+        EconomyManager.Instance.SpendResources(unit.goldCost, unit.silverCost);
         productionQueue.Enqueue(unitIndex);
         uiManager.UpdateQueueStatus(productionQueue.Count, maxQueueSize);
 
         if (!isProducing)
-        {
             ProcessProductionQueue();
-        }
 
         return true;
     }
@@ -118,7 +122,8 @@ public class Building : MonoBehaviour
             
             if (productionQueue.Count > 0)
             {
-                productionQueue.Dequeue();
+                int canceledIndex = productionQueue.Dequeue();
+                RefundUnit(canceledIndex);
             }
 
             uiManager.UpdateQueueStatus(productionQueue.Count, maxQueueSize);
@@ -130,10 +135,18 @@ public class Building : MonoBehaviour
     public void ClearQueue()
     {
         StopAllCoroutines();
+        
+        foreach (int index in productionQueue)
+            RefundUnit(index);
+        
         productionQueue.Clear();
         isProducing = false;
-        uiManager.UpdateQueueStatus(0, maxQueueSize);
-        uiManager.UpdateProgress(0, "Queue Cleared");
+        
+        if (uiManager != null)
+        {
+            uiManager.UpdateQueueStatus(0, maxQueueSize);
+            uiManager.UpdateProgress(0, "Queue Cleared");
+        }
     }
 
     public void RemoveUnitFromQueue(int unitIndex)
@@ -145,6 +158,7 @@ public class Building : MonoBehaviour
         {
             if (queuedIndex == unitIndex && !removed)
             {
+                RefundUnit(queuedIndex);
                 removed = true;
                 continue;
             }
@@ -153,6 +167,12 @@ public class Building : MonoBehaviour
 
         productionQueue = newQueue;
         uiManager.UpdateQueueStatus(productionQueue.Count, maxQueueSize);
+    }
+
+    private void RefundUnit(int unitIndex)
+    {
+        UnitData unit = availableUnits[unitIndex];
+        EconomyManager.Instance.AddResources(unit.goldCost, unit.silverCost);
     }
 
     private void OnDestroy()
