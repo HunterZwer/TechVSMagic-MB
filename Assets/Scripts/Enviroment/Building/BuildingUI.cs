@@ -15,6 +15,10 @@ public class BuildingUI : MonoBehaviour
     [SerializeField] private Transform queueGrid; // Контейнер для отображения очереди
     [SerializeField] private GameObject queueButtonPrefab; // Префаб кнопки в очереди
 
+
+    public BuildingPlacement buildingPlacement; // Ссылка на скрипт размещения
+    public GameObject[] buildings;
+
     private Building currentBuilding;
     private List<GameObject> queueButtonsList = new List<GameObject>(); // Список кнопок в очереди
 
@@ -40,6 +44,11 @@ public class BuildingUI : MonoBehaviour
     }
 
 
+
+    public void OnSelectBuilding(int buildingIndex)
+    {
+        buildingPlacement.StartBuilding(buildings[buildingIndex]);
+    }
 
 
 
