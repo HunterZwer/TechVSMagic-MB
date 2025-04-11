@@ -11,10 +11,8 @@ namespace CameraRelated
         [SerializeField] private float baseSize = 5f;
         [SerializeField] private float baseDistance = 10f;
         [SerializeField] private KeyCode focusKey = KeyCode.F2;
-        [SerializeField] private float focusSpeed = 5f;
         [SerializeField] private Button focusButton;
-
-        private bool isMoving = false;
+        
         private Vector3 targetPosition;
 
         private void Start()
@@ -42,7 +40,7 @@ namespace CameraRelated
 
         private Unit FindClosestUnit()
         {
-            return FindObjectsOfType<Unit>()
+            return FindObjectsByType<Unit>(FindObjectsSortMode.None)
                 .OrderBy(unit => Vector3.SqrMagnitude(mainCamera.transform.position - unit.transform.position))
                 .FirstOrDefault();
         }
@@ -56,14 +54,12 @@ namespace CameraRelated
 
                 Vector3 unitPosition = unit.transform.position;
                 targetPosition = unitPosition + new Vector3(-adjustedDistance, adjustedDistance * 1.3f, -adjustedDistance);
-                isMoving = true;
 
                 // Lock rotation
                 mainCamera.transform.rotation = Quaternion.Euler(45f, 45f, 0f);
 
                 // Move instantly (remove this if smooth movement is needed)
                 mainCamera.transform.position = targetPosition;
-                isMoving = false;
             }
         }
     }

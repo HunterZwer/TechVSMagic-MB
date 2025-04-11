@@ -25,7 +25,6 @@ public class Unit : MonoBehaviour
     public static event Action onUnitStatsChanged;
     public static event Action onUnitClassChanged;
     public static event Action<Unit> onUnitDied;
-    private static readonly Random _rand = new Random();
 
     private void Awake()
     {

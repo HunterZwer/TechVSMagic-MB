@@ -3,12 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using Unity.Burst;
 using Unity.Collections;
 using Unity.Mathematics;
     
-    
-[BurstCompile]
+
 public class BattleManager : MonoBehaviour
 {
     [Header("Time Scale Settings")]
@@ -202,7 +200,7 @@ public struct UnitPosition
         return result;
     }
 
-    [BurstCompile]
+
     private static float BurstAverageDistance(NativeSlice<UnitPosition> positions)
     {
         float totalDistance = 0;
@@ -261,8 +259,7 @@ public struct UnitPosition
 
         return result;
     }
-
-    [BurstCompile]
+    
     private static float BurstAverageTeamDistance(NativeSlice<UnitPosition> positionsA, NativeSlice<UnitPosition> positionsB)
     {
         float totalDistance = 0;

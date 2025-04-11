@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace CameraRelated
@@ -21,7 +22,6 @@ namespace CameraRelated
         public Texture2D cursorArrowDownRight;
 
         private Vector3 _newPosition;
-        private bool _isCursorSet;
         private const float EdgeSize = 50f;
         private float _movementSpeed;
 
@@ -104,7 +104,6 @@ namespace CameraRelated
             else
             {
                 ChangeCursor(CursorArrow.DEFAULT);
-                _isCursorSet = false;
             }
 
             // Normalize the movement vector to ensure consistent speed diagonally.
@@ -112,7 +111,6 @@ namespace CameraRelated
             {
                 movementDir.Normalize();
                 _newPosition = transform.position + movementDir * _movementSpeed;
-                _isCursorSet = true;
             }
             else
             {
