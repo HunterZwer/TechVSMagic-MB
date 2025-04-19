@@ -53,6 +53,6 @@ public class MinimapClickHandler : MonoBehaviour
     private IEnumerator HideClickIndicator()
     {
         yield return new WaitForSeconds(0.5f); 
-        clickIndicator.gameObject.SetActive(false);
+        //clickIndicator.gameObject.SetActive(false);
     }
 }
