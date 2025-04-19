@@ -9,6 +9,9 @@ public class WaveUnit
     public GameObject unitPrefab;
     public int wave1Amount;
     public int wave2Amount;
+    public int startAmount = 2;
+    public int incrementPerWave = 1;
+    public int maxRandomVariance = 2;
 }
 
 public class AreaWaveSpawner : MonoBehaviour
