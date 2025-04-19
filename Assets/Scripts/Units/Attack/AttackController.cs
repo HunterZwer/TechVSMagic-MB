@@ -8,15 +8,17 @@ public class AttackController : MonoBehaviour
     public string targetTag;
     public Unit ThisUnit;
     public UnitStats unitStats;
+    public float baseDamage;
+    public float baseRange;
     
     private void Awake()
     {
         ThisUnit = GetComponent<Unit>();
         unitStats = JsonLoader.LoadUnitStats(ThisUnit.unitClass, ThisUnit.IsPlayer);
         unitDamage = 10f;
+        baseDamage = 10f;
+        baseRange = 10f;
+        
         targetTag = ThisUnit.IsPlayer ? "Enemy" : "Player";
     }
-
-    protected bool IsTargetDead(Transform target) => 
-        !target || !target.TryGetComponent(out Unit unit) || unit.IsDead;
 }

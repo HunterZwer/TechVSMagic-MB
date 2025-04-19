@@ -9,8 +9,8 @@ public class EconomyManager : MonoBehaviour
     public int Gold { get; private set; }
     public int Silver { get; private set; }
 
-    [SerializeField] private int goldPerSecond = 10;
-    [SerializeField] private int silverPerSecond = 10;
+    [SerializeField] public int goldPerSecond = 10;
+    [SerializeField] public int silverPerSecond = 10;
     [SerializeField] private int startGold = 100;
     [SerializeField] private int startSilver = 100;
     [SerializeField] private Text goldAmountUI;

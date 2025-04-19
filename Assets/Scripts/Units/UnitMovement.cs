@@ -14,11 +14,12 @@ public class UnitMovement : MonoBehaviour
     private readonly float _rotationSpeed = 1500f;
 
     [Header("Upgrade Levels")]
-    private int _SpeedUprgadeLevel = 0;
-    private int _RotationUprgadeLevel = 0;
+    private int _speedUprgadeLevel = 0;
+    private int _rotationUprgadeLevel = 0;
 
     public LayerMask ground;
     public bool isCommandToMove;
+    private float _baseSpeed = 3.5f;
 
     private void Awake()
     {
@@ -32,8 +33,16 @@ public class UnitMovement : MonoBehaviour
     {
         _cam = Camera.main;
         unitStats = JsonLoader.LoadUnitStats(_unit.unitClass, _unit.IsPlayer);
-        agent.speed *= unitStats.SpeedMultiplier[_SpeedUprgadeLevel];
-        agent.angularSpeed = unitStats.RotationMultiplier[_RotationUprgadeLevel] * _rotationSpeed;
+        _speedUprgadeLevel = Upgrader.Instance.speedUpgradeLevel;
+        _rotationUprgadeLevel = Upgrader.Instance.speedUpgradeLevel;
+        agent.speed *= unitStats.SpeedMultiplier[_speedUprgadeLevel];
+        agent.angularSpeed *= unitStats.RotationMultiplier[_rotationUprgadeLevel] * _rotationSpeed;
+    }
+    
+    public virtual void ApplySpeedeUpgrade()
+    {
+        agent.speed =  _baseSpeed * unitStats.DamageMultiplier[Upgrader.Instance.speedUpgradeLevel];
+
     }
 
     private void Update()

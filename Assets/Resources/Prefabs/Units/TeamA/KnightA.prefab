@@ -2885,7 +2885,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   targetToAttack: {fileID: 0}
-  unitDamage: 12
+  unitDamage: 10
   targetTag: 
   ThisUnit: {fileID: 0}
   unitStats:
@@ -2896,6 +2896,7 @@ MonoBehaviour:
     SpeedMultiplier: []
     ReloadMultiplier: []
     RotationMultiplier: []
+  baseDamage: 0
   attackRange: 10
   attackCooldown: 1
 --- !u!135 &6457240231487787683

@@ -4006,10 +4006,11 @@ MonoBehaviour:
   unitClass: 3
   IsPlayer: 0
   unitIcon: {fileID: 21300000, guid: 961a4b06027c85d4fbbe487100ff853b, type: 3}
-  _unitHealth: 0
-  unitMaxHealth: 150
   healthTracker: {fileID: 7663264393250579959}
   circleIndicator: {fileID: 0}
+  unitMaxHealth: 150
+  _unitHealth: 0
+  InGameName: 
 --- !u!114 &5293168436731728356
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4023,7 +4024,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   targetToAttack: {fileID: 0}
-  unitDamage: 12
+  unitDamage: 10
   targetTag: 
   ThisUnit: {fileID: 0}
   unitStats:
@@ -4034,6 +4035,7 @@ MonoBehaviour:
     SpeedMultiplier: []
     ReloadMultiplier: []
     RotationMultiplier: []
+  baseDamage: 0
   attackRange: 10
   attackCooldown: 1
 --- !u!135 &2669253126528421045

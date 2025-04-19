@@ -33,12 +33,22 @@ public class RangeAttackController : AttackController
 
         attackRange *= unitStats.RangeMultiplier[_rangeUpgradeLevel];
         attackCooldown *= unitStats.ReloadMultiplier[_reloadUpgradeLevel];
+        _damageUpgradeLevel = Upgrader.Instance.rangedDamageUpgradeLevel;
         unitDamage *= unitStats.DamageMultiplier[_damageUpgradeLevel];
         _attackRangeSq = attackRange * attackRange;
         _lastAttackTime = Time.time - attackCooldown;
-
-
+        
         InvokeRepeating(nameof(FindNearestTarget), Random.Range(0f, 0.3f), 0.5f);
+    }
+    
+    public virtual void ApplyRangedDamageUpgrade()
+    {
+        unitDamage = baseDamage * unitStats.DamageMultiplier[Upgrader.Instance.rangedDamageUpgradeLevel];
+    }
+    public virtual void ApplyRangedUpgrade()
+    {
+        attackRange = baseRange * unitStats.DamageMultiplier[Upgrader.Instance.rangeUpgradeLevel];
+        _attackRangeSq = attackRange * attackRange;
     }
 
     private void FindNearestTarget()

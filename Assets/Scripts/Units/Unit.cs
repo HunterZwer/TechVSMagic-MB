@@ -13,6 +13,7 @@ public class Unit : MonoBehaviour
     public HealthTracker healthTracker;
     public Transform circleIndicator;
     public float unitMaxHealth;
+    private int _baseHealth = 100;
     public bool IsDead { get; private set; } = false;
     [SerializeField] private float _unitHealth;
     private UnitStats unitStats;
@@ -48,7 +49,9 @@ public class Unit : MonoBehaviour
     {
         unitStats = JsonLoader.LoadUnitStats(unitClass, IsPlayer);
         _animator.cullingMode = AnimatorCullingMode.CullCompletely;
-        unitMaxHealth = unitMaxHealth * unitStats.HealthMultiplier[_healthUprgadeLevel];
+        _healthUprgadeLevel = Upgrader.Instance.healthUpgradeLevel;;
+        unitMaxHealth = _baseHealth;
+        if (IsPlayer) {unitMaxHealth *=  unitStats.HealthMultiplier[_healthUprgadeLevel];}
         if (UnitSelectionManager.Instance != null)
         {
             UnitSelectionManager.Instance.allUnitSelected.Add(gameObject);
@@ -57,6 +60,12 @@ public class Unit : MonoBehaviour
         UpdateHealthUI(false);
     }
 
+    public virtual void ApplyHealthUpgrade()
+    {
+        unitMaxHealth = _baseHealth * unitStats.DamageMultiplier[Upgrader.Instance.healthUpgradeLevel];
+
+    }
+    
     private void OnDestroy()
     {
         if (UnitSelectionManager.Instance != null)

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class UnitRegistryManager: SelectionMethods
@@ -13,5 +14,10 @@ public class UnitRegistryManager: SelectionMethods
     {
         allPlayerUnits.Remove(unit);
         UnitSelectionManager.Instance?.UpdateSelectionButtonText();
+    }
+
+    public static HashSet<GameObject> ReturnAllPlayerUnits()
+    {
+        return allPlayerUnits;
     }
 }

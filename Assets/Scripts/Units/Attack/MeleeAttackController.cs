@@ -23,10 +23,17 @@ public class MeleeAttackController : AttackController
         // Apply upgrades
         attackRange *= unitStats.RangeMultiplier[_rangeUpgradeLevel];
         attackCooldown *= unitStats.ReloadMultiplier[_reloadUpgradeLevel];
+        _damageUpgradeLevel = Upgrader.Instance.damageUpgradeLevel;
         unitDamage *= unitStats.DamageMultiplier[_damageUpgradeLevel];
 
         // Start periodic enemy checks
         InvokeRepeating(nameof(PeriodicUpdate), Random.Range(0f, 0.25f), 0.5f);
+    }
+    
+    public virtual void ApplyDamageUpgrade()
+    {
+        unitDamage = baseDamage * unitStats.DamageMultiplier[Upgrader.Instance.damageUpgradeLevel];
+
     }
     
     private void PeriodicUpdate()
