@@ -39,7 +39,6 @@ public class AreaWaveSpawner : MonoBehaviour
             triggerCollider.isTrigger = true;
         }
         
-        // Define the spawn bounds (area where enemies will spawn)
     }
 
     private void OnTriggerEnter(Collider other)

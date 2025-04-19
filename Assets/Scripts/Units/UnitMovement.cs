@@ -33,10 +33,15 @@ public class UnitMovement : MonoBehaviour
     {
         _cam = Camera.main;
         unitStats = JsonLoader.LoadUnitStats(_unit.unitClass, _unit.IsPlayer);
-        _speedUprgadeLevel = Upgrader.Instance.speedUpgradeLevel;
-        _rotationUprgadeLevel = Upgrader.Instance.speedUpgradeLevel;
+        if (Upgrader.Instance is not null)
+        {
+            _speedUprgadeLevel = Upgrader.Instance.speedUpgradeLevel;
+            _rotationUprgadeLevel = Upgrader.Instance.speedUpgradeLevel;
+        }
         agent.speed *= unitStats.SpeedMultiplier[_speedUprgadeLevel];
         agent.angularSpeed *= unitStats.RotationMultiplier[_rotationUprgadeLevel] * _rotationSpeed;
+        
+        
     }
     
     public virtual void ApplySpeedeUpgrade()

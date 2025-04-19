@@ -23,7 +23,7 @@ public class MeleeAttackController : AttackController
         // Apply upgrades
         attackRange *= unitStats.RangeMultiplier[_rangeUpgradeLevel];
         attackCooldown *= unitStats.ReloadMultiplier[_reloadUpgradeLevel];
-        _damageUpgradeLevel = Upgrader.Instance.damageUpgradeLevel;
+        if (Upgrader.Instance is not null){_damageUpgradeLevel = Upgrader.Instance.damageUpgradeLevel;}
         unitDamage *= unitStats.DamageMultiplier[_damageUpgradeLevel];
 
         // Start periodic enemy checks

@@ -4,15 +4,14 @@ using UnityEngine.UI;
 
 public class Upgrader : MonoBehaviour
 {
-    public int damageUpgradeLevel = 0;
-    public int healthUpgradeLevel = 0;
-    public int rangedDamageUpgradeLevel = 0;
-    public int speedUpgradeLevel = 0;
-    public int rangeDamageUpgradeLevel = 0;
-    public int rangeUpgradeLevel = 0;
+    public int damageUpgradeLevel;
+    public int healthUpgradeLevel;
+    public int rangedDamageUpgradeLevel;
+    public int speedUpgradeLevel;
+    public int rangeDamageUpgradeLevel;
+    public int rangeUpgradeLevel;
     
     private int updatesAmount = 4;
-    
     private int silverUpgradeLevel = 0;
     private int goldUpgradeLevel = 0;
     private int moneyUpgradeAmount = 11;
@@ -63,6 +62,13 @@ public class Upgrader : MonoBehaviour
 
     private void Awake()
     {
+        damageUpgradeLevel = 0;
+        healthUpgradeLevel = 0;
+        rangedDamageUpgradeLevel = 0;
+        speedUpgradeLevel = 0;
+        rangeDamageUpgradeLevel = 0;
+        rangeUpgradeLevel = 0;
+        
         if (Instance != null && Instance != this)
             Destroy(gameObject);
         else

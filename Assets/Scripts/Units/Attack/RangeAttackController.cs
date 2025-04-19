@@ -33,7 +33,10 @@ public class RangeAttackController : AttackController
 
         attackRange *= unitStats.RangeMultiplier[_rangeUpgradeLevel];
         attackCooldown *= unitStats.ReloadMultiplier[_reloadUpgradeLevel];
-        _damageUpgradeLevel = Upgrader.Instance.rangedDamageUpgradeLevel;
+        if (Upgrader.Instance is not null)
+        {
+            _damageUpgradeLevel = Upgrader.Instance.rangedDamageUpgradeLevel;
+        }
         unitDamage *= unitStats.DamageMultiplier[_damageUpgradeLevel];
         _attackRangeSq = attackRange * attackRange;
         _lastAttackTime = Time.time - attackCooldown;

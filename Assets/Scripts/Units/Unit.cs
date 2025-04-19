@@ -49,13 +49,13 @@ public class Unit : MonoBehaviour
     {
         unitStats = JsonLoader.LoadUnitStats(unitClass, IsPlayer);
         _animator.cullingMode = AnimatorCullingMode.CullCompletely;
-        _healthUprgadeLevel = Upgrader.Instance.healthUpgradeLevel;;
         unitMaxHealth = _baseHealth;
-        if (IsPlayer) {unitMaxHealth *=  unitStats.HealthMultiplier[_healthUprgadeLevel];}
+        if (IsPlayer && Upgrader.Instance is not null) {_healthUprgadeLevel = Upgrader.Instance.healthUpgradeLevel;;}
         if (UnitSelectionManager.Instance != null)
         {
             UnitSelectionManager.Instance.allUnitSelected.Add(gameObject);
         }
+        unitMaxHealth *=  unitStats.HealthMultiplier[_healthUprgadeLevel];
         _unitHealth = unitMaxHealth;
         UpdateHealthUI(false);
     }
