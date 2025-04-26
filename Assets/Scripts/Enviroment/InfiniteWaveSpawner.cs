@@ -17,6 +17,7 @@ public class InfiniteWaveSpawner : MonoBehaviour
     private int currentWave = 0;
     private bool isActive = true;
     private BoxCollider triggerCollider;
+    private int totalUnitsSpawned = 0;
 
     private void Start()
     {
@@ -38,6 +39,7 @@ public class InfiniteWaveSpawner : MonoBehaviour
 
     private void SpawnWave(int waveNumber)
     {
+        int waveUnitCount = 0;
         foreach (WaveUnit unit in waveUnits)
         {
             if (unit.unitPrefab == null) continue;
@@ -45,6 +47,8 @@ public class InfiniteWaveSpawner : MonoBehaviour
             int baseAmount = unit.startAmount + (waveNumber - 1) * unit.incrementPerWave;
             int randomAmount = Random.Range(0, unit.maxRandomVariance + 1);
             int totalToSpawn = baseAmount + randomAmount;
+            
+            waveUnitCount += totalToSpawn;
 
             for (int i = 0; i < totalToSpawn; i++)
             {
@@ -57,6 +61,10 @@ public class InfiniteWaveSpawner : MonoBehaviour
                 }
             }
         }
+        
+        
+        totalUnitsSpawned += waveUnitCount;
+        Debug.Log($"Wave {waveNumber} spawned {waveUnitCount} units. Total so far: {totalUnitsSpawned}");
     }
 
     private Vector3 GetRandomSpawnPosition()

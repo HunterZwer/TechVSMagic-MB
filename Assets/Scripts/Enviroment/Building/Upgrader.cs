@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.UI;
@@ -48,17 +49,89 @@ public class Upgrader : MonoBehaviour
     [SerializeField] private float silverUpgradePercent = 0.3f;
     private Image silverUpgradeImage;
     
-    private void Start()
+    
+    private Queue<UpgradeData> upgradeQueue = new Queue<UpgradeData>();
+    private bool isProducingUpgrade = false;
+    private UpgradeData currentUpgrade;
+    
+    
+    public void ApplyUpgrade(string upgradeName)
     {
-        meleedamageUpgradeButton.onClick.AddListener(() => {Upgrader.Instance.UpgradeDamage(); });
-        healthUpgradeButton.onClick.AddListener(() => {Upgrader.Instance.UpgradeHealth(); });
-        rangeUpgradeButton.onClick.AddListener(() => {Upgrader.Instance.UpgradeRange(); });
-        rangedDamageUpgradeButton.onClick.AddListener(() => {Upgrader.Instance.UpgradeRangedDamage(); });
-        speedUpgradeButton.onClick.AddListener(() => {Upgrader.Instance.UpgradeSpeed(); });
-        SilverUpgradeButton.onClick.AddListener(() => {Upgrader.Instance.UpgradeSilver(); });
-        GoldUpgradeButton.onClick.AddListener(() => {Upgrader.Instance.UpgradeGold(); });
+        switch (upgradeName)
+        {
+            case "Damage": UpgradeDamage(); break;
+            case "Health": UpgradeHealth(); break;
+            case "RangedDamage": UpgradeRangedDamage(); break;
+            case "Speed": UpgradeSpeed(); break;
+            case "Range": UpgradeRange(); break;
+            case "Gold": UpgradeGold(); break;
+            case "Silver": UpgradeSilver(); break;
+            default:
+                Debug.LogWarning("Unknown upgrade applied: " + upgradeName);
+                break;
+        }
     }
 
+    
+    public int GetUpgradeLevel(string upgradeName)
+    {
+        switch (upgradeName)
+        {
+            case "Damage": return damageUpgradeLevel;
+            case "Health": return healthUpgradeLevel;
+            case "RangedDamage": return rangedDamageUpgradeLevel;
+            case "Speed": return speedUpgradeLevel;
+            case "Range": return rangeUpgradeLevel;
+            case "Gold": return goldUpgradeLevel;
+            case "Silver": return silverUpgradeLevel;
+            default:
+                Debug.LogWarning($"Unknown upgrade name: {upgradeName}");
+                return 0;
+        }
+    }
+    
+    public bool StartUpgrade(UpgradeData data)
+    {
+        int level = GetUpgradeLevel(data.upgradeName);
+        int goldCost = Mathf.RoundToInt(data.baseGoldCost * Mathf.Pow(data.costMultiplier, level));
+        int silverCost = Mathf.RoundToInt(data.baseSilverCost * Mathf.Pow(data.costMultiplier, level));
+
+        if (!EconomyManager.Instance.CanAfford(goldCost, silverCost))
+            return false;
+
+        EconomyManager.Instance.SpendResources(goldCost, silverCost);
+        upgradeQueue.Enqueue(data);
+
+        if (!isProducingUpgrade)
+            StartCoroutine(ProcessUpgradeQueue());
+
+        return true;
+    }
+    
+    private IEnumerator ProcessUpgradeQueue()
+    {
+        if (upgradeQueue.Count == 0) yield break;
+
+        isProducingUpgrade = true;
+        currentUpgrade = upgradeQueue.Peek();
+
+        float timer = 0f;
+        while (timer < currentUpgrade.productionTime)
+        {
+            timer += Time.deltaTime;
+            // Optional: Notify UI of progress here
+            yield return null;
+        }
+
+        ApplyUpgrade(currentUpgrade.upgradeName);
+        upgradeQueue.Dequeue();
+        isProducingUpgrade = false;
+
+        if (upgradeQueue.Count > 0)
+            StartCoroutine(ProcessUpgradeQueue());
+    }
+    
+    
 
     private void Awake()
     {

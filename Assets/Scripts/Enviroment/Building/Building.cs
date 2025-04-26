@@ -23,6 +23,7 @@ public class Building : MonoBehaviour
     private bool isProducing = false;
     private Queue<int> productionQueue = new Queue<int>();
     public event System.Action<int> OnUnitProduced;
+    [SerializeField] private UpgradeBuildingUI upgradeUI;
 
     public int QueueCount => productionQueue.Count;
     public bool IsQueueFull => productionQueue.Count >= maxQueueSize;
@@ -30,6 +31,7 @@ public class Building : MonoBehaviour
     private void OnMouseDown()
     {
         uiManager.ShowForBuilding(this);
+        upgradeUI.HideUI();
     }
 
 
