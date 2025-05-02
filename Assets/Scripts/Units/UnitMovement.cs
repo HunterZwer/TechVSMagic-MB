@@ -10,7 +10,7 @@ public class UnitMovement : MonoBehaviour
     private Transform _transform;
     private static readonly int IsMoving = Animator.StringToHash("isMoving");
     private UnitStats unitStats;
-    private Unit _unit;
+    private UnitLVL2 _unitLvl2;
     private readonly float _rotationSpeed = 1500f;
 
     [Header("Upgrade Levels")]
@@ -24,7 +24,7 @@ public class UnitMovement : MonoBehaviour
     private void Awake()
     {
         agent = GetComponent<NavMeshAgent>();
-        _unit = GetComponent<Unit>();
+        _unitLvl2 = GetComponent<UnitLVL2>();
         _transform = transform;
         _animator = GetComponent<Animator>();
     }
@@ -32,11 +32,16 @@ public class UnitMovement : MonoBehaviour
     private void Start()
     {
         _cam = Camera.main;
-        unitStats = JsonLoader.LoadUnitStats(_unit.unitClass, _unit.IsPlayer);
-        if (Upgrader.Instance is not null)
+        unitStats = JsonLoader.LoadUnitStats(_unitLvl2.unitClass, _unitLvl2.IsPlayer);
+        if (Upgrader.Instance is not null && _unitLvl2.IsPlayer)
         {
             _speedUprgadeLevel = Upgrader.Instance.speedUpgradeLevel;
             _rotationUprgadeLevel = Upgrader.Instance.speedUpgradeLevel;
+        }
+        else
+        {
+            _speedUprgadeLevel = 0;
+            _rotationUprgadeLevel = 0;
         }
         agent.speed *= unitStats.SpeedMultiplier[_speedUprgadeLevel];
         agent.angularSpeed *= unitStats.RotationMultiplier[_rotationUprgadeLevel] * _rotationSpeed;

@@ -5,22 +5,22 @@ using System.Collections.Generic;
 public class BuildingUI : MonoBehaviour
 {
     [SerializeField] private GameObject buildingUI;
-    [SerializeField] private Button[] unitButtons; // Оригинальные кнопки выбора юнитов
+    [SerializeField] private Button[] unitButtons; // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
     [SerializeField] private Slider progressBar;
     [SerializeField] private Text progressText;
     [SerializeField] private Text queueText;
     [SerializeField] private Button cancelButton;
     [SerializeField] private Button clearQueueButton;
 
-    [SerializeField] private Transform queueGrid; // Контейнер для отображения очереди
-    [SerializeField] private GameObject queueButtonPrefab; // Префаб кнопки в очереди
+    [SerializeField] private Transform queueGrid; // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+    [SerializeField] private GameObject queueButtonPrefab; // пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 
 
-    public BuildingPlacement buildingPlacement; // Ссылка на скрипт размещения
+    public BuildingPlacement buildingPlacement; // пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
     public GameObject[] buildings;
 
     private Building currentBuilding;
-    private List<GameObject> queueButtonsList = new List<GameObject>(); // Список кнопок в очереди
+    private List<GameObject> queueButtonsList = new List<GameObject>(); // пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 
    
 
@@ -42,16 +42,13 @@ public class BuildingUI : MonoBehaviour
             });
         }
     }
-
-
+    
 
     public void OnSelectBuilding(int buildingIndex)
     {
         buildingPlacement.StartBuilding(buildings[buildingIndex]);
     }
-
-
-
+    
     public void ShowForBuilding(Building building)
     {
         currentBuilding = building;
@@ -71,7 +68,7 @@ public class BuildingUI : MonoBehaviour
         }
 
         progressBar.value = 0;
-        progressText.text = "Select Unit";
+        progressText.text = "Select UnitLVL2";
         UpdateQueueStatus(currentBuilding.QueueCount, 5);
     }
 

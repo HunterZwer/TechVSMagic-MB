@@ -3,8 +3,8 @@ using System.IO;
 
 public static class JsonLoader
 {
-    // Load unit stats based on the unit's class and team
-    public static UnitStats LoadUnitStats(Unit.UnitClass unitClass, bool isPlayer)
+    // Load unitLvl2 stats based on the unitLvl2's class and team
+    public static UnitStats LoadUnitStats(UnitLVL2.UnitClass unitClass, bool isPlayer)
     {
         string team = isPlayer ? "TeamA" : "TeamB";
         string unitType = GetUnitTypeFromClass(unitClass);
@@ -28,21 +28,21 @@ public static class JsonLoader
         }
     }
 
-    // Map the UnitClass enum to the corresponding unit type string
-    private static string GetUnitTypeFromClass(Unit.UnitClass unitClass)
+    // Map the UnitClass enum to the corresponding unitLvl2 type string
+    private static string GetUnitTypeFromClass(UnitLVL2.UnitClass unitClass)
     {
         switch (unitClass)
         {
-            case Unit.UnitClass.Knight:
+            case UnitLVL2.UnitClass.Knight:
                 return "Knight";
-            case Unit.UnitClass.Archer:
+            case UnitLVL2.UnitClass.Archer:
                 return "Archer";
-            case Unit.UnitClass.Shaman:
+            case UnitLVL2.UnitClass.Shaman:
                 return "Shaman";
-            case Unit.UnitClass.Brute:
+            case UnitLVL2.UnitClass.Brute:
                 return "Brute";
             default:
-                Debug.LogWarning($"Unknown unit class: {unitClass}, defaulting to Brute");
+                Debug.LogWarning($"Unknown unitLvl2 class: {unitClass}, defaulting to Brute");
                 return "Brute";
         }
     }

@@ -16,7 +16,7 @@ public class RangeAttackController : AttackController
     private float _attackRangeSq;
     private readonly Collider[] _hitCollidersCache = new Collider[50]; // Reduce cache size based on expected enemies
     private Transform _cachedTransform; // Cache self transform
-    private Unit _cachedUnit; // Cache unit component
+    private UnitLVL2 _cachedUnitLvl2; // Cache unitLvl2 component
 
     private float closestDistanceSq;
     private Transform closestTarget;
@@ -29,7 +29,7 @@ public class RangeAttackController : AttackController
     protected void Start()
     {
         _cachedTransform = transform; // Cache transform
-        _cachedUnit = GetComponent<Unit>(); // Cache unit reference
+        _cachedUnitLvl2 = GetComponent<UnitLVL2>(); // Cache unitLvl2 reference
 
         attackRange *= unitStats.RangeMultiplier[_rangeUpgradeLevel];
         attackCooldown *= unitStats.ReloadMultiplier[_reloadUpgradeLevel];
@@ -56,7 +56,7 @@ public class RangeAttackController : AttackController
 
     private void FindNearestTarget()
     {
-        if (_cachedUnit.IsDead) return; // Use cached unit reference
+        if (_cachedUnitLvl2.IsDead) return; // Use cached unitLvl2 reference
 
         hitCount = Physics.OverlapSphereNonAlloc(
             _cachedTransform.position, attackRange, _hitCollidersCache, _enemyLayerMask
@@ -68,7 +68,7 @@ public class RangeAttackController : AttackController
         for (int i = 0; i < hitCount; i++)
         {
             Collider hitCollider = _hitCollidersCache[i];
-            hitCollider.TryGetComponent(out Unit unit); // Directly get component reference
+            hitCollider.TryGetComponent(out UnitLVL2 unit); // Directly get component reference
 
             if (unit == null || unit.IsDead) continue;
 
@@ -112,7 +112,7 @@ public class RangeAttackController : AttackController
             projectileScript = projectile.AddComponent<Projectile>();
         }
 
-        projectileScript.Initialize(targetToAttack, unitDamage, projectileSpeed, _cachedUnit.IsPlayer);
+        projectileScript.Initialize(targetToAttack, unitDamage, projectileSpeed, _cachedUnitLvl2.IsPlayer);
         projectile.SetActive(true);
     }
 }

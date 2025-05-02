@@ -1,22 +1,25 @@
 using UnityEngine;
 using System.Collections;
+using TMPro; // Add this for TextMeshPro
 using Random = UnityEngine.Random;
 
 public class InfiniteWaveSpawner : MonoBehaviour
 {
     [Header("Wave Settings")]
-    [SerializeField] private float waveInterval = 30f;
-    [SerializeField] private int maxWave = 10;
+    [SerializeField] private float minWaveInterval = 5f;
+    [SerializeField] private float maxWaveInterval = 30f;
+    [SerializeField] private int maxWave = 100;
 
-    [Header("Unit Configuration")]
+    [Header("UnitLVL2 Configuration")]
     [SerializeField] private WaveUnit[] waveUnits = new WaveUnit[4];
     [SerializeField] private Transform[] spawnPositions;
-
     [SerializeField] private Transform _endPoint;
+
+    [Header("UI")]
+    [SerializeField] private TMP_Text nextWaveText;
 
     private int currentWave = 0;
     private bool isActive = true;
-    private BoxCollider triggerCollider;
     private int totalUnitsSpawned = 0;
 
     private void Start()
@@ -30,41 +33,53 @@ public class InfiniteWaveSpawner : MonoBehaviour
         {
             currentWave++;
             SpawnWave(currentWave);
-            yield return new WaitForSeconds(waveInterval);
+
+            float t = (float)(currentWave - 1) / (maxWave - 1);
+            float waveInterval = Mathf.Lerp(minWaveInterval, maxWaveInterval, t);
+
+            yield return StartCoroutine(CountdownToNextWave(waveInterval));
         }
 
-        isActive = false; // ✅ Stop further waves
+        isActive = false;
+        nextWaveText.text = "All waves complete!";
         Debug.Log("Max wave reached. Spawner stopped.");
+    }
+
+    private IEnumerator CountdownToNextWave(float duration)
+    {
+        float timeLeft = duration;
+        while (timeLeft > 0f)
+        {
+            nextWaveText.text = $"Next Wave in {timeLeft:F1}s";
+            yield return null;
+            timeLeft -= Time.deltaTime;
+        }
     }
 
     private void SpawnWave(int waveNumber)
     {
-        int waveUnitCount = 0;
-        foreach (WaveUnit unit in waveUnits)
+        int totalUnitsToSpawn = waveNumber;
+        int unitsSpawnedThisWave = 0;
+        int unitTypeCount = Mathf.Min(waveNumber / 2 + 1, waveUnits.Length); // Gradually introduce unitLvl2 types
+
+        while (unitsSpawnedThisWave < totalUnitsToSpawn)
         {
-            if (unit.unitPrefab == null) continue;
-
-            int baseAmount = unit.startAmount + (waveNumber - 1) * unit.incrementPerWave;
-            int randomAmount = Random.Range(0, unit.maxRandomVariance + 1);
-            int totalToSpawn = baseAmount + randomAmount;
-            
-            waveUnitCount += totalToSpawn;
-
-            for (int i = 0; i < totalToSpawn; i++)
+            for (int i = 0; i < unitTypeCount && unitsSpawnedThisWave < totalUnitsToSpawn; i++)
             {
+                if (waveUnits[i].unitPrefab == null) continue;
+
                 Vector3 spawnPos = GetRandomSpawnPosition();
-                GameObject enemy = Instantiate(unit.unitPrefab, spawnPos, Quaternion.identity);
+                GameObject enemy = Instantiate(waveUnits[i].unitPrefab, spawnPos, Quaternion.identity);
 
                 if (enemy.TryGetComponent(out UnitMovement movement))
-                {
                     movement.agent.SetDestination(_endPoint.position);
-                }
+
+                unitsSpawnedThisWave++;
             }
         }
-        
-        
-        totalUnitsSpawned += waveUnitCount;
-        Debug.Log($"Wave {waveNumber} spawned {waveUnitCount} units. Total so far: {totalUnitsSpawned}");
+
+        totalUnitsSpawned += unitsSpawnedThisWave;
+        Debug.Log($"Wave {waveNumber} spawned {unitsSpawnedThisWave} units. Total so far: {totalUnitsSpawned}");
     }
 
     private Vector3 GetRandomSpawnPosition()

@@ -12,7 +12,7 @@ public class MeleeAttackController : AttackController
     private int _rangeUpgradeLevel = 0;
     private int _reloadUpgradeLevel = 0;
     private int _damageUpgradeLevel = 0;
-    private readonly Dictionary<Transform, Unit> enemiesInRange = new();
+    private readonly Dictionary<Transform, UnitLVL2> enemiesInRange = new();
     private Transform closestEnemy;
     private float closestDistanceSq = float.MaxValue;
     
@@ -38,7 +38,7 @@ public class MeleeAttackController : AttackController
     
     private void PeriodicUpdate()
     {
-        if (ThisUnit.IsDead) return;
+        if (thisUnitLvl2.IsDead) return;
 
         CleanupDeadTargets();
         UpdateTarget();  // Only update if needed
@@ -48,7 +48,7 @@ public class MeleeAttackController : AttackController
     {
         if (!IsValidTarget(other)) return;
 
-        if (other.TryGetComponent(out Unit unit) && !unit.IsDead)
+        if (other.TryGetComponent(out UnitLVL2 unit) && !unit.IsDead)
         {
             enemiesInRange[other.transform] = unit;;
         }
@@ -73,12 +73,12 @@ public class MeleeAttackController : AttackController
 
     private void UpdateTarget()
     {
-        if (ThisUnit.IsDead) return;
+        if (thisUnitLvl2.IsDead) return;
 
         CleanupDeadTargets();
     
         // Update closest enemy only if necessary
-        if (targetToAttack == null || targetToAttack.GetComponent<Unit>().IsDead)
+        if (targetToAttack == null || targetToAttack.GetComponent<UnitLVL2>().IsDead)
         {
             targetToAttack = GetClosestEnemy();
         }
@@ -102,9 +102,9 @@ public class MeleeAttackController : AttackController
         foreach (var kvp in enemiesInRange)
         {
             Transform enemyTransform = kvp.Key;
-            Unit enemyUnit = kvp.Value;
+            UnitLVL2 enemyUnitLvl2 = kvp.Value;
 
-            if (enemyUnit.IsDead) continue;
+            if (enemyUnitLvl2.IsDead) continue;
 
             float distanceSq = (enemyTransform.position - myPosition).sqrMagnitude;
             if (distanceSq < closestDistanceSq)
@@ -119,9 +119,9 @@ public class MeleeAttackController : AttackController
 
     private void PerformAttack()
     {
-        if (isAttacking || ThisUnit.IsDead || targetToAttack == null) return;
+        if (isAttacking || thisUnitLvl2.IsDead || targetToAttack == null) return;
 
-        if (targetToAttack.TryGetComponent(out Unit targetUnit) && targetUnit != null && !targetUnit.IsDead)
+        if (targetToAttack.TryGetComponent(out UnitLVL2 targetUnit) && targetUnit != null && !targetUnit.IsDead)
         {
             isAttacking = true;
             Attack();
@@ -153,9 +153,9 @@ public class MeleeAttackController : AttackController
 
     public void Attack()
     {
-        if (ThisUnit.IsDead || targetToAttack == null) return;
+        if (thisUnitLvl2.IsDead || targetToAttack == null) return;
 
-        if (targetToAttack.TryGetComponent(out Unit targetUnit) && targetUnit != null && !targetUnit.IsDead)
+        if (targetToAttack.TryGetComponent(out UnitLVL2 targetUnit) && targetUnit != null && !targetUnit.IsDead)
         {
             targetUnit.TakeDamage(unitDamage);
         }
@@ -164,12 +164,12 @@ public class MeleeAttackController : AttackController
     private readonly struct EnemyInfo
     {
         public readonly Transform Transform;
-        public readonly Unit Unit;
+        public readonly UnitLVL2 UnitLvl2;
 
-        public EnemyInfo(Transform transform, Unit unit)
+        public EnemyInfo(Transform transform, UnitLVL2 unitLvl2)
         {
             Transform = transform;
-            Unit = unit;
+            UnitLvl2 = unitLvl2;
         }
     }
 }

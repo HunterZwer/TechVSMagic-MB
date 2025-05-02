@@ -31,28 +31,28 @@ namespace CameraRelated
 
         private void MoveToClosestUnit()
         {
-            Unit closestUnit = FindClosestUnit();
-            if (closestUnit != null)
+            UnitLVL2 closestUnitLvl2 = FindClosestUnit();
+            if (closestUnitLvl2 != null)
             {
-                SetTargetPosition(closestUnit);
+                SetTargetPosition(closestUnitLvl2);
             }
         }
 
-        private Unit FindClosestUnit()
+        private UnitLVL2 FindClosestUnit()
         {
-            return FindObjectsByType<Unit>(FindObjectsSortMode.None)
+            return FindObjectsByType<UnitLVL2>(FindObjectsSortMode.None)
                 .OrderBy(unit => Vector3.SqrMagnitude(mainCamera.transform.position - unit.transform.position))
                 .FirstOrDefault();
         }
 
-        private void SetTargetPosition(Unit unit)
+        private void SetTargetPosition(UnitLVL2 unitLvl2)
         {
-            if (mainCamera != null && unit != null)
+            if (mainCamera != null && unitLvl2 != null)
             {
                 float sizeFactor = mainCamera.orthographicSize / baseSize;
                 float adjustedDistance = baseDistance * sizeFactor;
 
-                Vector3 unitPosition = unit.transform.position;
+                Vector3 unitPosition = unitLvl2.transform.position;
                 targetPosition = unitPosition + new Vector3(-adjustedDistance, adjustedDistance * 1.3f, -adjustedDistance);
 
                 // Lock rotation

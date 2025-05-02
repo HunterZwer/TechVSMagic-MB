@@ -100,7 +100,7 @@ public class SelectionMethods: MonoBehaviour
 
     private void SelectUnit(GameObject unit, bool isSelected)
     {
-        unit.TryGetComponent(out Unit unitComponent);
+        unit.TryGetComponent(out UnitLVL2 unitComponent);
         if (unitComponent == null || unitComponent.circleIndicator == null) return;
         unitComponent.circleIndicator.gameObject.SetActive(isSelected);
     }
@@ -140,14 +140,14 @@ public class SelectionMethods: MonoBehaviour
     
     protected void SelectAllUnitsOfSameType(GameObject unit)
     {
-        if (!unit.TryGetComponent(out Unit unitComponent)) return;
+        if (!unit.TryGetComponent(out UnitLVL2 unitComponent)) return;
 
         DeselectAll(); // Deselect everything first
-        Unit.UnitClass selectedClass = unitComponent.unitClass;
+        UnitLVL2.UnitClass selectedClass = unitComponent.unitClass;
 
         foreach (GameObject playerUnit in allPlayerUnits)
         {
-            if (playerUnit.TryGetComponent(out Unit playerUnitComponent) &&
+            if (playerUnit.TryGetComponent(out UnitLVL2 playerUnitComponent) &&
                 playerUnitComponent.unitClass == selectedClass)
             {
                 AddToSelection(playerUnit);

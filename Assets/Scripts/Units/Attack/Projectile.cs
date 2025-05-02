@@ -16,7 +16,7 @@ public class Projectile : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (!target || (target.TryGetComponent(out Unit unit) && unit.IsDead))
+        if (!target || (target.TryGetComponent(out UnitLVL2 unit) && unit.IsDead))
         {
             DestroyProjectile();
             return;
@@ -35,7 +35,7 @@ public class Projectile : MonoBehaviour
 
     void HitTarget()
     {
-        if (target && target.TryGetComponent(out Unit targetUnit))
+        if (target && target.TryGetComponent(out UnitLVL2 targetUnit))
         {
             targetUnit.TakeDamage(damage);
         }

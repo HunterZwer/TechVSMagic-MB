@@ -6,7 +6,8 @@ using UnityEngine.UI;
 public class Upgrader : MonoBehaviour
 {
     public int damageUpgradeLevel;
-    public int healthUpgradeLevel;
+    public int healthMeleeUpgradeLevel;
+    public int healthRangedUpgradeLevel;
     public int rangedDamageUpgradeLevel;
     public int speedUpgradeLevel;
     public int rangeDamageUpgradeLevel;
@@ -31,9 +32,13 @@ public class Upgrader : MonoBehaviour
     [SerializeField] private Sprite[] rangeUpgradeSprites;
     private Image rangeUpgradeImage;
     
-    [SerializeField] private Button healthUpgradeButton;
-    [SerializeField] private Sprite[] healthUpgradeSprites;
-    private Image healthUpgradeImage;
+    [SerializeField] private Button healthMeleeUpgradeButton;
+    [SerializeField] private Sprite[] healthMeleeUpgradeSprites;
+    private Image healthMeleeUpgradeImage;    
+    
+    [SerializeField] private Button healthRangedUpgradeButton;
+    [SerializeField] private Sprite[] healthRangedUpgradeSprites;
+    private Image healthRangedUpgradeImage;
     
     [SerializeField] private Button speedUpgradeButton;
     [SerializeField] private Sprite[] speedUpgradeSprites;
@@ -60,7 +65,8 @@ public class Upgrader : MonoBehaviour
         switch (upgradeName)
         {
             case "Damage": UpgradeDamage(); break;
-            case "Health": UpgradeHealth(); break;
+            case "HealthMelee": UpgradeMeleeHealth(); break;
+            case "HealthRanged": UpgradeRangedHealth(); break;
             case "RangedDamage": UpgradeRangedDamage(); break;
             case "Speed": UpgradeSpeed(); break;
             case "Range": UpgradeRange(); break;
@@ -78,7 +84,8 @@ public class Upgrader : MonoBehaviour
         switch (upgradeName)
         {
             case "Damage": return damageUpgradeLevel;
-            case "Health": return healthUpgradeLevel;
+            case "HealthMelee": return healthMeleeUpgradeLevel;
+            case "HealthRanged": return healthRangedUpgradeLevel;
             case "RangedDamage": return rangedDamageUpgradeLevel;
             case "Speed": return speedUpgradeLevel;
             case "Range": return rangeUpgradeLevel;
@@ -136,7 +143,8 @@ public class Upgrader : MonoBehaviour
     private void Awake()
     {
         damageUpgradeLevel = 0;
-        healthUpgradeLevel = 0;
+        healthRangedUpgradeLevel = 0;
+        healthMeleeUpgradeLevel = 0;
         rangedDamageUpgradeLevel = 0;
         speedUpgradeLevel = 0;
         rangeDamageUpgradeLevel = 0;
@@ -151,7 +159,8 @@ public class Upgrader : MonoBehaviour
         silverUpgradeImage = SilverUpgradeButton.GetComponent<Image>();
         rangedDamageUpgradeImage = rangedDamageUpgradeButton.GetComponent<Image>();
         rangeUpgradeImage = rangeUpgradeButton.GetComponent<Image>();
-        healthUpgradeImage = healthUpgradeButton.GetComponent<Image>();
+        healthMeleeUpgradeImage = healthMeleeUpgradeButton.GetComponent<Image>();
+        healthRangedUpgradeImage = healthRangedUpgradeButton.GetComponent<Image>();
         speedUpgradeImage = speedUpgradeButton.GetComponent<Image>();
     }
     
@@ -165,16 +174,15 @@ public class Upgrader : MonoBehaviour
         }
 
         damageUpgradeLevel++;
-        if (UnitRegistryManager.ReturnAllPlayerUnits().Count != 0){return;}
+        if (damageUpgradeLevel < meleedamageUpgradeSprites.Length)
+        {
+            meleedamageUpgradeImage.sprite = meleedamageUpgradeSprites[damageUpgradeLevel];
+        }
+        if (UnitRegistryManager.ReturnAllPlayerUnits().Count == 0){return;}
         foreach (var unit in UnitRegistryManager.ReturnAllPlayerUnits())
         {
             unit.TryGetComponent(out MeleeAttackController meleeAttackController);
             meleeAttackController?.ApplyDamageUpgrade();
-        }
-        
-        if (damageUpgradeLevel < meleedamageUpgradeSprites.Length)
-        {
-            meleedamageUpgradeImage.sprite = meleedamageUpgradeSprites[damageUpgradeLevel];
         }
     }        
     
@@ -185,43 +193,63 @@ public class Upgrader : MonoBehaviour
             Destroy(rangedDamageUpgradeButton.gameObject);
             return;
         }
-
+        if (rangedDamageUpgradeLevel < rangedDamageUpgradeSprites.Length)
+        {
+            rangedDamageUpgradeImage.sprite = rangedDamageUpgradeSprites[rangedDamageUpgradeLevel];
+        }
         rangedDamageUpgradeLevel++;
-        if (UnitRegistryManager.ReturnAllPlayerUnits().Count != 0){return;}
+        if (UnitRegistryManager.ReturnAllPlayerUnits().Count == 0){return;}
         foreach (var unit in UnitRegistryManager.ReturnAllPlayerUnits())
         {
             unit.TryGetComponent(out RangeAttackController rangeAttackController);
             rangeAttackController?.ApplyRangedDamageUpgrade();
         }
-        
-        if (rangedDamageUpgradeLevel < rangedDamageUpgradeSprites.Length)
-        {
-            rangedDamageUpgradeImage.sprite = rangedDamageUpgradeSprites[rangedDamageUpgradeLevel];
-        }
     }    
     
-    public void UpgradeHealth()
+    public void UpgradeRangedHealth()
     {
-        if (healthUpgradeLevel + 1 >= updatesAmount)
+        if (healthRangedUpgradeLevel + 1 >= updatesAmount)
         {
-            Destroy(healthUpgradeButton.gameObject);
+            Destroy(healthRangedUpgradeButton.gameObject);
             return;
         }
 
-        healthUpgradeLevel++;
-        if (UnitRegistryManager.ReturnAllPlayerUnits().Count != 0){return;}
+        healthRangedUpgradeLevel++;
+        if (healthRangedUpgradeLevel < healthRangedUpgradeSprites.Length)
+        {
+            healthRangedUpgradeImage.sprite = healthRangedUpgradeSprites[healthRangedUpgradeLevel];
+        }
+        if (UnitRegistryManager.ReturnAllPlayerUnits().Count == 0){return;}
         foreach (var unit in UnitRegistryManager.ReturnAllPlayerUnits())
         {
-            unit.TryGetComponent(out Unit _unitComponent);
-            if (_unitComponent.IsPlayer)
+            unit.TryGetComponent(out UnitLVL2 _unitComponent);
+            if (_unitComponent.unitClass is UnitLVL2.UnitClass.Archer or UnitLVL2.UnitClass.Shaman)
+            { _unitComponent.ApplyHealthUpgrade();}
+        }
+        Debug.Log(UnitRegistryManager.ReturnAllPlayerUnits().Count);
+    }
+
+    public void UpgradeMeleeHealth()
+    {
+        if (healthMeleeUpgradeLevel + 1 >= updatesAmount)
+        {
+            Destroy(healthMeleeUpgradeButton.gameObject);
+            return;
+        }
+
+        healthMeleeUpgradeLevel++;
+        if (healthMeleeUpgradeLevel < healthMeleeUpgradeSprites.Length)
+        {
+            healthMeleeUpgradeImage.sprite = healthMeleeUpgradeSprites[healthMeleeUpgradeLevel];
+        }
+        if (UnitRegistryManager.ReturnAllPlayerUnits().Count == 0){return;}
+        foreach (var unit in UnitRegistryManager.ReturnAllPlayerUnits())
+        {
+            unit.TryGetComponent(out UnitLVL2 _unitComponent);
+            if (_unitComponent.unitClass is UnitLVL2.UnitClass.Knight or UnitLVL2.UnitClass.Brute)
             {
                 _unitComponent.ApplyHealthUpgrade();
             }
-        }
-        
-        if (healthUpgradeLevel < healthUpgradeSprites.Length)
-        {
-            healthUpgradeImage.sprite = healthUpgradeSprites[healthUpgradeLevel];
         }
     }    
     
@@ -232,18 +260,18 @@ public class Upgrader : MonoBehaviour
             Destroy(speedUpgradeButton.gameObject);
             return;
         }
-
-        speedUpgradeLevel++;
-        if (UnitRegistryManager.ReturnAllPlayerUnits().Count != 0){return;}
-        foreach (var unit in UnitRegistryManager.ReturnAllPlayerUnits())
-        {
-            unit.TryGetComponent(out UnitMovement unitMovement);
-            unitMovement.ApplySpeedeUpgrade();
-        }
         
         if (speedUpgradeLevel < speedUpgradeSprites.Length)
         {
             speedUpgradeImage.sprite = speedUpgradeSprites[speedUpgradeLevel];
+        }
+
+        speedUpgradeLevel++;
+        if (UnitRegistryManager.ReturnAllPlayerUnits().Count == 0){return;}
+        foreach (var unit in UnitRegistryManager.ReturnAllPlayerUnits())
+        {
+            unit.TryGetComponent(out UnitMovement unitMovement);
+            unitMovement.ApplySpeedeUpgrade();
         }
     }
 
@@ -256,17 +284,16 @@ public class Upgrader : MonoBehaviour
         return;
         }
 
-    rangeUpgradeLevel++;
-        if (UnitRegistryManager.ReturnAllPlayerUnits().Count != 0){return;}
+        rangeUpgradeLevel++;
+        if (rangeUpgradeLevel < rangeUpgradeSprites.Length)
+        {
+            rangeUpgradeImage.sprite = rangeUpgradeSprites[rangeUpgradeLevel];
+        }
+        if (UnitRegistryManager.ReturnAllPlayerUnits().Count == 0){return;}
         foreach (var unit in UnitRegistryManager.ReturnAllPlayerUnits())
         {
             unit.TryGetComponent(out RangeAttackController rangeAttackController);
             rangeAttackController?.ApplyRangedUpgrade();
-        }
-        
-        if (rangeUpgradeLevel < rangeUpgradeSprites.Length)
-        {
-            rangeUpgradeImage.sprite = rangeUpgradeSprites[rangeUpgradeLevel];
         }
     }
 
@@ -278,7 +305,6 @@ public class Upgrader : MonoBehaviour
             return;
         }
         goldUpgradeLevel++;
-        if (UnitRegistryManager.ReturnAllPlayerUnits().Count != 0){return;}
         EconomyManager.Instance.goldPerSecond += Mathf.RoundToInt(EconomyManager.Instance.goldPerSecond * goldUpgradePercent);
         if (goldUpgradeLevel < GoldUpgradeSprites.Length)
         {
@@ -293,7 +319,6 @@ public class Upgrader : MonoBehaviour
             return;
         }
         silverUpgradeLevel++;
-        if (UnitRegistryManager.ReturnAllPlayerUnits().Count != 0){return;}
         EconomyManager.Instance.silverPerSecond += Mathf.RoundToInt(EconomyManager.Instance.silverPerSecond * silverUpgradePercent);
         if (silverUpgradeLevel < SilverUpgradeSprites.Length)
         {

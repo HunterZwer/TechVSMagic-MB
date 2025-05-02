@@ -45,7 +45,7 @@ public class Dragon_Script : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.TryGetComponent(out Unit unit))
+        if (other.TryGetComponent(out UnitLVL2 unit))
         {
             StartFlight();
         }

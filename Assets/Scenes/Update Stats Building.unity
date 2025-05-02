@@ -1504,7 +1504,7 @@ GameObject:
   - component: {fileID: 330646680}
   - component: {fileID: 330646679}
   m_Layer: 5
-  m_Name: HealthButton
+  m_Name: HealthMeleeButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1526,7 +1526,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 770, y: -860}
+  m_AnchoredPosition: {x: 610, y: -860}
   m_SizeDelta: {x: 80, y: 85}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &330646679
@@ -1593,7 +1593,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 010fbd86a8aa0e64caa3bac9638f0497, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 525ec5d8fd17d6e4e8682a1164b8970d, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -2202,7 +2202,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 57552a6653ee48b7a8ac15c7a664e294, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  waveInterval: 1
+  minWaveInterval: 5
+  maxWaveInterval: 30
   maxWave: 10
   waveUnits:
   - unitPrefab: {fileID: 9016114144046474163, guid: a3c52525ecffb7041b45ec0ae9473bfa, type: 3}
@@ -2234,6 +2235,7 @@ MonoBehaviour:
   - {fileID: 1159904524}
   - {fileID: 535391071}
   _endPoint: {fileID: 1182188346}
+  nextWaveText: {fileID: 1524305325}
 --- !u!4 &413645649
 Transform:
   m_ObjectHideFlags: 0
@@ -3625,7 +3627,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 690, y: -860}
+  m_AnchoredPosition: {x: 850, y: -860}
   m_SizeDelta: {x: 80, y: 85}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &683767567
@@ -3869,6 +3871,126 @@ CanvasRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 726157981}
+  m_CullTransparentMesh: 1
+--- !u!1 &752335045
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 752335046}
+  - component: {fileID: 752335049}
+  - component: {fileID: 752335048}
+  - component: {fileID: 752335047}
+  m_Layer: 5
+  m_Name: HealthRangedButton
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &752335046
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 752335045}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2131132387}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 690, y: -860}
+  m_SizeDelta: {x: 80, y: 85}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &752335047
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 752335045}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Navigation:
+    m_Mode: 3
+    m_WrapAround: 0
+    m_SelectOnUp: {fileID: 0}
+    m_SelectOnDown: {fileID: 0}
+    m_SelectOnLeft: {fileID: 0}
+    m_SelectOnRight: {fileID: 0}
+  m_Transition: 1
+  m_Colors:
+    m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
+    m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
+    m_ColorMultiplier: 1
+    m_FadeDuration: 0.1
+  m_SpriteState:
+    m_HighlightedSprite: {fileID: 0}
+    m_PressedSprite: {fileID: 0}
+    m_SelectedSprite: {fileID: 0}
+    m_DisabledSprite: {fileID: 0}
+  m_AnimationTriggers:
+    m_NormalTrigger: Normal
+    m_HighlightedTrigger: Highlighted
+    m_PressedTrigger: Pressed
+    m_SelectedTrigger: Selected
+    m_DisabledTrigger: Disabled
+  m_Interactable: 1
+  m_TargetGraphic: {fileID: 752335048}
+  m_OnClick:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &752335048
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 752335045}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 21300000, guid: da9856ef0939d554eb7210a78cd0a5db, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &752335049
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 752335045}
   m_CullTransparentMesh: 1
 --- !u!1 &763094535
 GameObject:
@@ -6808,6 +6930,7 @@ RectTransform:
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 1524305327}
   - {fileID: 129838823}
   - {fileID: 1214148604}
   - {fileID: 562273235}
@@ -8560,6 +8683,142 @@ RectTransform:
   m_AnchoredPosition: {x: 1.1376953, y: 0}
   m_SizeDelta: {x: -2.2755, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!1 &1524305324
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1524305327}
+  - component: {fileID: 1524305326}
+  - component: {fileID: 1524305325}
+  m_Layer: 5
+  m_Name: NextWaveText
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1524305325
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1524305324}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_text: Next Wave
+  m_isRightToLeft: 0
+  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontSharedMaterials: []
+  m_fontMaterial: {fileID: 0}
+  m_fontMaterials: []
+  m_fontColor32:
+    serializedVersion: 2
+    rgba: 4278190080
+  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
+  m_enableVertexGradient: 0
+  m_colorMode: 3
+  m_fontColorGradient:
+    topLeft: {r: 1, g: 1, b: 1, a: 1}
+    topRight: {r: 1, g: 1, b: 1, a: 1}
+    bottomLeft: {r: 1, g: 1, b: 1, a: 1}
+    bottomRight: {r: 1, g: 1, b: 1, a: 1}
+  m_fontColorGradientPreset: {fileID: 0}
+  m_spriteAsset: {fileID: 0}
+  m_tintAllSprites: 0
+  m_StyleSheet: {fileID: 0}
+  m_TextStyleHashCode: -1183493901
+  m_overrideHtmlColors: 0
+  m_faceColor:
+    serializedVersion: 2
+    rgba: 4294967295
+  m_fontSize: 36
+  m_fontSizeBase: 36
+  m_fontWeight: 400
+  m_enableAutoSizing: 0
+  m_fontSizeMin: 18
+  m_fontSizeMax: 72
+  m_fontStyle: 0
+  m_HorizontalAlignment: 1
+  m_VerticalAlignment: 256
+  m_textAlignment: 65535
+  m_characterSpacing: 0
+  m_wordSpacing: 0
+  m_lineSpacing: 0
+  m_lineSpacingMax: 0
+  m_paragraphSpacing: 0
+  m_charWidthMaxAdj: 0
+  m_TextWrappingMode: 1
+  m_wordWrappingRatios: 0.4
+  m_overflowMode: 0
+  m_linkedTextComponent: {fileID: 0}
+  parentLinkedComponent: {fileID: 0}
+  m_enableKerning: 0
+  m_ActiveFontFeatures: 6e72656b
+  m_enableExtraPadding: 0
+  checkPaddingRequired: 0
+  m_isRichText: 1
+  m_EmojiFallbackSupport: 1
+  m_parseCtrlCharacters: 1
+  m_isOrthographic: 1
+  m_isCullingEnabled: 0
+  m_horizontalMapping: 0
+  m_verticalMapping: 0
+  m_uvLineOffset: 0
+  m_geometrySortingOrder: 0
+  m_IsTextObjectScaleStatic: 0
+  m_VertexBufferAutoSizeReduction: 0
+  m_useMaxVisibleDescender: 1
+  m_pageToDisplay: 1
+  m_margin: {x: 0, y: 0, z: 0, w: 0}
+  m_isUsingLegacyAnimationComponent: 0
+  m_isVolumetricText: 0
+  m_hasFontAssetChanged: 0
+  m_baseMaterial: {fileID: 0}
+  m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!222 &1524305326
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1524305324}
+  m_CullTransparentMesh: 1
+--- !u!224 &1524305327
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1524305324}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1195633156}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 120, y: -30}
+  m_SizeDelta: {x: 200, y: 50}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1556226824
 GameObject:
   m_ObjectHideFlags: 0
@@ -8903,7 +9162,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: e5b328c8363573c40911ddda38eda8f3, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 4ab9993c2063fce4691875f19172919d, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -9078,7 +9337,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   damageUpgradeLevel: 0
-  healthUpgradeLevel: 0
+  healthMeleeUpgradeLevel: 0
+  healthRangedUpgradeLevel: 0
   rangedDamageUpgradeLevel: 0
   speedUpgradeLevel: 0
   rangeDamageUpgradeLevel: 0
@@ -9097,16 +9357,22 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 528ed0fbb4b7656439d4f62c70f414b8, type: 3}
   rangeUpgradeButton: {fileID: 1588740257}
   rangeUpgradeSprites:
-  - {fileID: 21300000, guid: e5b328c8363573c40911ddda38eda8f3, type: 3}
-  - {fileID: 21300000, guid: e5b328c8363573c40911ddda38eda8f3, type: 3}
-  - {fileID: 21300000, guid: e5b328c8363573c40911ddda38eda8f3, type: 3}
-  - {fileID: 21300000, guid: e5b328c8363573c40911ddda38eda8f3, type: 3}
-  healthUpgradeButton: {fileID: 330646679}
-  healthUpgradeSprites:
-  - {fileID: 21300000, guid: 010fbd86a8aa0e64caa3bac9638f0497, type: 3}
-  - {fileID: 21300000, guid: 010fbd86a8aa0e64caa3bac9638f0497, type: 3}
-  - {fileID: 21300000, guid: 010fbd86a8aa0e64caa3bac9638f0497, type: 3}
-  - {fileID: 21300000, guid: 010fbd86a8aa0e64caa3bac9638f0497, type: 3}
+  - {fileID: 21300000, guid: 4ab9993c2063fce4691875f19172919d, type: 3}
+  - {fileID: 21300000, guid: 4761151f5b3be214893ddbfff36bfbdd, type: 3}
+  - {fileID: 21300000, guid: ccb7581463d5e0146a9c2234e08f297d, type: 3}
+  - {fileID: 21300000, guid: c1208256003e6634ba017516f00b6909, type: 3}
+  healthMeleeUpgradeButton: {fileID: 330646679}
+  healthMeleeUpgradeSprites:
+  - {fileID: 21300000, guid: 525ec5d8fd17d6e4e8682a1164b8970d, type: 3}
+  - {fileID: 21300000, guid: 525ec5d8fd17d6e4e8682a1164b8970d, type: 3}
+  - {fileID: 21300000, guid: 525ec5d8fd17d6e4e8682a1164b8970d, type: 3}
+  - {fileID: 21300000, guid: 525ec5d8fd17d6e4e8682a1164b8970d, type: 3}
+  healthRangedUpgradeButton: {fileID: 752335047}
+  healthRangedUpgradeSprites:
+  - {fileID: 21300000, guid: da9856ef0939d554eb7210a78cd0a5db, type: 3}
+  - {fileID: 21300000, guid: 70b0b64e5b6331f4d8e3055b04021cf3, type: 3}
+  - {fileID: 21300000, guid: 674e269b3e9675b499a661ae5c42fab7, type: 3}
+  - {fileID: 21300000, guid: c06e64a8fa402d148a9841606d645143, type: 3}
   speedUpgradeButton: {fileID: 1587032371}
   speedUpgradeSprites:
   - {fileID: 21300000, guid: b0a48111763ee5c4a8b080508bc6c88b, type: 3}
@@ -9122,6 +9388,7 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 5882bd1de4670954bb69d8953e416340, type: 3}
   - {fileID: 21300000, guid: a04656195e9e82d48bf88b327e748d16, type: 3}
   - {fileID: 21300000, guid: d6e6b7aa4dcb4674fb05cab4ecc2e666, type: 3}
+  - {fileID: 21300000, guid: 02663b127b1514048abcd3647f3ac098, type: 3}
   - {fileID: 21300000, guid: 4ab5e274ca02a304e9897ad7ea455b52, type: 3}
   - {fileID: 21300000, guid: 9f5e440dd9f999645825a2f490691c3f, type: 3}
   - {fileID: 21300000, guid: 4d6f65d2230674e4daf5e35688467026, type: 3}
@@ -9137,6 +9404,7 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 9bd3a85f7b3d6344282af3c7dfa32bab, type: 3}
   - {fileID: 21300000, guid: f4536137396ccbf4c87b86906cc6d9f3, type: 3}
   - {fileID: 21300000, guid: c13e7ed93167133478c7e7a14e32b9eb, type: 3}
+  - {fileID: 21300000, guid: a9a302b3ad9db274997fa92fde18e1f9, type: 3}
   - {fileID: 21300000, guid: d85180fcab619b848bfbd33db829db05, type: 3}
   - {fileID: 21300000, guid: ac5d925ea37c5324781a0dd9d916c2f1, type: 3}
   - {fileID: 21300000, guid: ebee0f057f05d9f47bbf7f142010b4b9, type: 3}
@@ -9787,7 +10055,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 610, y: -860}
+  m_AnchoredPosition: {x: 770, y: -860}
   m_SizeDelta: {x: 80, y: 85}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1807086860
@@ -11145,6 +11413,7 @@ RectTransform:
   - {fileID: 2112372060}
   - {fileID: 1588740256}
   - {fileID: 330646678}
+  - {fileID: 752335046}
   - {fileID: 1587032370}
   - {fileID: 1807086859}
   - {fileID: 683767566}
@@ -11213,7 +11482,7 @@ Canvas:
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
   m_VertexColorAlwaysGammaSpace: 0
-  m_AdditionalShaderChannelsFlag: 0
+  m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
   m_SortingOrder: 0
@@ -11258,8 +11527,9 @@ MonoBehaviour:
   - {fileID: 1588740257}
   - {fileID: 1807086860}
   - {fileID: 683767567}
+  - {fileID: 752335047}
   upgradeDataList:
-  - upgradeName: Health
+  - upgradeName: HealthMelee
     productionTime: 4
     baseGoldCost: 16
     baseSilverCost: 20
@@ -11290,6 +11560,11 @@ MonoBehaviour:
     baseSilverCost: 20
     costMultiplier: 1.5
   - upgradeName: Silver
+    productionTime: 4
+    baseGoldCost: 16
+    baseSilverCost: 20
+    costMultiplier: 1.5
+  - upgradeName: HealthRanged
     productionTime: 4
     baseGoldCost: 16
     baseSilverCost: 20

@@ -17,7 +17,7 @@ public class BattleManager : MonoBehaviour
     
     [Header("Formation Settings")]
     [SerializeField] private float horizontalSpacing = 2f;    // Space between units in a row
-    [SerializeField] private float verticalSpacing = 5f;      // Space between unit types
+    [SerializeField] private float verticalSpacing = 5f;      // Space between unitLvl2 types
     // [SerializeField] private float unitLineOffset = 3f;       // Front-back offset between lines
     
     [Header("Team A Units")]
@@ -26,7 +26,7 @@ public class BattleManager : MonoBehaviour
     [SerializeField] private GameObject teamA_Unit3Prefab;
     [SerializeField] private GameObject teamA_Unit4Prefab;
     
-    [Header("Team A Unit Counts")]
+    [Header("Team A UnitLVL2 Counts")]
     [SerializeField] private int teamA_Unit1Count = 5;
     [SerializeField] private int teamA_Unit2Count = 3;
     [SerializeField] private int teamA_Unit3Count = 2;
@@ -38,7 +38,7 @@ public class BattleManager : MonoBehaviour
     [SerializeField] private GameObject teamB_Unit3Prefab;
     [SerializeField] private GameObject teamB_Unit4Prefab;
     
-    [Header("Team B Unit Counts")]
+    [Header("Team B UnitLVL2 Counts")]
     [SerializeField] private int teamB_Unit1Count = 5;
     [SerializeField] private int teamB_Unit2Count = 3;
     [SerializeField] private int teamB_Unit3Count = 2;
@@ -135,7 +135,7 @@ public class BattleManager : MonoBehaviour
                 teamList
             );
 
-            // Move position for next unit type
+            // Move position for next unitLvl2 type
             currentPosition += new Vector3(0, 0, verticalSpacing);
         }
     }

@@ -11,14 +11,14 @@ public class HoverEffect : MonoBehaviour, IPointerExitHandler, IPointerEnterHand
 
 
     private UnitStats unitStats;
-    private Unit _unit;
+    private UnitLVL2 _unitLvl2;
     private float unitDamage;
     private int _damageUprgadeLevel = 0;
 
     private void Start()
     {
-        _unit = _unitInfoShowPrefab.GetComponent<Unit>();
-        unitStats = JsonLoader.LoadUnitStats(_unit.unitClass, _unit.IsPlayer);
+        _unitLvl2 = _unitInfoShowPrefab.GetComponent<UnitLVL2>();
+        unitStats = JsonLoader.LoadUnitStats(_unitLvl2.unitClass, _unitLvl2.IsPlayer);
         unitDamage = unitDamage * unitStats.DamageMultiplier[_damageUprgadeLevel];
     }
 
@@ -27,15 +27,15 @@ public class HoverEffect : MonoBehaviour, IPointerExitHandler, IPointerEnterHand
 
         
 
-        Unit unitComponent = _unit.GetComponent<Unit>();
-        unitComponent.TryGetComponent(out NavMeshAgent agent);
+        UnitLVL2 unitLvl2Component = _unitLvl2.GetComponent<UnitLVL2>();
+        unitLvl2Component.TryGetComponent(out NavMeshAgent agent);
         string attackInfo = "";
-        if (unitComponent.TryGetComponent(out MeleeAttackController melee))
+        if (unitLvl2Component.TryGetComponent(out MeleeAttackController melee))
             attackInfo = $"{melee.unitDamage}";
-        else if (unitComponent.TryGetComponent(out RangeAttackController ranged))
+        else if (unitLvl2Component.TryGetComponent(out RangeAttackController ranged))
             attackInfo = $" {ranged.unitDamage}";
         PanelInfoUnits.Instance.TransformingPanel(transform.position.x);
-        PanelInfoUnits.Instance.SetInfo($"Name: {_unit.name}", $"Damage: {attackInfo}", $"Speed {agent.speed}");
+        PanelInfoUnits.Instance.SetInfo($"Name: {_unitLvl2.name}", $"Damage: {attackInfo}", $"Speed {agent.speed}");
         PanelInfoUnits.Instance.SetActivePanelInfo(true);
     }
 

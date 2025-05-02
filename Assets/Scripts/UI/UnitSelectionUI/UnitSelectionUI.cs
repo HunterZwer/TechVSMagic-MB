@@ -28,7 +28,7 @@ public class UnitSelectionUI : MonoBehaviour
     public Image healthFill;
 
     private List<GameObject> iconInstances = new List<GameObject>();
-    private List<Unit> cachedSelectedUnits = new List<Unit>();
+    private List<UnitLVL2> cachedSelectedUnits = new List<UnitLVL2>();
 
     private int currentPage = 0;
     private const int UNITS_PER_PAGE = 27;
@@ -44,7 +44,7 @@ public class UnitSelectionUI : MonoBehaviour
     private void Start()
     {
         UnitSelectionManager.Instance.onSelectionChanged += UpdateSelectionUI;
-        Unit.onUnitDied += HandleUnitDeath;
+        UnitLVL2.onUnitDied += HandleUnitDeath;
 
 
         for (int i = 0; i < pageButtons.Length; i++)
@@ -69,7 +69,7 @@ public class UnitSelectionUI : MonoBehaviour
     private void OnDestroy()
     {
         UnitSelectionManager.Instance.onSelectionChanged -= UpdateSelectionUI;
-        Unit.onUnitDied -= HandleUnitDeath;
+        UnitLVL2.onUnitDied -= HandleUnitDeath;
     }
 
     private void Update()
@@ -85,11 +85,11 @@ public class UnitSelectionUI : MonoBehaviour
     private void UpdateSelectionUI()
     {
         List<GameObject> selectedUnits = UnitSelectionManager.Instance.unitSelected;
-        selectedUnits.RemoveAll(unit => unit == null || unit.GetComponent<Unit>()?.IsDead == true);
+        selectedUnits.RemoveAll(unit => unit == null || unit.GetComponent<UnitLVL2>()?.IsDead == true);
 
         cachedSelectedUnits.Clear();
         foreach (GameObject unit in selectedUnits)
-            cachedSelectedUnits.Add(unit.GetComponent<Unit>());
+            cachedSelectedUnits.Add(unit.GetComponent<UnitLVL2>());
 
         currentPage = 0;
 
@@ -132,28 +132,28 @@ public class UnitSelectionUI : MonoBehaviour
         panelSingleUnit.SetActive(true);
         gridMultiUnits.SetActive(false);
 
-        Unit unitComponent = unit.GetComponent<Unit>();
-        if (unitComponent != null)
+        UnitLVL2 unitLvl2Component = unit.GetComponent<UnitLVL2>();
+        if (unitLvl2Component != null)
         {
-            profileImage.sprite = unitComponent.GetUnitIcon() ?? defaultProfileSprite;
-            unitNameText.text = unitComponent.InGameName;
+            profileImage.sprite = unitLvl2Component.GetUnitIcon() ?? defaultProfileSprite;
+            unitNameText.text = unitLvl2Component.InGameName;
             profileImage.gameObject.SetActive(true);
             healthSlider.gameObject.SetActive(true);
             healthText.gameObject.SetActive(true);
 
             string attackInfo = "Нет атаки";
-            if (unitComponent.TryGetComponent(out MeleeAttackController melee))
+            if (unitLvl2Component.TryGetComponent(out MeleeAttackController melee))
                 attackInfo = $"Урон: {melee.unitDamage}";
-            else if (unitComponent.TryGetComponent(out RangeAttackController ranged))
+            else if (unitLvl2Component.TryGetComponent(out RangeAttackController ranged))
                 attackInfo = $"Урон: {ranged.unitDamage}";
 
             unitAttackText.text = attackInfo;
 
-            unitSpeedText.text = unitComponent.TryGetComponent(out NavMeshAgent agent)
+            unitSpeedText.text = unitLvl2Component.TryGetComponent(out NavMeshAgent agent)
                 ? $"Скорость: {agent.speed}"
                 : "Скорость: N/A";
 
-            UpdateHealthUI(unitComponent);
+            UpdateHealthUI(unitLvl2Component);
         }
     }
 
@@ -166,12 +166,12 @@ public class UnitSelectionUI : MonoBehaviour
         UpdateGrid();
     }
 
-    private void UpdateHealthUI(Unit unit)
+    private void UpdateHealthUI(UnitLVL2 unitLvl2)
     {
         if (healthSlider != null && healthText != null && healthFill != null)
         {
-            float health = unit.GetCurrentHealth();
-            float maxHealth = unit.unitMaxHealth;
+            float health = unitLvl2.GetCurrentHealth();
+            float maxHealth = unitLvl2.unitMaxHealth;
             float healthPercentage = health / maxHealth;
 
             healthSlider.maxValue = maxHealth;
@@ -206,16 +206,16 @@ public class UnitSelectionUI : MonoBehaviour
 
             if (i + startIndex < cachedSelectedUnits.Count)
             {
-                Unit unitComponent = cachedSelectedUnits[i + startIndex];
+                UnitLVL2 unitLvl2Component = cachedSelectedUnits[i + startIndex];
 
-                icon.GetComponent<Image>().sprite = unitComponent.GetUnitIcon();
+                icon.GetComponent<Image>().sprite = unitLvl2Component.GetUnitIcon();
                 icon.SetActive(true);
 
                 Slider healthSlider = icon.GetComponentInChildren<Slider>();
                 if (healthSlider != null)
                 {
-                    healthSlider.maxValue = unitComponent.unitMaxHealth;
-                    healthSlider.value = unitComponent.GetCurrentHealth();
+                    healthSlider.maxValue = unitLvl2Component.unitMaxHealth;
+                    healthSlider.value = unitLvl2Component.GetCurrentHealth();
                 }
 
                 
@@ -223,7 +223,7 @@ public class UnitSelectionUI : MonoBehaviour
                 if (button != null)
                 {
                     button.onClick.RemoveAllListeners();
-                    button.onClick.AddListener(() => FocusOnUnit(unitComponent));
+                    button.onClick.AddListener(() => FocusOnUnit(unitLvl2Component));
                 }
             }
             else
@@ -250,9 +250,9 @@ public class UnitSelectionUI : MonoBehaviour
             }
         }
     }
-    private void FocusOnUnit(Unit unit)
+    private void FocusOnUnit(UnitLVL2 unitLvl2)
     {
-        if (mainCamera != null && unit != null)
+        if (mainCamera != null && unitLvl2 != null)
         {
             float baseSize = 5f; 
             float baseDistance = 10f; 
@@ -261,7 +261,7 @@ public class UnitSelectionUI : MonoBehaviour
             float sizeFactor = mainCamera.orthographicSize / baseSize;
             float adjustedDistance = baseDistance * sizeFactor;
 
-            Vector3 unitPosition = unit.transform.position;
+            Vector3 unitPosition = unitLvl2.transform.position;
 
       
             Vector3 offset = new Vector3(-adjustedDistance, adjustedDistance * 1.3f, -adjustedDistance);
@@ -281,14 +281,14 @@ public class UnitSelectionUI : MonoBehaviour
         int startIndex = currentPage * UNITS_PER_PAGE;
         for (int i = 0; i < iconInstances.Count && (i + startIndex) < cachedSelectedUnits.Count; i++)
         {
-            Unit unitComponent = cachedSelectedUnits[i + startIndex];
-            if (unitComponent == null) continue;
+            UnitLVL2 unitLvl2Component = cachedSelectedUnits[i + startIndex];
+            if (unitLvl2Component == null) continue;
 
             Slider healthSlider = iconInstances[i].GetComponentInChildren<Slider>();
             if (healthSlider != null)
             {
-                healthSlider.maxValue = unitComponent.unitMaxHealth;
-                healthSlider.value = unitComponent.GetCurrentHealth(); // Убираем анимацию, теперь обновляется сразу
+                healthSlider.maxValue = unitLvl2Component.unitMaxHealth;
+                healthSlider.value = unitLvl2Component.GetCurrentHealth(); // Убираем анимацию, теперь обновляется сразу
             }
         }
 
@@ -309,7 +309,7 @@ public class UnitSelectionUI : MonoBehaviour
         iconInstances.Clear();
     }
 
-    private void HandleUnitDeath(Unit deadUnit)
+    private void HandleUnitDeath(UnitLVL2 deadUnitLvl2)
     {
         UpdateSelectionUI();
     }

@@ -21,7 +21,7 @@ public class AreaWaveSpawner : MonoBehaviour
     [SerializeField] private Vector3 spawnAreaSize = new Vector3(10f, 2f, 10f); // Size of spawn area
     [SerializeField] private Color gizmoColor = new Color(1f, 0f, 0f, 0.3f); // Red with transparency
 
-    [Header("Unit Configuration")]
+    [Header("UnitLVL2 Configuration")]
     [SerializeField] private WaveUnit[] waveUnits = new WaveUnit[4];
     [SerializeField] private string playerTag = "Player";
     [SerializeField] private Transform[] SpawnPositions;

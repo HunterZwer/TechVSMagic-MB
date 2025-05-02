@@ -6,19 +6,19 @@ public class AttackController : MonoBehaviour
     public Transform targetToAttack;
     public float unitDamage;
     public string targetTag;
-    public Unit ThisUnit;
+    [FormerlySerializedAs("ThisUnit")] public UnitLVL2 thisUnitLvl2;
     public UnitStats unitStats;
     public float baseDamage;
     public float baseRange;
     
     private void Awake()
     {
-        ThisUnit = GetComponent<Unit>();
-        unitStats = JsonLoader.LoadUnitStats(ThisUnit.unitClass, ThisUnit.IsPlayer);
+        thisUnitLvl2 = GetComponent<UnitLVL2>();
+        unitStats = JsonLoader.LoadUnitStats(thisUnitLvl2.unitClass, thisUnitLvl2.IsPlayer);
         unitDamage = 10f;
         baseDamage = 10f;
         baseRange = 10f;
         
-        targetTag = ThisUnit.IsPlayer ? "Enemy" : "Player";
+        targetTag = thisUnitLvl2.IsPlayer ? "Enemy" : "Player";
     }
 }

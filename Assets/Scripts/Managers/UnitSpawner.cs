@@ -3,11 +3,11 @@ using UnityEngine.UI;
 
 public class UnitSpawner : MonoBehaviour
 {
-    [Header("Unit Prefabs")]
-    public GameObject[] unitPrefabs; // Assign 8 unit prefabs in the Inspector
+    [Header("UnitLVL2 Prefabs")]
+    public GameObject[] unitPrefabs; // Assign 8 unitLvl2 prefabs in the Inspector
 
     [Header("UI Elements")]
-    public Text selectedUnitText; // Assign UI Text to display selected unit name
+    public Text selectedUnitText; // Assign UI Text to display selected unitLvl2 name
 
     private int selectedUnitIndex = 0;
     private bool isPaused = false;
@@ -21,7 +21,7 @@ public class UnitSpawner : MonoBehaviour
 
     void HandleUnitSelection()
     {
-        // Check number keys 1-8 and update the selected unit
+        // Check number keys 1-8 and update the selected unitLvl2
         for (int i = 0; i < unitPrefabs.Length; i++)
         {
             if (Input.GetKeyDown((KeyCode)(KeyCode.Alpha1 + i)))
@@ -69,7 +69,7 @@ public class UnitSpawner : MonoBehaviour
     {
         if (selectedUnitText != null)
         {
-            selectedUnitText.text = "Selected Unit: " + unitPrefabs[selectedUnitIndex].name;
+            selectedUnitText.text = "Selected UnitLVL2: " + unitPrefabs[selectedUnitIndex].name;
         }
     }
 }
