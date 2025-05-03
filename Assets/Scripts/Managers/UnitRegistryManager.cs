@@ -15,9 +15,23 @@ public class UnitRegistryManager: SelectionMethods
         allPlayerUnits.Remove(unit);
         UnitSelectionManager.Instance?.UpdateSelectionButtonText();
     }
+    public static void RegisterEnemyUnit(GameObject unit)
+    {
+        allEnemyUnits.Add(unit);
+    }
+
+    public static void UnregisterEnemyUnit(GameObject unit)
+    {
+        allEnemyUnits.Remove(unit);
+    }
 
     public static HashSet<GameObject> ReturnAllPlayerUnits()
     {
         return allPlayerUnits;
+    }    
+    
+    public static HashSet<GameObject> ReturnAllEnemyUnits()
+    {
+        return allEnemyUnits;
     }
 }

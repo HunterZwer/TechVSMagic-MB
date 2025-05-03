@@ -13,6 +13,7 @@ public class SelectionMethods: MonoBehaviour
     
     protected List<SelectedUnitData> selectedUnitsWithAttack = new List<SelectedUnitData>();
     protected static HashSet<GameObject> allPlayerUnits = new HashSet<GameObject>();
+    protected static HashSet<GameObject> allEnemyUnits = new HashSet<GameObject>();
     protected bool _hasOffensiveUnits;
     
     private HashSet<GameObject> selectedUnitsSet = new HashSet<GameObject>();

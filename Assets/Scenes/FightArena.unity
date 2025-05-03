@@ -5240,6 +5240,8 @@ MonoBehaviour:
   clearQueueButton: {fileID: 21262580}
   queueGrid: {fileID: 2065306431}
   queueButtonPrefab: {fileID: 845800660514918238, guid: f9be2bd790925524594f6c1cd6554c3c, type: 3}
+  buildingPlacement: {fileID: 0}
+  buildings: []
 --- !u!114 &1468581745
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6740,8 +6742,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 713c24ee5b35a11499ce58a4d23b444f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  allUnitSelected: []
+  selectionButtonText: {fileID: 1319369466}
+  _selectAllUnitsButton: {fileID: 2120603817}
   unitSelected: []
+  allUnitSelected: []
   clickable:
     serializedVersion: 2
     m_Bits: 128
@@ -6753,8 +6757,6 @@ MonoBehaviour:
     m_Bits: 256
   ClickIcon: {fileID: 1727930050}
   attackCursorVisible: 0
-  selectionButtonText: {fileID: 1319369466}
-  _selectAllUnitsButton: {fileID: 2120603817}
 --- !u!4 &1861294099
 Transform:
   m_ObjectHideFlags: 0
@@ -6786,7 +6788,6 @@ MonoBehaviour:
   baseSize: 5
   baseDistance: 10
   focusKey: 283
-  focusSpeed: 5
   focusButton: {fileID: 1310845412}
 --- !u!1 &1885983517
 GameObject:

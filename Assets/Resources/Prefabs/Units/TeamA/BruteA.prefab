@@ -4025,8 +4025,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetToAttack: {fileID: 0}
   unitDamage: 10
-  targetTag: 
-  ThisUnit: {fileID: 0}
+  thisUnitLvl2: {fileID: 0}
   unitStats:
     HealthMultiplier: []
     DamageMultiplier: []
@@ -4036,8 +4035,12 @@ MonoBehaviour:
     ReloadMultiplier: []
     RotationMultiplier: []
   baseDamage: 0
+  baseRange: 0
   attackRange: 10
   attackCooldown: 1
+  _enemyLayerMask:
+    serializedVersion: 2
+    m_Bits: 256
 --- !u!135 &2669253126528421045
 SphereCollider:
   m_ObjectHideFlags: 0

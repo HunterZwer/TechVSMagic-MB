@@ -46,13 +46,16 @@ public class UnitMovement : MonoBehaviour
         agent.speed *= unitStats.SpeedMultiplier[_speedUprgadeLevel];
         agent.angularSpeed *= unitStats.RotationMultiplier[_rotationUprgadeLevel] * _rotationSpeed;
         
-        
+        float normalizedSpeed = Mathf.InverseLerp(3.5f, 6.5f, agent.speed);
+        _animator.speed = (_baseSpeed + normalizedSpeed) * 0.3f;
     }
     
     public virtual void ApplySpeedeUpgrade()
     {
         agent.speed =  _baseSpeed * unitStats.DamageMultiplier[Upgrader.Instance.speedUpgradeLevel];
-
+        
+        float normalizedSpeed = Mathf.InverseLerp(3.5f, 6.5f, agent.speed);
+        _animator.speed = (_baseSpeed + normalizedSpeed) * 0.3f;
     }
 
     private void Update()

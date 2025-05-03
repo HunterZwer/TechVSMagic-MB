@@ -47,6 +47,10 @@ public class UnitLVL2 : MonoBehaviour
         {
             UnitRegistryManager.RegisterPlayerUnit(gameObject);
         }
+        else
+        {
+            UnitRegistryManager.RegisterEnemyUnit(gameObject);
+        }
         unitStats = JsonLoader.LoadUnitStats(unitClass, IsPlayer);
         _animator.cullingMode = AnimatorCullingMode.CullCompletely;
         unitMaxHealth = _baseHealth;
@@ -91,12 +95,14 @@ public class UnitLVL2 : MonoBehaviour
     private void OnDestroy()
     {
         if (UnitSelectionManager.Instance != null)
-        {
-            UnitSelectionManager.Instance.allUnitSelected.Remove(gameObject);
-        }
+        { UnitSelectionManager.Instance.allUnitSelected.Remove(gameObject);}
+        
         if (IsPlayer) UnitRegistryManager.UnregisterPlayerUnit(gameObject);
+        else
+        {
+            UnitRegistryManager.UnregisterEnemyUnit(gameObject);
+        }
     }
-    
     public void SetUnitClass(UnitClass newClass, Sprite newIcon)
     {
         unitClass = newClass;

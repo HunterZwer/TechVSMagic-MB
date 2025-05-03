@@ -5,7 +5,6 @@ public class AttackController : MonoBehaviour
 {
     public Transform targetToAttack;
     public float unitDamage;
-    public string targetTag;
     [FormerlySerializedAs("ThisUnit")] public UnitLVL2 thisUnitLvl2;
     public UnitStats unitStats;
     public float baseDamage;
@@ -18,7 +17,5 @@ public class AttackController : MonoBehaviour
         unitDamage = 10f;
         baseDamage = 10f;
         baseRange = 10f;
-        
-        targetTag = thisUnitLvl2.IsPlayer ? "Enemy" : "Player";
     }
 }

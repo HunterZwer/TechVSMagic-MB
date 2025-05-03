@@ -7,6 +7,8 @@ public class MeleeAttackController : AttackController
     public float attackRange = 1.5f;
     public float attackCooldown = 1.0f;
 
+    [SerializeField] private LayerMask _enemyLayerMask;
+    
     private bool isAttacking;
     private float attackRangeSquared;
     private int _rangeUpgradeLevel = 0;
@@ -15,6 +17,8 @@ public class MeleeAttackController : AttackController
     private readonly Dictionary<Transform, UnitLVL2> enemiesInRange = new();
     private Transform closestEnemy;
     private float closestDistanceSq = float.MaxValue;
+    private static readonly int IsMoving = Animator.StringToHash("isMoving");
+    private Animator _animator;
     
     private void Start()
     {
@@ -28,18 +32,17 @@ public class MeleeAttackController : AttackController
 
         // Start periodic enemy checks
         InvokeRepeating(nameof(PeriodicUpdate), Random.Range(0f, 0.25f), 0.5f);
+        _animator = GetComponent<Animator>();
     }
     
     public virtual void ApplyDamageUpgrade()
     {
         unitDamage = baseDamage * unitStats.DamageMultiplier[Upgrader.Instance.damageUpgradeLevel];
-
     }
     
     private void PeriodicUpdate()
     {
-        if (thisUnitLvl2.IsDead) return;
-
+        if (thisUnitLvl2.IsDead || enemiesInRange.Count == 0) return;
         CleanupDeadTargets();
         UpdateTarget();  // Only update if needed
     }
@@ -68,7 +71,7 @@ public class MeleeAttackController : AttackController
 
     private bool IsValidTarget(Collider other)
     {
-        return !(string.IsNullOrEmpty(targetTag) || !other.CompareTag(targetTag));
+        return (_enemyLayerMask.value & (1 << other.gameObject.layer)) != 0;
     }
 
     private void UpdateTarget()
@@ -119,6 +122,7 @@ public class MeleeAttackController : AttackController
 
     private void PerformAttack()
     {
+        if (_animator.GetBool(IsMoving)) return;
         if (isAttacking || thisUnitLvl2.IsDead || targetToAttack == null) return;
 
         if (targetToAttack.TryGetComponent(out UnitLVL2 targetUnit) && targetUnit != null && !targetUnit.IsDead)
@@ -158,18 +162,6 @@ public class MeleeAttackController : AttackController
         if (targetToAttack.TryGetComponent(out UnitLVL2 targetUnit) && targetUnit != null && !targetUnit.IsDead)
         {
             targetUnit.TakeDamage(unitDamage);
-        }
-    }
-
-    private readonly struct EnemyInfo
-    {
-        public readonly Transform Transform;
-        public readonly UnitLVL2 UnitLvl2;
-
-        public EnemyInfo(Transform transform, UnitLVL2 unitLvl2)
-        {
-            Transform = transform;
-            UnitLvl2 = unitLvl2;
         }
     }
 }

@@ -27,17 +27,25 @@ public class InfiniteWaveSpawner : MonoBehaviour
         StartCoroutine(WaveLoop());
     }
 
+    private void Update()
+    {
+        Debug.Log(UnitRegistryManager.ReturnAllEnemyUnits().Count);
+    }
+
     private IEnumerator WaveLoop()
     {
+        nextWaveText.text = "";
         while (isActive && currentWave < maxWave)
         {
-            currentWave++;
-            SpawnWave(currentWave);
+            yield return new WaitUntil(() => UnitRegistryManager.ReturnAllEnemyUnits().Count == 0);
 
             float t = (float)(currentWave - 1) / (maxWave - 1);
             float waveInterval = Mathf.Lerp(minWaveInterval, maxWaveInterval, t);
 
             yield return StartCoroutine(CountdownToNextWave(waveInterval));
+            
+            currentWave++;
+            SpawnWave(currentWave);
         }
 
         isActive = false;

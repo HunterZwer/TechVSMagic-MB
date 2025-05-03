@@ -25,6 +25,8 @@ public class RangeAttackController : AttackController
     private int _rangeUpgradeLevel = 0;
     private int _reloadUpgradeLevel = 0;
     private int _damageUpgradeLevel = 0;
+    private Animator _animator;
+    private static readonly int IsMoving = Animator.StringToHash("isMoving");
 
     protected void Start()
     {
@@ -42,6 +44,7 @@ public class RangeAttackController : AttackController
         _lastAttackTime = Time.time - attackCooldown;
         
         InvokeRepeating(nameof(FindNearestTarget), Random.Range(0f, 0.3f), 0.5f);
+        _animator = GetComponent<Animator>();
     }
     
     public virtual void ApplyRangedDamageUpgrade()
@@ -87,6 +90,7 @@ public class RangeAttackController : AttackController
 
     private void TryAttack()
     {
+        if (_animator.GetBool(IsMoving)) return;
         if (targetToAttack == null || Time.time - _lastAttackTime < attackCooldown)
             return;
 
