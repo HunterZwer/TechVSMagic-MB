@@ -35,6 +35,8 @@ public class EconomyManager : MonoBehaviour
         {
             yield return new WaitForSeconds(1);
             AddResources(goldPerSecond, silverPerSecond);
+            FloatingTextManager.ShowText1("+"+goldPerSecond.ToString());
+            FloatingTextManager.ShowText2("+"+silverPerSecond.ToString());
             UpdateUI();
         }
     }

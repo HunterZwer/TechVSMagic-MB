@@ -40,6 +40,7 @@ public class UnitSelectionUI : MonoBehaviour
     private const float healthUpdateInterval = 0f;
 
     [SerializeField] private BuildingUI _buildingUIPanel;
+    [SerializeField] private UpgradeBuildingUI upgradeUI;
 
     private void Start()
     {
@@ -102,11 +103,13 @@ public class UnitSelectionUI : MonoBehaviour
         if (selectedUnits.Count == 1)
         {
             _buildingUIPanel.Hide();
+            upgradeUI.HideUI();
             ShowSingleUnitPanel(selectedUnits[0]);
         }
         else
         {
             _buildingUIPanel.Hide();
+            upgradeUI.HideUI();
             ShowMultiUnitGrid(selectedUnits);
         }
     }

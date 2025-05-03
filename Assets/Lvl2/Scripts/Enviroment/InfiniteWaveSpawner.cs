@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using System.Collections;
 using TMPro; // Add this for TextMeshPro
@@ -27,18 +28,12 @@ public class InfiniteWaveSpawner : MonoBehaviour
         StartCoroutine(WaveLoop());
     }
 
-    private void Update()
-    {
-        Debug.Log(UnitRegistryManager.ReturnAllEnemyUnits().Count);
-    }
-
     private IEnumerator WaveLoop()
     {
         nextWaveText.text = "";
         while (isActive && currentWave < maxWave)
         {
             yield return new WaitUntil(() => UnitRegistryManager.ReturnAllEnemyUnits().Count == 0);
-
             float t = (float)(currentWave - 1) / (maxWave - 1);
             float waveInterval = Mathf.Lerp(minWaveInterval, maxWaveInterval, t);
 
@@ -94,5 +89,10 @@ public class InfiniteWaveSpawner : MonoBehaviour
     {
         if (spawnPositions.Length == 0) return transform.position;
         return spawnPositions[Random.Range(0, spawnPositions.Length)].position;
+    }
+
+    private void OnDestroy()
+    {
+        FloatingTextManager.ShowText3("You Win");
     }
 }

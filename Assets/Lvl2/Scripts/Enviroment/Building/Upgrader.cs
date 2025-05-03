@@ -326,5 +326,9 @@ public class Upgrader : MonoBehaviour
         }
     }
 
+    private void OnDestroy()
+    {
+        FloatingTextManager.ShowText3("You lose");
+    }
     
 }

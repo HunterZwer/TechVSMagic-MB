@@ -69,7 +69,7 @@ public class UpgradeBuildingUI : MonoBehaviour
     {
         if (activeUpgradeNames.Contains(data.upgradeName))
         {
-            Debug.Log($"Upgrade '{data.upgradeName}' is already in progress or queued.");
+            FloatingTextManager.ShowText3($"Upgrade '{data.upgradeName}' is already in progress or queued.");
             return false;
         }
         int currentLevel = Upgrader.Instance.GetUpgradeLevel(data.upgradeName);

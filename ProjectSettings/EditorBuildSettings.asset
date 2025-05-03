@@ -15,7 +15,7 @@ EditorBuildSettings:
     path: Assets/InsaneSystems/RTSStarterKit/Scenes/Example.unity
     guid: fa0b44aa00fedd44391bfa5a9205c22d
   - enabled: 1
-    path: Assets/Scenes/FightArena.unity
+    path: Assets/Lvl2/Scenes/FightArena.unity
     guid: 3b5bbdfe265cc784c9f267ab7ab07bf0
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}

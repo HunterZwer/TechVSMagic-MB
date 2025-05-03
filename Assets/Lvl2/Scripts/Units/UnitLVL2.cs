@@ -1,14 +1,13 @@
 ﻿using System;
-using System.Collections;
 using System.IO;
 using UnityEngine;
-using Random = Unity.Mathematics.Random;
 
 public class UnitLVL2 : MonoBehaviour
 {
-    public enum UnitClass { Knight, Archer, Shaman, Brute }
+    public enum UnitClass { Knight, Archer, Shaman, Brute, Building }
     public UnitClass unitClass;
     public bool IsPlayer;    
+    public bool isBuilding = false;
     public Sprite unitIcon;
     public HealthTracker healthTracker;
     public Transform circleIndicator;
@@ -29,8 +28,8 @@ public class UnitLVL2 : MonoBehaviour
 
     private void Awake()
     {
-        _animator = GetComponent<Animator>();
-        _movement = GetComponent<UnitMovement>();
+        TryGetComponent(out _animator);
+        TryGetComponent(out _movement);
         circleIndicator = transform.Find("CircleIndicator");
 
         var path = "Assets/Resources/Config/Units/Names&Surnames.txt";
@@ -43,7 +42,11 @@ public class UnitLVL2 : MonoBehaviour
 
     private void Start()
     {
-        if (IsPlayer)
+        if (isBuilding)
+        {
+            Debug.Log("Hi building");
+        }
+        else if (IsPlayer)
         {
             UnitRegistryManager.RegisterPlayerUnit(gameObject);
         }

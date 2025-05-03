@@ -54,7 +54,7 @@ public class MeleeAttackController : AttackController
         if (other.TryGetComponent(out UnitLVL2 unit) && !unit.IsDead)
         {
             enemiesInRange[other.transform] = unit;;
-        }
+        }                
     }
 
     private void OnTriggerExit(Collider other)
@@ -158,10 +158,10 @@ public class MeleeAttackController : AttackController
     public void Attack()
     {
         if (thisUnitLvl2.IsDead || targetToAttack == null) return;
-
+        
         if (targetToAttack.TryGetComponent(out UnitLVL2 targetUnit) && targetUnit != null && !targetUnit.IsDead)
         {
             targetUnit.TakeDamage(unitDamage);
-        }
+        }        
     }
 }
