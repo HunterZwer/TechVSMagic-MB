@@ -2719,6 +2719,7 @@ GameObject:
   - component: {fileID: 6457240231487787683}
   - component: {fileID: 8483686998318666754}
   - component: {fileID: -80423674097711524}
+  - component: {fileID: 6239723414898707156}
   m_Layer: 7
   m_Name: KnightA
   m_TagString: Player
@@ -2866,10 +2867,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   unitClass: 0
   IsPlayer: 1
+  isBuilding: 0
   unitIcon: {fileID: 21300000, guid: 3da923f6fdf453b47b3d86a3089a2f05, type: 3}
   healthTracker: {fileID: 3367305207077953102}
   circleIndicator: {fileID: 0}
   unitMaxHealth: 150
+  _goldCost: 5
+  _silverCost: 5
   _unitHealth: 0
   InGameName: 
 --- !u!114 &5124030722077707608
@@ -2972,6 +2976,18 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &6239723414898707156
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8829081743538213828}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 976c937ef85ba8941a0ba7a067638ee4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &8833678538161556933
 GameObject:
   m_ObjectHideFlags: 0

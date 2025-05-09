@@ -12,6 +12,8 @@ public class UnitLVL2 : MonoBehaviour
     public HealthTracker healthTracker;
     public Transform circleIndicator;
     public float unitMaxHealth;
+    public int _goldCost;
+    public int _silverCost;
     private int _baseHealth = 100;
     public bool IsDead { get; private set; } = false;
     [SerializeField] private float _unitHealth;

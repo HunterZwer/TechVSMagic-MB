@@ -5212,6 +5212,7 @@ GameObject:
   - component: {fileID: 8457068086413945631}
   - component: {fileID: 8479423922506703422}
   - component: {fileID: 5251394166027262775}
+  - component: {fileID: -5459125447626871341}
   m_Layer: 7
   m_Name: ArcherA
   m_TagString: Player
@@ -5361,10 +5362,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   unitClass: 1
   IsPlayer: 1
+  isBuilding: 0
   unitIcon: {fileID: 21300000, guid: 1c6c0c72169aff245a67178d6fe6f7e6, type: 3}
   healthTracker: {fileID: 999856920605178554}
   circleIndicator: {fileID: 0}
   unitMaxHealth: 100
+  _goldCost: 10
+  _silverCost: 10
   _unitHealth: 0
   InGameName: 
 --- !u!95 &5919841473883921500
@@ -5402,9 +5406,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   targetToAttack: {fileID: 0}
-  unitDamage: 0
-  targetTag: 
-  ThisUnit: {fileID: 0}
+  unitDamage: 10
+  thisUnitLvl2: {fileID: 0}
   unitStats:
     HealthMultiplier: []
     DamageMultiplier: []
@@ -5413,6 +5416,8 @@ MonoBehaviour:
     SpeedMultiplier: []
     ReloadMultiplier: []
     RotationMultiplier: []
+  baseDamage: 0
+  baseRange: 0
   projectilePrefab: {fileID: 4579222575667263265, guid: 67e113c11cfa0aa4f93262672f602ecc, type: 3}
   projectileSpawnPoint: {fileID: 109296686808876108}
   attackRange: 10
@@ -5469,6 +5474,18 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 15
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &-5459125447626871341
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8383154584205355589}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 976c937ef85ba8941a0ba7a067638ee4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &8399565841835284486
 GameObject:
   m_ObjectHideFlags: 0

@@ -3858,6 +3858,7 @@ GameObject:
   - component: {fileID: 2669253126528421045}
   - component: {fileID: 7431608944032491140}
   - component: {fileID: 8635165642847782159}
+  - component: {fileID: 7646952835012507700}
   m_Layer: 7
   m_Name: BruteA
   m_TagString: Player
@@ -4005,10 +4006,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   unitClass: 3
   IsPlayer: 1
+  isBuilding: 0
   unitIcon: {fileID: 21300000, guid: 8aa3d2228b05064408c24ad209bca1ed, type: 3}
   healthTracker: {fileID: 732985876889389428}
   circleIndicator: {fileID: 0}
   unitMaxHealth: 150
+  _goldCost: 15
+  _silverCost: 15
   _unitHealth: 0
   InGameName: 
 --- !u!114 &5293168436731728356
@@ -4111,6 +4115,18 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &7646952835012507700
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8908745380470061523}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 976c937ef85ba8941a0ba7a067638ee4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &8973908349553587558
 GameObject:
   m_ObjectHideFlags: 0
